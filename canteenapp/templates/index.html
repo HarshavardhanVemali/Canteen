@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canteen - Your College Food Destination</title>
+    <title>Food Hub</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
     <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
-    <script src="{% static 'js/script.js' %}" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
@@ -18,7 +17,7 @@
         <nav class="navbar">
             <a href="#" class="logo"></a>
             <ul class="nav-links">
-                <li><a href="#order-now">Order Now</a></li>
+                <li><a href="{% url 'home' %}">Order Now</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#footer">Contact</a></li>
                 <li><a href="#" onclick="openLoginOverlay()">Login</a></li>
@@ -36,7 +35,7 @@
                 <h1 class="hero-heading">Discover the Best Food & Drinks on Campus</h1>
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search for cuisines, dishes..." >
+                    <input type="text" placeholder="Search for cuisines, dishes..." autocomplete="off">
                     
                 </div>
             </div>
@@ -55,11 +54,11 @@
         
                 <section>
                     <div class="form-group">
-                        <input type="text" id="username" name="username" placeholder=" " required>
+                        <input type="text" id="username" name="username" placeholder=" " required autocomplete="off">
                         <label class="user-label" for="username">Full Name*</label>
                     </div>
                     <div class="form-group" id="email-field">
-                        <input type="email" class="email" id="email" name="email" placeholder=" " required>
+                        <input type="email" class="email" id="email" name="email" placeholder=" " required autocomplete="off">
                         <label class="email-label" for="email">Email*</label>
                     </div>
                     <div class="terms-checkbox">
@@ -78,7 +77,7 @@
                     </div>
         
                     <div class="google-signup">
-                        <button class="google-button">
+                        <button class="google-button" id="google-signup-button">
                             <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
                             Continue with Google
                         </button>
@@ -108,20 +107,20 @@
         
                 <section>
                     <div class="form-group">
+                        <label for="error-message" id="error-message" style="color: #ea4335;"></label>
+                    </div>
+                    <div class="form-group">
                         <div style="display: flex; align-items: center;" id="phonenumberlabel">
-                            <span style="margin-right: 5px;">+91</span>
-                            <input type="tel" id="phone" name="phone" placeholder="Phone" required>
+                            <input type="email" id="login-email" name="login-email" placeholder="Email" required autocomplete="off">
                         </div>
                     </div>
-        
-                    <button class="otp-button" id="otpButton">Send One Time Password</button>
-        
+                    <button class="verification-button" id="verificationButton">Send Verification Code</button>
                     <div class="divider">
                         <span>or</span>
                     </div>
         
-                    <div class="google-login">
-                        <button class="google-button">
+                    <div class="google-login"> 
+                        <button class="google-button" id="google-login-button">
                             <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
                             Continue with Google
                         </button>
@@ -137,7 +136,34 @@
                     </p>
                 </section>
             </div>
-        </div>              
+        </div> 
+        <div class="login-verification-overlay" id="login-verification-overlay">
+            <div class="overlay-content">
+                <section style="display: flex; align-items: center; justify-content: space-between;">
+                    <h3>Verification Code</h3>
+                    <button class="close-overlay" id="close-verification-overlay" onclick="closeVerificationOverlay()" style="display: flex; align-items: center; justify-content: space-between;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                </section>
+                <section>
+                    <p id="login-verification-error" style="color: #ea4335;"></p>
+                    <p class="verification-message">One Time Password has been sent to your email <strong id="verification-email"></strong>. Please enter it below. Valid for 10 minutes.</p>
+                    <div class="otp-inputs">
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+
+                    </div>
+                    <p class="timer">00:00</p>
+                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendLoginOTP()">Resend Now</span></p>
+                </section>
+            </div>
+        </div>           
         <section class="top">
 
             <div class="cards">
@@ -230,40 +256,41 @@
                                 <h3>Chicken</h3>
                             </div>
                         </div>
+                        
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/dish_images/d9766dd91cd75416f4f65cf286ca84331634805483.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Idli</h3>
                             </div>
                         </div>
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/dish_images/c2f22c42f7ba90d81440a88449f4e5891634806087.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Rolls</h3>
                             </div>
                         </div>
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/dish_images/e44c42ff4b60b025225c8691ef9735b11635781903.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Paneer</h3>
                             </div>
                         </div>
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/dish_images/d5ab931c8c239271de45e1c159af94311634805744.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Cakes</h3>
                             </div>
                         </div>
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/o2_assets/bf2d0e73add1c206aeeb9fec762438111727708719.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Biryani</h3>
                             </div>
                         </div>
                         <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                            <img src="https://b.zmtcdn.com/data/o2_assets/d0bd7c9405ac87f6aa65e31fe55800941632716575.png" alt="Chicken Dish">
                             <div class="dish-info">
-                                <h3>Chicken</h3>
+                                <h3>Pizza</h3>
                             </div>
                         </div>
                         
@@ -281,8 +308,8 @@
               </p>
               
             </div>
-            <div>
-                <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+            <div class="about container-img">
+                <img src="{% static '/images/DSC_0823.JPG' %}" alt="Chicken Dish">
             </div>
         </section>
         <!--
@@ -350,6 +377,220 @@
       </footer>
 </body>
 <script>
+    function openSignupOverlay() {
+        document.getElementById("signupOverlay").style.display = "flex"; 
+        document.body.classList.add('overlay-open');
+        document.getElementById("loginOverlay").style.display = "none"; 
+    }
+
+    function closeSignupOverlay() {
+        document.getElementById("signupOverlay").style.display = "none";
+        document.body.classList.remove('overlay-open'); 
+    }
+
+    function openLoginOverlay() {
+        document.getElementById("loginOverlay").style.display = "flex"; 
+        document.body.classList.add('overlay-open');
+        document.getElementById("signupOverlay").style.display = "none"; 
+    }
+
+    function closeLoginOverlay() {
+        document.getElementById("loginOverlay").style.display = "none";
+        document.body.classList.remove('overlay-open'); 
+    }
+    function closeVerificationOverlay() {
+        document.getElementById('login-verification-overlay').style.visibility = 'hidden';
+    }
+
+    function openVerificationOverlay() {
+        document.getElementById("signupOverlay").style.display = "none"; 
+        document.getElementById("loginOverlay").style.display = "none"; 
+        document.getElementById('login-verification-overlay').style.visibility = 'visible';     
+    }
+
+    function resendLoginOTP() {
+        
+
+    }
+
+    function moveToNext(input) {
+        if (input.value.length >= 1) {
+            const inputs = document.querySelectorAll('.otp-input');
+            const currentIndex = Array.from(inputs).indexOf(input);
+            
+            if (currentIndex < inputs.length - 1) {
+                inputs[currentIndex + 1].focus();
+            }
+        }
+    }
+    function moveBack(input, event) {
+        if (event.key === "Backspace" && input.value.length === 0) {
+            const inputs = document.querySelectorAll('.otp-input');
+            const currentIndex = Array.from(inputs).indexOf(input);
+            
+            if (currentIndex > 0) {
+                inputs[currentIndex - 1].focus();
+            }
+        }
+    }
+    function showVerificationOverlay() {
+        openVerificationOverlay();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const agreeTermsCheckbox = document.getElementById('agreeTerms');
+        const signupButton = document.getElementById('signupButton');
+
+        function validateForm() {
+            const isUsernameValid = usernameInput.value.length > 3;
+            const isEmailValid = emailInput.value.trim() !== '';
+            const isTermsChecked = agreeTermsCheckbox.checked;
+
+            signupButton.disabled = !(isUsernameValid && isEmailValid && isTermsChecked);
+        }
+        usernameInput.addEventListener('input', validateForm);
+        emailInput.addEventListener('input', validateForm);
+        agreeTermsCheckbox.addEventListener('change', validateForm);
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const verificationButton = document.getElementById('verificationButton');
+        if (verificationButton) { 
+            verificationButton.addEventListener('click', () => {
+                const emailLogin = document.getElementById('login-email').value;
+                if (!validateEmail(emailLogin)) {
+                    document.getElementById('error-message').textContent='Invalid Email';
+                    return;
+                }
+                verificationButton.classList.add('loading'); 
+                sendVerificationCode(emailLogin); 
+            });
+        } else {
+            console.error('Element with ID "verificationButton" not found.');
+        }
+        
+    });
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    function sendVerificationCode(email) {
+        if (!validateEmail(email)) {
+            document.getElementById('error-message').textContent='Invalid Email';
+            return;
+        }
+        fetch('/sendverificationcode/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ email_login: email }) 
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('verificationButton').classList.remove('loading');
+            if (data.success) {
+                closeSignupOverlay();
+                closeLoginOverlay();
+                closeVerificationOverlay();
+                openVerificationOverlay();
+                startTimer();
+            } else {
+                document.getElementById('error-message').textContent=data.error;
+            }
+        })
+        .catch(error => {
+            document.getElementById('verificationButton').classList.remove('loading'); 
+            console.error('Error sending verification code:', error);
+            alert('Error sending verification code. Please try again later.');
+        });
+    }
+    function startTimer() {
+        let seconds = 30;
+        const timerElement = document.querySelector('.timer');
+        const resendLink = document.querySelector('.resend-link');
+
+        timerId = setInterval(function() {
+            seconds--;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+            if (seconds <= 0) {
+                clearInterval(timerId);
+                timerElement.textContent = "00:00";
+                resendLink.style.display = 'inline-block'; 
+            }
+        }, 1000);
+    }
+    let timerId = null;
+    function resendLoginOTP() {
+        const email = document.getElementById('login-email').value;
+        sendVerificationCode(email);
+        clearOTPFields();
+        resetTimer();
+        document.getElementById("verificationButton").classList.add('loading');
+    }
+    function clearOTPFields() {
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach(input => input.value = '');
+    }
+
+    function resetTimer() {
+        clearInterval(timerId);
+        startTimer();
+        
+    }
+
+    function validateOTP() {
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
+        const email = document.getElementById('login-email').value;
+
+        if (otp.length === 6) {
+            fetch('/loginverifymail/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ email: email, code: otp })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    document.getElementById('login-verification-error').textContent = data.error;
+                    otpInputs.forEach(input => input.value = ''); 
+                }
+            })
+            .catch(error => {
+                console.error('Error verifying OTP:', error);
+                alert('Error verifying OTP. Please try again later.');
+            });
+        }
+    }
+    const lastOTPInput = document.querySelectorAll('.otp-input')[5];
+    lastOTPInput.addEventListener('keyup', validateOTP); 
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+</script>
+<script>
     const track = document.querySelector('.carousel-track');
     const prevButton = document.querySelector('.carousel-prev');
     const nextButton = document.querySelector('.carousel-next');
@@ -372,31 +613,6 @@
     }
     track.style.transform = `translateX(-${currentPosition}px)`;
     });
-
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId); 
-        const startPosition = window.pageYOffset; 
-        const distanceToScroll = targetElement.getBoundingClientRect().top; 
-        let startTime = null;
-        function animation(currentTime) {
-        if (startTime === null) startTime = currentTime;
-        const timeElapsed = currentTime - startTime;
-        const run = easeInOut(timeElapsed, startPosition, distanceToScroll, 1000);
-        window.scrollTo(0, run);
-        if (timeElapsed < 1000) requestAnimationFrame(animation);
-        }
-        requestAnimationFrame(animation);
-    });
-    });
-    function easeInOut(t, b, c, d) {
-    t /= d/2;
-    if (t < 1) return c/2*t*t + b;
-    t--;
-    return -c/2 * (t*(t-2) - 1) + b;
-    }
     const scrollToTopButton = document.getElementById('scrollToTopBtn');
     window.addEventListener('scroll', () => {
     if (window.pageYOffset > 300) { 
@@ -411,46 +627,8 @@
             behavior: 'smooth'
         });
     });
-</script>
-<script>
-    function openSignupOverlay() {
-    document.getElementById("signupOverlay").style.display = "flex"; 
-    document.body.classList.add('overlay-open');
-    document.getElementById("loginOverlay").style.display = "none"; 
-    }
-
-    function closeSignupOverlay() {
-    document.getElementById("signupOverlay").style.display = "none";
-    document.body.classList.remove('overlay-open'); 
-    }
-
-    function openLoginOverlay() {
-    document.getElementById("loginOverlay").style.display = "flex"; 
-    document.body.classList.add('overlay-open');
-    document.getElementById("signupOverlay").style.display = "none"; 
-    }
-
-    function closeLoginOverlay() {
-    document.getElementById("loginOverlay").style.display = "none";
-    document.body.classList.remove('overlay-open'); 
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const agreeTermsCheckbox = document.getElementById('agreeTerms');
-    const signupButton = document.getElementById('signupButton');
-
-    function validateForm() {
-        const isUsernameValid = usernameInput.value.length > 3;
-        const isEmailValid = emailInput.value.trim() !== '';
-        const isTermsChecked = agreeTermsCheckbox.checked;
-
-        signupButton.disabled = !(isUsernameValid && isEmailValid && isTermsChecked);
-    }
-    usernameInput.addEventListener('input', validateForm);
-    emailInput.addEventListener('input', validateForm);
-    agreeTermsCheckbox.addEventListener('change', validateForm);
-});
-
+    document.getElementById("google-login-button").onclick = function() {
+        window.location.href = "{% url 'social:begin' 'google-oauth2' %}";
+    };
 </script>
 </html>

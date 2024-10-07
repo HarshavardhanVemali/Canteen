@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
 {% load static %}
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canteen - Your College Food Destination</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Order Food</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
@@ -13,342 +13,194 @@
     <script src="{% static 'js/script.js' %}" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
+<style>
+
+</style>
 <body>
-    <header>
-        <nav class="navbar">
-            <a href="#" class="logo"></a>
-            <ul class="nav-links">
-                <li><a href="#order-now">Order Now</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#footer">Contact</a></li>
-                <li><a href="#" onclick="openLoginOverlay()">Login</a></li>
-                <li><a href="#" onclick="openSignupOverlay()">Signup</a></li>
-            </ul>
-            
-        </nav>
-        <div class="hero">
-            <img id="hero-image" src="{% static 'images/banner2.jpg' %}" alt="Canteen Hero Image">
-            <div class="hero-overlay"></div> 
-            <div class="container hero-content">
-               <div id="headerlogo">
+    <header class="header-container">
+        <div class="header-content">
+          <div class="header-title">
+            <a href="#" class="logo-link" title="Food Delivery">
                 <img src="{% static 'images/3.png' %}" alt="">
-               </div>
-                <h1 class="hero-heading">Discover the Best Food & Drinks on Campus</h1>
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search for cuisines, dishes..." >
-                    
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <div class="signup-overlay" id="signupOverlay">
-            <div class="overlay-content">
-                <section style="display: flex;align-items: center;justify-content: space-between;">
-                    <h3>Sign up</h3>
-                    <button class="close-overlay" id="closeSignup" onclick="closeSignupOverlay()" style="display: flex;align-items: center;justify-content: space-between;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                      </svg></button>
-                </section>
-        
-                <section>
-                    <div class="form-group">
-                        <input type="text" id="username" name="username" placeholder=" " required>
-                        <label class="user-label" for="username">Full Name*</label>
-                    </div>
-                    <div class="form-group" id="email-field">
-                        <input type="email" class="email" id="email" name="email" placeholder=" " required>
-                        <label class="email-label" for="email">Email*</label>
-                    </div>
-                    <div class="terms-checkbox">
-                        <input type="checkbox" id="agreeTerms">
-                        <label for="agreeTerms">
-                            I agree to Canteen's 
-                            <a href="#" target="_blank">Terms of Service</a>, 
-                            <a href="#" target="_blank">Privacy Policy</a> 
-                        </label>
-                    </div>
-                    
-                    <button class="signup-button" id="signupButton" disabled>Create account</button>                    
-        
-                    <div class="divider">
-                        <span>or</span>
-                    </div>
-        
-                    <div class="google-signup">
-                        <button class="google-button">
-                            <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
-                            Continue with Google
-                        </button>
-                    </div>
-        
-                    <div class="divider">
-                        <hr>
-                    </div>
-        
-                    <p class="login-link">
-                        Already have an account? 
-                        <a href="#" onclick="openLoginOverlay()">Log in</a>
-                    </p>
-                </section>
-            </div>
-        </div>  
-        <div class="login-overlay" id="loginOverlay">
-            <div class="overlay-content">
-                <section style="display: flex; align-items: center; justify-content: space-between;">
-                    <h3>Login</h3>
-                    <button class="close-overlay" id="closeLogin" onclick="closeLoginOverlay()" style="display: flex; align-items: center; justify-content: space-between;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                        </svg>
-                    </button>
-                </section>
-        
-                <section>
-                    <div class="form-group">
-                        <div style="display: flex; align-items: center;" id="phonenumberlabel">
-                            <span style="margin-right: 5px;">+91</span>
-                            <input type="tel" id="phone" name="phone" placeholder="Phone" required>
-                        </div>
-                    </div>
-        
-                    <button class="otp-button" id="otpButton">Send One Time Password</button>
-        
-                    <div class="divider">
-                        <span>or</span>
-                    </div>
-        
-                    <div class="google-login">
-                        <button class="google-button">
-                            <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
-                            Continue with Google
-                        </button>
-                    </div>
-        
-                    <div class="divider">
-                        <hr>
-                    </div>
-        
-                    <p class="signup-link">
-                        Don't have an account? 
-                        <a href="#" onclick="openSignupOverlay()">Sign up</a>
-                    </p>
-                </section>
-            </div>
-        </div>              
-        <section class="top">
-
-            <div class="cards">
-              <a href="#">
-                <img src="{% static 'images/ordernow.jpg' %}" alt="Order Food Online">
-                <h2>Order Food Online</h2>
               </a>
-            </div>
-      
-            <div class="cards">
-              <a href="#">
-                <img src="{% static 'images/book a table.jpg' %}" alt="Go out for a meal">
-                <h2>Go out for a meal</h2>
-              </a>
-            </div>
-            <div class="cards">
-                <a href="#">
-                  <img src="{% static 'images/fastdeleviry_processed.png' %}" alt="Go out for a meal">
-                  <h2>Get Food Delivered Fast!</h2>
+              <h3>Food Hub</h3>
+          </div>
+          
+          <ul class="nav-items-container">   
+            <li class="nav-item search-item">
+                <form action="/search" method="GET"> 
+                    <div class="search-bar-container">
+                      <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off">
+                      <button type="submit" class="search-button">
+                        <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                      </button>
+                    </div>
+                  </form>
+            </li>
+              <li class="nav-item cart-item">
+                <a href="/checkout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
                 </a>
-              </div>
-            
-      
-        </section>
-
-        <section class="explore-options section">
-            <div class="container">
-              <div class="options-wrapper">
-                <div class="option" id="cuisines">
-                  <h3>Popular Cuisines</h3>
-                  <div class="cuisine-items"> 
-                    <a href="#" class="cuisine-item">
-                      <img src="{% static 'images/north indian food.jpg' %}" alt="North Indian">
-                      <h4>North Indian</h4>
-                      <ul class="popular-dishes">
-                        <li>Butter Chicken</li>
-                        <li>Dal Makhani</li>
-                        <li>Naan</li>
-                      </ul>
-                    </a>
-                    <a href="#" class="cuisine-item">
-                      <img src="{% static 'images/south_indian_food.jpeg' %}" alt="South Indian">
-                      <h4>South Indian</h4>
-                      <ul class="popular-dishes">
-                        <li>Dosa</li>
-                        <li>Idli</li>
-                        <li>Vada</li>
-                      </ul>
-                    </a>
-                    <a href="#" class="cuisine-item">
-                      <img src="{% static 'images/chinese.webp' %}" alt="Chinese">
-                      <h4>Chinese</h4>
-                      <ul class="popular-dishes">
-                        <li>Noodles</li>
-                        <li>Fried Rice</li>
-                        <li>Manchurian</li>
-                      </ul>
-                    </a>
-                    <a href="#" class="cuisine-item">
-                      <img src="{% static 'images/italian.jpg' %}" alt="Italian">
-                      <h4>Italian</h4>
-                      <ul class="popular-dishes">
-                        <li>Pizza</li>
-                        <li>Pasta</li>
-                        <li>Garlic Bread</li>
-                      </ul>
-                    </a>
-                    <a href="#" class="cuisine-item">
-                      <img src="{% static 'images/mexican.jpg' %}" alt="Mexican">
-                      <h4>Mexican</h4>
-                      <ul class="popular-dishes">
-                        <li>Tacos</li>
-                        <li>Burritos</li>
-                        <li>Quesadillas</li>
-                      </ul>
-                    </a>
-                    </div> 
-                </div>
-              </div>
-            </div>
-        </section>
-        <section class="frequently-ordered">
-            <div>
-                <h3>Most Ordered Dishes</h3> 
-                <div class="dish-carousel"> 
-                    <div class="carousel-track">
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
+              </li>
+              <li class="nav-item">
+                <a href="/account"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+              </li>
+              <li class="nav-item">
+                  <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                  </a>
+                </li>
+            </ul>
+          </div>
+        </header>
+  <main>
+    <section class="frequently-ordered">
+        <div>
+            <h3>Eat And Repeat</h3> 
+            <div class="dish-carousel"> 
+                <div class="carousel-track">
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Chicken</h3>
                         </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        <div class="dish-card">
-                            <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-                            <div class="dish-info">
-                                <h3>Chicken</h3>
-                            </div>
-                        </div>
-                        
                     </div>
-                    <i class="bi bi-chevron-compact-left carousel-prev"></i>
-                    <i class="bi bi-chevron-compact-right carousel-next"></i>
+                    
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/d9766dd91cd75416f4f65cf286ca84331634805483.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Idli</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/c2f22c42f7ba90d81440a88449f4e5891634806087.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Rolls</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/e44c42ff4b60b025225c8691ef9735b11635781903.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Paneer</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/d5ab931c8c239271de45e1c159af94311634805744.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Cakes</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/o2_assets/bf2d0e73add1c206aeeb9fec762438111727708719.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Biryani</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/o2_assets/d0bd7c9405ac87f6aa65e31fe55800941632716575.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Pizza</h3>
+                        </div>
+                    </div>
+                    
                 </div>
+                <i class="bi bi-chevron-compact-left carousel-prev"></i>
+                <i class="bi bi-chevron-compact-right carousel-next"></i>
             </div>
-        </section>
-        <section class="about-canteen section" id="about">
-            <div class="about container">
-              <h3>About</h3>
-              <p>
-                We're your one-stop shop for all your campus food cravings! Order ahead, skip the lines, and enjoy fresh, delicious meals delivered right to you. Whether it's a quick bite between classes or a hearty dinner after a long day, Canteen makes campus dining easy and enjoyable. 
-              </p>
-              
-            </div>
-            <div>
-                <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
-            </div>
-        </section>
-        <!--
-        <section class="get-app setion" id="get-app">
-            <div id="downloadimage">
-                <img src="{% static 'images/downloadimage.avif' %}" alt="download">
-            </div>
-            <div class="download container">
-                <p>Download the app and start exploring the best food options on campus!</p>
-                
-                <div class="app-links">
-                  <a href="#" target="_blank"> <img alt="Get it on Google Play" src="https://b.zmtcdn.com/data/webuikit/9f0c85a5e33adb783fa0aef667075f9e1556003622.png" loading="lazy" class="sc-s1isp7-5 fyZwWD"> </a>
-                  <a href="#" target="_blank"> <img alt="Download on the App Store" src="https://b.zmtcdn.com/data/webuikit/23e930757c3df49840c482a8638bf5c31556001144.png" loading="lazy" class="sc-s1isp7-5 fyZwWD"> </a>
-                </div>
-              </div>
-              
-        </section>
-        -->
-          <button id="scrollToTopBtn" title="Back to top">
-            <i class="bi bi-chevron-up" style="font-weight: 600;"></i>
-        </button>
-    </main>
-
-    <footer class="footer" id="footer">
-        <div class="container"> 
-          <div class="footer-content">
-      
-            <div class="footer-section logo-section">
-              <img src="{% static 'images/3.png' %}" alt="Canteen Logo">
-              
-            </div> 
-      
-            <div class="footer-section links-section">
-              <div class="link-column">
-                <h6>Contact Us</h6>
-                <nav>
-                  <a href="#">Email</a>
-                  <a href="#">Phone</a>
-                </nav>
-              </div>
-            </div>
-            <div class="footer-section maps">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d795.6657633302855!2d83.40501683559759!3d18.061473825406793!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3be5b8cf7c64d5%3A0x1d00d3df1d61db4e!2sMVGR%20Canteen!5e0!3m2!1sen!2sin!4v1727594887566!5m2!1sen!2sin" width="400" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-            <div class="footer-section social-section">
-              <h6>Social Links</h6>
-              <div class="social-icons">
-                <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-              </div>
-              <div class="app-download">
-                <a href="#" target="_blank"><img src="https://b.zmtcdn.com/data/webuikit/23e930757c3df49840c482a8638bf5c31556001144.png" alt="Download on the App Store"></a>
-                <a href="#" target="_blank"><img src="https://b.zmtcdn.com/data/webuikit/9f0c85a5e33adb783fa0aef667075f9e1556003622.png" alt="Get it on Google Play"></a>
-              </div>
-            </div>
-      
-          </div> 
-          <hr class="footer-divider">
-          <p class="copyright">
-            © 2024. All Rights Reserved.
-          </p>
         </div>
-      </footer>
+    </section>
+    <hr class="sc-kyDlHK gdbIIB">
+    <section class="meal-options section"> 
+        <div class="container">
+          <div class="options-wrapper">
+            <div class="option" id="meals">
+              <h3>Explore Meals</h3>
+              <div class="meal-items">
+                <a href="#" class="meal-item">
+                  <img src="{% static 'images/south_indian_food.jpeg' %}" alt="Breakfast"> 
+                  <h4>Breakfast</h4>
+                </a>
+                <a href="#" class="meal-item">
+                  <img src="{% static 'images/biryani.webp' %}" alt="Lunch"> 
+                  <h4>Lunch</h4>
+                  
+                </a>
+                <a href="#" class="meal-item">
+                  <img src="{% static 'images/samosa.webp' %}" alt="Snacks"> 
+                  <h4>Snacks</h4>
+                </a>
+                </div> 
+            </div>
+          </div>
+        </div>
+    </section>
+    <section>
+      
+    </section>
+    <hr class="sc-kyDlHK gdbIIB">
+    <button id="scrollToTopBtn" title="Back to top">
+        <i class="bi bi-chevron-up" style="font-weight: 600;"></i>
+    </button>
+  </main>
 </body>
+<footer class="footer" id="footer">
+    <div class="container"> 
+      <div class="footer-content">
+  
+        <div class="footer-section logo-section">
+          <img src="{% static 'images/3.png' %}" alt="Canteen Logo">
+          
+        </div> 
+  
+        <div class="footer-section links-section">
+          <div class="link-column">
+            <h6>Contact Us</h6>
+            <nav>
+              <a href="#">Email</a>
+              <a href="#">Phone</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-section maps">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d795.6657633302855!2d83.40501683559759!3d18.061473825406793!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a3be5b8cf7c64d5%3A0x1d00d3df1d61db4e!2sMVGR%20Canteen!5e0!3m2!1sen!2sin!4v1727594887566!5m2!1sen!2sin" width="400" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="footer-section social-section">
+          <h6>Social Links</h6>
+          <div class="social-icons">
+            <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          <div class="app-download">
+            <a href="#" target="_blank"><img src="https://b.zmtcdn.com/data/webuikit/23e930757c3df49840c482a8638bf5c31556001144.png" alt="Download on the App Store"></a>
+            <a href="#" target="_blank"><img src="https://b.zmtcdn.com/data/webuikit/9f0c85a5e33adb783fa0aef667075f9e1556003622.png" alt="Get it on Google Play"></a>
+          </div>
+        </div>
+  
+      </div> 
+      <hr class="footer-divider">
+      <p class="copyright">
+        © 2024. All Rights Reserved.
+      </p>
+    </div>
+  </footer>
 <script>
     const track = document.querySelector('.carousel-track');
     const prevButton = document.querySelector('.carousel-prev');
@@ -411,46 +263,5 @@
             behavior: 'smooth'
         });
     });
-</script>
-<script>
-    function openSignupOverlay() {
-    document.getElementById("signupOverlay").style.display = "flex"; 
-    document.body.classList.add('overlay-open');
-    document.getElementById("loginOverlay").style.display = "none"; 
-    }
-
-    function closeSignupOverlay() {
-    document.getElementById("signupOverlay").style.display = "none";
-    document.body.classList.remove('overlay-open'); 
-    }
-
-    function openLoginOverlay() {
-    document.getElementById("loginOverlay").style.display = "flex"; 
-    document.body.classList.add('overlay-open');
-    document.getElementById("signupOverlay").style.display = "none"; 
-    }
-
-    function closeLoginOverlay() {
-    document.getElementById("loginOverlay").style.display = "none";
-    document.body.classList.remove('overlay-open'); 
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-    const usernameInput = document.getElementById('username');
-    const emailInput = document.getElementById('email');
-    const agreeTermsCheckbox = document.getElementById('agreeTerms');
-    const signupButton = document.getElementById('signupButton');
-
-    function validateForm() {
-        const isUsernameValid = usernameInput.value.length > 3;
-        const isEmailValid = emailInput.value.trim() !== '';
-        const isTermsChecked = agreeTermsCheckbox.checked;
-
-        signupButton.disabled = !(isUsernameValid && isEmailValid && isTermsChecked);
-    }
-    usernameInput.addEventListener('input', validateForm);
-    emailInput.addEventListener('input', validateForm);
-    agreeTermsCheckbox.addEventListener('change', validateForm);
-});
-
 </script>
 </html>

@@ -215,7 +215,7 @@ a {
   .google-button {
     background-color: #fff;
     border: 1px solid #c2c8d0;
-    border-radius: 10px; 
+    border-radius: 30px; 
     padding: 10px 15px;
     display: flex; 
     align-items: center; 
@@ -245,8 +245,9 @@ a {
     text-decoration: none;
   }
 .logo {
-    font-size: 2rem; 
-    font-weight: 600;
+    font-size: 1.5rem; 
+    font-weight: 500;
+    margin-left: 20px;
 }
 .login-overlay {
   position: fixed;
@@ -273,8 +274,7 @@ a {
   position: relative;
   margin-bottom: 20px;
 }
-
-input[type="tel"] {
+#login-email {
   width: calc(100% - 40px);
   padding: 8px;
   border: none;
@@ -285,7 +285,7 @@ input[type="tel"] {
   transition: border-color 0.3s ease;
   outline: none; 
 }
-input[type="tel"]:focus {
+#login-email:focus {
   outline: none; 
   border-color: transparent; 
 }
@@ -298,7 +298,7 @@ input[type="tel"]:focus {
   padding-right: 10px;
   border-right: 1px solid #c2c8d0;
 }
-.otp-button {
+.verification-button {
   width: 100%;
   padding: 12px;
   background-color: #4285f4;
@@ -308,17 +308,127 @@ input[type="tel"]:focus {
   cursor: pointer;
   margin-top: 10px;
   transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
-.otp-button:hover{
+.verification-button:hover{
   background-color: #357ae8; 
 }
+.verification-button.loading { 
+  cursor: wait; 
+  pointer-events: none; 
+}
+.verification-button.loading::after {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-left: 10px;
+  animation: dot-animation 1s infinite;
+}
 
+@keyframes dot-animation {
+  0% {
+      transform: scale(1);
+  }
+  50% {
+      transform: scale(1.2);
+  }
+  100% {
+      transform: scale(1);
+  }
+}
 .divider {
   text-align: center;
   margin: 20px 0;
 }
+.login-verification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+  visibility: hidden; 
+}
+.login-verification-overlay h3{
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 500;
+  color: rgb(79, 79, 79);
+}
+.overlay-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  width: 400px;
+}
 
+.otp-inputs {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.otp-input {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  font-size: 24px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-weight: 300 !important ;
+}
+.otp-input:focus{
+  outline: none;
+    border-color: #4285f4; 
+    box-shadow: 0px 0px 8px rgba(66, 133, 244, 0.5);
+}
+
+.close-overlay {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.verification-message,
+.timer,
+.resend-message {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 14px;
+  color:rgb(105, 105, 105)
+}
+.timer{
+  font-size: 1.3rem;
+    line-height: 3rem;
+    color: rgb(28, 28, 28);
+    text-align: center;
+    margin: 1rem 0px 0px;
+}
+.resend-message{
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: rgb(105, 105, 105);
+  text-align: center;
+}
+
+.resend-link {
+  color: #4285f4;
+  cursor: pointer;
+  text-decoration: none;
+}
+.resend-link:hover{
+  text-decoration: underline;
+  color: #357ae8;
+}
 .signup-link {
   text-align: center;
 }
@@ -650,6 +760,10 @@ input[type="tel"]:focus {
     margin-left: auto;
     margin-right: auto;
   }
+  .about.container-img img{
+    border-radius: 20px;
+    width: 400px;
+  }
   .download,.about{
     display: flex;
     justify-content: center;
@@ -683,7 +797,7 @@ input[type="tel"]:focus {
   }
 
 .footer {
-    background-color: rgb(248, 248, 248); 
+    background-color: rgb(240, 240, 245); 
     color: #333;
     padding: 0px;
   }
