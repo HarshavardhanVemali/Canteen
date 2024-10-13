@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Hub - Order Details</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
+</head>
+<style>
+    body{
+        background-color: #f1f3f6;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .order-details-page {
+        padding: 20px;
+    }
+
+    .section-heading {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .order-details-container {
+        display: grid;
+        grid-template-columns: 1fr; 
+        gap: 20px;
+    }
+
+    .order-info-section,
+    .order-items-section,
+    .order-summary-section,
+    .payment-details-section,
+    .refund-section {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); 
+    }
+    .order-items-section{
+        padding: 30px 20px;
+    }
+    
+    h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    h4{
+        margin: 0;
+    }
+    .order-details-header {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-details-summary-item{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+    .order-details-summary-item span{
+        font-size: .9rem;
+    }
+    .order-details-id {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #3874ff;
+    }
+
+    .order-details-date {
+        font-size: 0.9rem;
+        color: #7e808c;
+    }
+
+    .order-details-item {
+        display: flex;
+        gap: 20px;
+        padding: 15px 0px;
+        border-bottom: 1px solid #eee;
+    }
+    .order-details-item:last-child{
+        border-bottom: none;
+    }
+
+    .item-image-container{
+        display: flex;
+        gap: 10px;
+    }
+    .item-image-container img {
+        width: 80px;
+        height: 60px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+    .item-image-container svg{
+        width: 15px;
+        height: 15px;
+    }
+
+    .item-details { 
+        flex-grow: 1; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-details-item-name {
+        font-weight: 500;
+        font-size: 1rem;
+    }
+
+    .order-details-item-description {
+        font-size: 0.8rem;
+        color: #7e808c;
+    }
+
+    .order-details-item-quantity {
+        font-size: 0.9rem;
+        color: #7e808c;
+    }
+
+    .order-details-item-price {
+        font-weight: 600;
+        white-space: nowrap; 
+    }
+
+    .order-status-timeline {
+        display: flex;
+        align-items: center;
+        margin-top: 30px;
+        justify-content: space-between;
+    }
+
+    .status-point {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ccc;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        flex-shrink: 0; 
+    }
+
+    .status-point::before {
+        content: attr(data-status);
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.7rem;
+        white-space: nowrap;
+        color: #333;
+        text-align: center;
+    }
+
+    .status-point.active {
+        background-color: #4caf50;
+    }
+
+    .status-point.completed {
+        background-color: #4caf50;
+    }
+
+    .status-line {
+        height: 4px;
+        background-color: #ccc;
+        margin: 0 8px; 
+        flex-grow: 1;
+        position: relative;
+        z-index: 1;
+    }
+
+    .status-line.active {
+        background-color: #4caf50;
+    }
+
+    .status-point.cancelled {
+        background-color: red;
+    }
+
+    .status-line.cancelled {
+        background-color: red;
+    }
+
+    .refund-section {
+        border: 1px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffe0;
+    }
+
+    .refund-status {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+
+    .price-summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: .9rem;
+    }
+
+    .price-summary-label {
+        font-weight: 500;
+    }
+
+    .price-summary-value {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    .total-price {
+        font-size: 1.1rem;
+        color: #3874ff;
+    }
+
+    @media (min-width: 768px) {
+        .order-details-container {
+            grid-template-columns:1fr;
+        }
+
+        .order-info-section{
+            grid-row: 1 ;
+        }
+        .item-image-container img {
+            width: 150px;
+            height: 100px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        .order-info-section{
+            padding: 40px;
+        }
+        .order-info-section,
+        .order-items-section,
+        .order-summary-section,
+        .payment-details-section,
+        .refund-section {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); 
+        }
+        
+    }
+    hr{
+        margin: 20px 0px;
+        border:1px lightslategray #000;
+    }
+    .order-items-section{
+        padding: 50px;
+    }
+    #qrcode {
+        margin: 20px 0px;
+        width: 150px;    
+        height: 150px;
+    }
+</style>
+<body>
+    <header class="header-container">
+        <div class="header-content">
+          <div class="header-title">
+            <a href="{% url 'home' %}" class="logo-link" title="Food Delivery">
+                <img src="{% static 'images/3.png' %}" alt="">
+              </a>
+              <h3>Food Hub</h3>
+          </div>
+
+          <ul class="nav-items-container">   
+            <li class="nav-item search-item">
+                <a href="/search"> 
+                    <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                    Search
+                </a>
+            </li>
+              <li class="nav-item cart-item">
+                <a href="/checkout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="/profile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+              </li>
+              <li class="nav-item">
+                  <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                  </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="container order-details-page">
+            <div class="order-details-container" id="order-details-container">
+
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const cartIcon = document.querySelector('.cart-icon');
+            const cartCount = document.querySelector('.cart-count');
+
+            if (data.data && data.data.length > 0) {
+                cartIcon.style.fill = '#60b246';
+                cartCount.style.color = '#60b246';
+                cartCount.textContent = data.data.length;
+            
+            }
+            else {
+                cartIcon.style.fill = 'currentColor';
+                cartCount.style.color = 'inherit';
+                cartCount.textContent = '0';
+            }
+        };
+    function getOrderedDetails(orderId) {
+        fetch(`/getorderdetails/${orderId}/`, {
+            method: 'GET',
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Order data:', data); 
+          populateOrderDetails(data.orders[0]); 
+        })
+        .catch(error => {
+          console.error('Error fetching order details:', error);
+        });
+    }
+    function populateOrderDetails(order) {
+            const orderDetailsContainer = document.getElementById('order-details-container');
+
+            let orderItemsHTML = '';
+            let orderStatusTimelineHTML = '';
+            let statusChoices = [];
+            if (order.delivery_type === 'Delivery') {
+                statusChoices = [
+                { status: 'Pending', label: 'Ordered' },
+                { status: 'Confirmed', label: 'Confirmed' },
+                { status: 'Prepared', label: 'Prepared' },
+                { status: 'Shipped', label: 'Shipped' },
+                { status: 'Delivered', label: 'Delivered' }
+                ];
+            } else if (order.delivery_type === 'Pickup') {
+                statusChoices = [
+                { status: 'Pending', label: 'Ordered' },
+                { status: 'Confirmed', label: 'Confirmed' },
+                { status: 'Preparing', label: 'Preparing' },
+                { status: 'Ready to Take', label: 'Ready to Take' },
+                { status: 'Received by Customer', label: 'Received' }
+                ];
+            } else if (order.delivery_type === 'Dining') {
+                statusChoices = [
+                { status: 'Pending', label: 'Ordered' },
+                { status: 'Confirmed', label: 'Confirmed' },
+                { status: 'Preparing', label: 'Preparing' },
+                { status: 'Served to Customer', label: 'Served' }
+                ];
+            }
+            order.items.forEach(item => {
+                orderItemsHTML += `
+                    <div class="order-details-item">
+                        
+                        <div class="item-image-container">
+                            <img src="${item.item_image}" class="item-image" alt="${item.item_name}">  
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                            </svg>  
+                        </div>
+                        <div class="item-details"> 
+                            <span class="order-details-item-name">${item.item_name}</span>
+                            <span class="order-details-item-description">${item.description}</span>
+                            <span class="order-details-item-quantity">Quantity: ${item.quantity}</span>
+                            
+                        </div>
+                        <span class="order-details-item-price">₹${item.price_at_order_time}</span>
+                    </div>
+                `;
+            });
+
+            let additionalChargesHTML = '';
+            if (order.additional_charges && order.additional_charges.length > 0) {
+                order.additional_charges.forEach(charge => {
+                    const formattedChargeType = charge.charge_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                    additionalChargesHTML += `
+                    <div class="price-summary-item">
+                        <span class="price-summary-label">${formattedChargeType} (${charge.value_type === 'fixed' ? 'Fixed' : `${charge.value}%`}):</span>
+                        <span class="price-summary-value">₹${charge.calculated_value}</span>
+                    </div>
+                    `;
+                });
+            }else {
+                additionalChargesHTML = `
+                    <div class="price-summary-item">
+                        <span class="price-summary-label">Additional Charges:</span>
+                        <span class="price-summary-value">None</span>
+                    </div>
+                `;
+            }
+
+            orderStatusTimelineHTML = `
+                <div class="order-status-timeline">
+            `;
+
+            statusChoices.forEach((choice, index) => {
+                const isActive = order.status === choice.status || (order.status === 'Cancelled' && index === 0); 
+                const isCompleted = (order.status !== 'Pending' && order.status !== 'Cancelled' && index < statusChoices.findIndex(c => c.status === order.status)) || 
+                (order.status === 'Delivered' && choice.status === 'Delivered') ||
+                (order.status === 'Received by Customer' && choice.status === 'Received by Customer') ||
+                (order.status === 'Served to Customer' && choice.status === 'Served to Customer');
+
+                const isLineActive = isCompleted && index < statusChoices.length - 1;
+
+                orderStatusTimelineHTML += `
+                    <div class="status-point ${isActive ? 'active' : (isCompleted ? 'completed' : '')}" data-status="${choice.label}"></div>
+                    ${index < statusChoices.length - 1 ? `<div class="status-line ${isLineActive ? 'active' : (order.status === 'Cancelled' ? 'cancelled' : '')}"></div>` : ''}
+                `;
+            });
+
+            orderStatusTimelineHTML += `
+                </div>
+            `;
+
+            let refundSectionHTML = '';
+            if (order.status === 'Cancelled') {
+                refundSectionHTML = `
+                    <div class="refund-section">
+                        <p><span class="refund-status">Refund Completed</span> - ${order.cancel_reason ? order.cancel_reason : 'No reason provided'}</p>
+                    </div>
+                `;
+            }
+            const qrCodeText = `Order ID: ${order.order_id}\nDate Ordered: ${order.created_at}\nPhone Number: ${order.phone_number}`; 
+            orderDetailsContainer.innerHTML = `
+                <div class="order-info-section">
+                    <div class="order-details-header">
+                         <h3>Order Details</h3>
+                        
+                        <div class="order-details-summary-item">
+                           <h4 class="orer-details-orderid" style="color:#3874ff;">${order.order_id}</h4>
+                            <span class="order-details-date">${order.created_at}</span>
+                        </div>
+                        <span class="order-details-name" style="color:#333;font-weight:520;">${order.customer}</span>
+                        <span class="order-details-number" style="color:#333;font-weight:520;">This Order is tracking by: ${order.phone_number}</span>
+                        <span class="order-details-email" style="color:#333;font-weight:520;">${order.email}</span>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Status:</span>
+                            <span class="order-details-status">${order.status}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Delivery Type:</span>
+                            <span class="order-details-delivery-type">${order.delivery_type}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Customer Status:</span>
+                            <span class="order-details-summary-value">${order.customer_status}</span>
+                        </div>   
+                        <div id="qrcode"></div>     
+                    </div>  
+                </div>
+
+                <div class="order-items-section">
+                    <h3>Ordered Items</h3>
+                    ${orderItemsHTML}
+                    ${orderStatusTimelineHTML}
+                </div>
+
+                <div class="price-summary-container order-summary-section">
+                    <h3>Order Payment Details</h3>
+                    <div class="price-summary-item">
+                        <span class="price-summary-label">Item Total:</span>
+                        <span class="price-summary-value">₹${order.total_item_price}</span>
+                    </div>
+                    ${additionalChargesHTML}
+                    <hr>
+                    <div class="price-summary-item">
+                        <span class="price-summary-label">Total:</span>
+                        <span class="price-summary-value total-price">₹${order.total_price}</span>
+                    </div>
+                </div>
+                <div class="payment-details-section">
+                    <h3>Payment Mode</h3>
+                    <div class="order-details-summary-item">
+                        <span class="order-details-summary-label">Payment Method:</span>
+                        <span class="order-details-summary-value">${order.payment_method}</span>
+                    </div>
+                    <div class="order-details-summary-item">
+                        <span class="order-details-summary-label">Transaction ID:</span>
+                        <span class="order-details-summary-value">${order.transaction_id}</span>
+                    </div>
+                    <div class="order-details-summary-item">
+                        <span class="order-details-summary-label">Payment Amount:</span>
+                        <span class="order-details-summary-value">₹${order.payment_amount}</span>
+                    </div>
+                    <div class="order-details-summary-item">
+                        <span class="order-details-summary-label">Payment Status:</span>
+                        <span class="order-details-summary-value">${order.payment_status}</span>
+                    </div>
+                    <div class="order-details-summary-item">
+                        <span class="order-details-summary-label">Payment Date:</span>
+                        <span class="order-details-summary-value">${order.payment_date}</span>
+                    </div>
+                </div>
+                ${refundSectionHTML} 
+            `;
+            generateQRCode(qrCodeText); 
+        }
+        function generateQRCode(text) {
+            new QRCode(document.getElementById("qrcode"), {
+                text: text,
+                width: 150,  
+                height: 150, 
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            orderId = urlParams.get('order_id');
+            if (orderId) {
+                getOrderedDetails(orderId);
+                localStorage.setItem('orderId', orderId);
+            }
+        }); 
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

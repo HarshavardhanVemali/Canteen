@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminmenu.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  <script src="{% static 'js/adminmenu.js' %}"></script>
+  {% endblock %}
+  
+</head>
+
+<body>
+    {% block menu_block %}
+    <li class="nav-item has-submenu">
+        <a href="#" class="nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#888" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleSidebar()">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>                      
+              
+            <span class="nav-link-text">Menu</span> 
+            
+        </a>
+        <ul class="submenu">
+            <li><a class="nav-link active" href="{% url 'adminmenu' %}" > <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+              </svg>Create Menu</a></li>
+              <li><a class="nav-link" href="{% url 'adminsubmenu' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-menu-button" viewBox="0 0 16 16">
+                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8A1.5 1.5 0 0 1 11 1.5v2A1.5 1.5 0 0 1 9.5 5h-8A1.5 1.5 0 0 1 0 3.5zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5z"/>
+                <path d="m7.823 2.823-.396-.396A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0M0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+              </svg>Create Sub Menu</a></li>
+              <li><a class="nav-link" href="{% url 'adminitems' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-bag-plus" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5"/>
+                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+              </svg>Items</a></li>
+            
+        </ul>
+    </li>
+    {% endblock %}
+  {% block main_content %}
+        <div class="subnav-container">
+            <div class="subnav">
+                <h3>Menu</h3>
+                <div class="addbutton">
+                <button id="addmenubtn" onclick="showMenuForm()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg> <span>Create Menu</span>
+                </button>
+            </div>
+            </div>
+        </div> 
+        <div class="overlay-container" id="addmenuoverlay">
+            <div class="overlay-content">
+                <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+                    <h3>Create Menu</h3>
+                    <button class="close-overlay" id="closeSignup" onclick="closeMenuForm()" style="display: flex; align-items: center; justify-content: space-between;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                </section>
+                <section>
+                    <form method="post" enctype="multipart/form-data" id="addmenuform" action="{% url 'adminaddmenu' %}"> 
+                        {% csrf_token %} 
+                        <div class="form-group">
+                            <label for="menuname">Menu Name</label>
+                            <input type="text" name="menuname" id="menuname" placeholder="Name" required>
+                            <span class="error-message" id="nameError"></span> 
+                        </div>
+                        <div class="form-group">
+                            <label for="menuimage">Photo</label>
+                            <input type="file" name="menuimage" id="menuimage" accept="image/*" required>
+                        </div>
+                        <div class="displayimage">
+                            <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; max-height: 200px; display: none;"> 
+                        </div>
+                        <div class="addbutton addformbtn">
+                            <button type="submit" id="addmenubtn">Create Menu</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+        <div class="menuitems">
+
+        </div>
+  {% endblock %} 
+</body>
+</html>

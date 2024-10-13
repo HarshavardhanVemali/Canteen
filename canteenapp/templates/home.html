@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Food</title>
+    <title>Food Hub - Order</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
     <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
-    <script src="{% static 'js/script.js' %}" defer></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <style>
@@ -20,7 +20,7 @@
     <header class="header-container">
         <div class="header-content">
           <div class="header-title">
-            <a href="#" class="logo-link" title="Food Delivery">
+            <a href="{% url 'home' %}" class="logo-link" title="Food Delivery">
                 <img src="{% static 'images/3.png' %}" alt="">
               </a>
               <h3>Food Hub</h3>
@@ -28,19 +28,15 @@
           
           <ul class="nav-items-container">   
             <li class="nav-item search-item">
-                <form action="/search" method="GET"> 
-                    <div class="search-bar-container">
-                      <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off">
-                      <button type="submit" class="search-button">
-                        <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
-                      </button>
-                    </div>
-                  </form>
-            </li>
+              <a href="/search"> 
+                  <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                  Search
+              </a>
+              </li>
               <li class="nav-item cart-item">
                 <a href="/checkout">
                   <span class="cart-icon-container" style="display: flex;align-items: center;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
                       <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                     </svg>
                     <span class="cart-count">0</span>
@@ -49,7 +45,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/account"> 
+                <a href="/profile"> 
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                     <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
@@ -132,28 +128,160 @@
             <div class="option" id="meals">
               <h3>Explore Meals</h3>
               <div class="meal-items">
-                <a href="#" class="meal-item">
-                  <img src="{% static 'images/south_indian_food.jpeg' %}" alt="Breakfast"> 
-                  <h4>Breakfast</h4>
-                </a>
-                <a href="#" class="meal-item">
-                  <img src="{% static 'images/biryani.webp' %}" alt="Lunch"> 
-                  <h4>Lunch</h4>
-                  
-                </a>
-                <a href="#" class="meal-item">
-                  <img src="{% static 'images/samosa.webp' %}" alt="Snacks"> 
-                  <h4>Snacks</h4>
-                </a>
+                
                 </div> 
             </div>
           </div>
         </div>
     </section>
-    <section>
-      
-    </section>
     <hr class="sc-kyDlHK gdbIIB">
+    <section class="section" style="align-items: normal;">
+      <div>
+        <h3>Order Food Online</h3>
+      </div>
+    </section>
+    <div class="sub-navbar" id="sub-navbar">
+      <div style="display: flex;align-items: center;gap: 10px;">
+        <div class="nav-sub-item filter" onclick="openFilterOverlay()">
+          <span class="filter-btn">Filter</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="" width="16" height="16" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" class="sc-rbbb40-0 iwHbVQ"><title>filter</title><path d="M2.14 6.42h7.26c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h2.96c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001h-2.94c-0.341-1.226-1.447-2.11-2.76-2.11s-2.419 0.885-2.755 2.090l-0.005 0.020h-7.26c-0.343 0.059-0.6 0.355-0.6 0.71s0.257 0.651 0.596 0.709l0.004 0.001zM12.16 4.28c0.776 0.011 1.4 0.643 1.4 1.42 0 0.784-0.636 1.42-1.42 1.42-0.777 0-1.409-0.624-1.42-1.399l-0-0.001c-0-0.006-0-0.013-0-0.020 0-0.784 0.636-1.42 1.42-1.42 0.007 0 0.014 0 0.021 0l-0.001-0zM17.86 13.58h-7.24c-0.328-1.245-1.443-2.148-2.77-2.148s-2.442 0.903-2.766 2.128l-0.004 0.020h-2.94c-0.036-0.006-0.077-0.010-0.12-0.010-0.398 0-0.72 0.322-0.72 0.72s0.322 0.72 0.72 0.72c0.042 0 0.084-0.004 0.124-0.011l-0.004 0.001h2.96c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h7.26c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001zM7.84 15.72c-0.776-0.011-1.4-0.643-1.4-1.42 0-0.784 0.636-1.42 1.42-1.42 0.777 0 1.409 0.624 1.42 1.399l0 0.001c0 0.006 0 0.013 0 0.020 0 0.784-0.636 1.42-1.42 1.42-0.007 0-0.014-0-0.021-0l0.001 0z"></path></svg>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Pure Veg</span>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Ratings 4.0+</span>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Less than Rs. 300</span>
+        </div>
+      </div>
+      <div class="search-bar" style="cursor: pointer;">
+        <a href="{% url 'search' %}" style="cursor: pointer;">
+          <input type="text" placeholder="Search for food" autocomplete="off" style="cursor: pointer;">
+        <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill="rgb(255, 126, 139)"><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+        </a>
+      </div>
+    </div>
+    <section class="homeitems section">
+      <div class="allitems">
+        
+      </div>
+    </section>
+    <div class="filter-overlay">
+      <div class="filter-overlay-content">
+        <div class="filter-header">
+          <h3>Filter</h3>
+          <button class="close-btn" aria-label="Close filter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="filter-body">
+          <div class="filter-categories">
+            <ul>
+              <li class="active" onclick="showContent('sort')">Sort</li>
+              <li onclick="showContent('ratings')">Ratings</li>
+              <li onclick="showContent('vegNonVeg')">Veg/Non-Veg</li>
+              <li onclick="showContent('price')">Price</li>
+            </ul>
+          </div>
+          <div class="filter-content">
+            
+            <div id="sort" class="filter-options-content">
+              <h4>Sort By</h4>
+              <div class="filter-options">
+                <label><input type="radio" name="sort" value="relevance" checked> Relevance (Default)</label>
+                <label><input type="radio" name="sort" value="deliveryTime"> Delivery Time</label>
+                <label><input type="radio" name="sort" value="rating"> Rating</label>
+                <label><input type="radio" name="sort" value="lowToHigh"> Cost: Low to High</label>
+                <label><input type="radio" name="sort" value="highToLow"> Cost: High to Low</label>
+              </div>
+            </div>
+    
+            <div id="ratings" class="filter-options-content" style="display: none;">
+              <h4>Ratings</h4>
+              <div class="filter-options">
+                <label><input type="checkbox" name="ratings" value="4.5"> Ratings 4.5+</label>
+                <label><input type="checkbox" name="ratings" value="4.0"> Ratings 4.0+</label>
+                <label><input type="checkbox" name="ratings" value="3.5"> Ratings 3.5+</label>
+              </div>
+            </div>
+    
+            <div id="vegNonVeg" class="filter-options-content" style="display: none;">
+              <h4>Veg/Non-Veg</h4>
+              <div class="filter-options">
+                <label><input type="radio" name="vegNonVeg" value="veg"> Pure Veg</label>
+                <label><input type="radio" name="vegNonVeg" value="nonVeg"> Non-Veg</label>
+              </div>
+            </div>
+    
+            <div id="price" class="filter-options-content" style="display: none;">
+              <h4>Price Range</h4>
+              <div class="filter-options">
+                <input type="range" min="0" max="10000" value="5000" class="price-range" id="priceRange">
+                <span id="priceOutput">₹5000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="filter-footer">
+          <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+          <button class="apply-btn" onclick="applyFilters()">Apply</button>
+        </div>
+      </div>
+    </div>   
+    <div id="itemOverlay">
+        <div class="overlay-content" id="item-overlay-content">
+            <button class="overlay-close-btn">&times;</button>
+            <div class="overlay-body">
+                <img src="#" alt="Item">
+                <h3></h3>
+                <p class="price"></p>
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <div class="overlay-container" id="phonenumberoverlay">
+      <div class="overlay-content">
+        <section style="display: flex; align-items: center; justify-content: space-between;">
+          <h3>Phone Number Required</h3>
+        </section>
+      <section>
+        <div class="form-group">
+          <label for="error-message" id="error-message" style="color: #ea4335;"></label>
+        </div>
+        <div class="form-group">
+          <div style="display: flex; align-items: center;" id="updatephonenumberlabel">
+            <input type="tel" id="updatephonenumber" name="updatephonenumber" placeholder="Phone Number" required autocomplete="off">
+          </div>
+        </div>
+        <button class="verification-button" id="verificationButton">Continue</button>
+      </section>
+      </div>
+    </div>
+    <div class="cartSuccessOverlay">
+        <button class="cartSuccessButton" id="view-cart-btn">
+            <span class="cartContent" aria-hidden="true">
+                <span class="cartMain">
+                    <span class="cartTitle"></span>
+                    <span class="cartSubTitle"></span>
+                </span>
+                <span class="viewCart">
+                    <span>VIEW CART</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bag-check" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                </span>
+            </span>
+        </button>
+    </div>
+  
     <button id="scrollToTopBtn" title="Back to top">
         <i class="bi bi-chevron-up" style="font-weight: 600;"></i>
     </button>
@@ -263,5 +391,542 @@
             behavior: 'smooth'
         });
     });
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/menu/');
+    const menuDiv = document.querySelector('.meal-items');
+    socket.onopen = function(event) {
+        console.log('Connected to WebSocket server!');
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data); 
+        if (data.data) {
+            menuDiv.innerHTML = ''; 
+            data.data.forEach(menu => {
+                const mealItemHtml = `
+                  <a href="#" class="meal-item" id="${menu.menu_id}" onclick="redirectToSearch('${menu.menu_name}')">
+                    <img src="${menu.menu_picture}" alt="${menu.menu_name}"> 
+                    <h4>${menu.menu_name}</h4>
+                  </a>
+                `;
+                menuDiv.innerHTML += mealItemHtml;
+            });
+        } else {
+            console.log("No data received in the message.");
+        }
+    };
+    socket.onerror = function(event) {
+        console.error('WebSocket error observed:', event);
+    };
+    function redirectToSearch(menuName) {
+        const encodedMenuName = encodeURIComponent(menuName);
+        window.location.href = `{% url 'search' %}?menu_name=${encodedMenuName}`; 
+    }
+
+    const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+    const allitemsDiv = document.querySelector('.allitems'); 
+    allitemsSocket.onopen = function(event) {
+      console.log('Connected to All Items WebSocket server!');
+    };
+
+    allitemsSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.data) {
+            allitemsDiv.innerHTML = '';
+            data.data.forEach(item => {
+              const itemHtml = `
+                <div class="item-card" data-item-id="${item.item_id}">
+                    <div class="item-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                        </svg>
+                        <h4>${item.item_name}</h4>
+                        <span class="price" id="item-name">₹${item.price}</span>
+                        <p>${item.description}</p>
+                        <p style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                        <p></p>
+                    </div>
+                    <div class="image-container">
+                        <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                        ${item.is_available ? (item.in_cart ? `
+                            <div class="quantity-control">
+                                <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                    </svg>
+                                </button>
+                                <p class="quantity">${item.quantity}</p>
+                                <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                            </div>
+                        ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                    </div>
+                    <hr class="styles_divider__2JelH">
+                </div>
+              `;
+              allitemsDiv.innerHTML += itemHtml;
+            });
+        } else {
+            console.log("No item data received in the message.");
+        }
+    };
+    window.onscroll = function() {stickyNavbar()};
+
+    const navbar = document.getElementById("sub-navbar");
+    const sticky = navbar.offsetTop;
+
+    function stickyNavbar() {
+      if (window.pageYOffset >= sticky) {
+        navbar.classList.add("sticky");
+      } else {
+        navbar.classList.remove("sticky");
+      }
+    }
+    document.querySelector('.close-btn').addEventListener('click', function() {
+      document.querySelector('.filter-overlay').style.display = 'none';
+    });
+    function openFilterOverlay(){
+      document.querySelector('.filter-overlay').style.display = 'flex';
+    }
+    function showContent(contentId) {
+        const sections = document.querySelectorAll('.filter-options-content');
+        sections.forEach(section => section.style.display = 'none');
+
+        const categoryItems = document.querySelectorAll('.filter-categories li');
+        categoryItems.forEach(item => item.classList.remove('active'));
+        document.getElementById(contentId).style.display = 'block';
+
+        const activeItem = document.querySelector(`[onclick="showContent('${contentId}')"]`);
+        activeItem.classList.add('active');
+    }
+
+      const priceRange = document.getElementById('priceRange');
+      const priceOutput = document.getElementById('priceOutput');
+
+      priceRange.oninput = function () {
+        priceOutput.textContent = '₹' + this.value;
+      }
+      function applyFilters() {
+        const sortOption = document.querySelector('input[name="sort"]:checked').value;
+
+        const ratingOptions = [];
+        document.querySelectorAll('input[name="ratings"]:checked').forEach(function(el) {
+          ratingOptions.push(el.value);
+        });
+        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') ? 
+            document.querySelector('input[name="vegNonVeg"]:checked').value : null;
+
+        const priceRange = document.getElementById('priceRange').value;
+
+      }
+
+      function clearFilters() {
+        document.querySelector('input[name="sort"][value="relevance"]').checked = true;
+
+        document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
+          el.checked = false;
+        });
+
+        document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
+          el.checked = false;
+        });
+        const priceRange = document.getElementById('priceRange');
+        priceRange.value = 5000;
+        document.getElementById('priceOutput').innerText = '₹5000';
+
+        console.log('Filters cleared to default.');
+      }
+
+      document.getElementById('priceRange').addEventListener('input', function() {
+        document.getElementById('priceOutput').innerText = '₹' + this.value;
+      });
+
+      const itemOverlay = document.getElementById('itemOverlay');
+      const overlayCloseButton = document.querySelector('.overlay-close-btn');
+
+      document.addEventListener('DOMContentLoaded', () => {
+          if (itemOverlay && overlayCloseButton && allitemsDiv) {
+              allitemsDiv.addEventListener('click', (event) => {
+                  if (event.target.tagName === 'IMG') {
+                      const itemId = event.target.dataset.itemId;
+                      const itemCard = document.querySelector(`.item-card[data-item-id="${itemId}"]`);
+
+                      if (itemCard) {
+                          const itemInfo = itemCard.querySelector('.item-info');
+                          const itemName = itemInfo.querySelector('h4').textContent;
+                          const itemPrice = itemInfo.querySelector('.price').textContent;
+                          const itemDescription = itemInfo.querySelector('p').textContent;
+                          const itemDeliveryTime = itemInfo.querySelector('p:last-of-type').textContent;
+
+                          itemOverlay.querySelector('h3').textContent = itemName;
+                          itemOverlay.querySelector('.overlay-body img').src = event.target.src;
+                          itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
+                          itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
+                          itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
+
+                          itemOverlay.classList.add('show'); 
+                          document.body.classList.add('overlay-active');
+                      }
+                  }
+              });
+
+              overlayCloseButton.addEventListener('click', () => {
+                  itemOverlay.classList.remove('show'); 
+                  document.body.classList.remove('overlay-active'); 
+              });
+          }
+      });
+      const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+
+      cartitemscountSocket.onopen = function(event) {
+          console.log('Connected to Cart WebSocket server!');
+      };
+
+      cartitemscountSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const cartIcon = document.querySelector('.cart-icon');
+        const cartCount = document.querySelector('.cart-count');
+
+        if (data.data && data.data.length > 0) {
+            cartIcon.style.fill = '#60b246';
+            cartCount.style.color = '#60b246';
+            cartCount.textContent = data.data.length;
+            document.querySelector('.cartSuccessOverlay').style.display='flex';
+            showCartSuccessOverlay();
+            if (data.data.length==1){
+              document.querySelector('.cartSubTitle').textContent='Item added';
+            }
+            else{
+              document.querySelector('.cartSubTitle').textContent='Items added';
+            }
+            document.querySelector('.cartTitle').textContent=data.data.length;
+        }
+        else {
+            cartIcon.style.fill = 'currentColor';
+            cartCount.style.color = 'inherit';
+            
+            cartCount.textContent = '0';
+            document.querySelector('.cartSuccessOverlay').style.display='none';
+        }
+    };
+    function addtocart(itemId, operation) {
+        const formData = new FormData();
+        formData.append('operation', operation);
+        formData.append('item_id',itemId);
+        fetch(/addtocart/, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') 
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Cart updated successfully.');
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+    function showCartSuccessOverlay() {
+        const overlay = document.querySelector('.cartSuccessOverlay');
+        overlay.classList.add('show');
+    }
+    document.getElementById('view-cart-btn').addEventListener('click', function() {
+        window.location.href = "{% url 'checkout' %}";
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      {% if not user.phone_number %}
+        openPhoneNumberOverlay();
+      {% endif %}
+    });
+    function openPhoneNumberOverlay() {
+      const overlay = document.getElementById('phonenumberoverlay');
+      overlay.style.display = 'flex';
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closePhoneNumberOverlay(); 
+        }
+      });
+      document.body.style.overflow = 'hidden';
+      const allLinks = document.querySelectorAll('a');
+      allLinks.forEach(link => {
+        link.style.pointerEvents = 'none';
+      });
+      const allButtons = document.querySelectorAll('button:not(#verificationButton)');
+      allButtons.forEach(button => {
+        button.disabled = true;
+      });
+      function closePhoneNumberOverlay() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        allLinks.forEach(link => {
+          link.style.pointerEvents = 'auto';
+        });
+        allButtons.forEach(button => {
+          button.disabled = false;
+        });
+      }
+
+      const verificationButton = document.getElementById('verificationButton');
+      verificationButton.removeEventListener('click', verifyPhoneNumber);
+      verificationButton.addEventListener('click', verifyPhoneNumber);
+
+      function verifyPhoneNumber() {
+        const phoneNumberInput = document.getElementById('updatephonenumber');
+        const phoneNumber = phoneNumberInput.value;
+        const errorMessageLabel = document.getElementById('error-message');
+        if (/^[6-9]\d{9}$/.test(phoneNumber)) {
+            errorMessageLabel.textContent = ''; 
+            const formData = new FormData();
+            formData.append('phone_number', phoneNumber);
+            fetch('/addphonenumber/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorMessageLabel.textContent = data.error;  
+                } else {
+                    errorMessageLabel.textContent = 'Phone number updated successfully!';
+                    setTimeout(() => {
+                        closePhoneNumberOverlay(); 
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating phone number:', error);
+                errorMessageLabel.textContent = 'An error occurred while updating the phone number.';
+            });
+          }
+      }
+    }
+    function applyFilters(filterType) {
+      switch (filterType) {
+        case 'vegNonVeg':
+          document.querySelector(`input[name="vegNonVeg"][value="${filterValue}"]`).checked = true;
+          break;
+      }
+        const sortOption = document.querySelector('input[name="sort"]:checked').value;
+        const ratingOptions = Array.from(document.querySelectorAll('input[name="ratings"]:checked'))
+            .map(checkbox => checkbox.value);
+        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') 
+            ? document.querySelector('input[name="vegNonVeg"]:checked').value 
+            : null;
+        const priceRange = document.getElementById('priceRange').value;
+
+        const queryParams = new URLSearchParams({
+            sort: sortOption,
+            ratings: ratingOptions.join(','),
+            vegNonVeg: vegNonVegOption,
+            price: priceRange
+        });
+
+        fetch(`/filteritems/?${queryParams.toString()}`,{
+          method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+          })
+          .then(response => response.json())
+          .then(data => {
+              populateItems(data.items);
+          })
+          .catch(error => {
+            console.error('Error fetching filtered items:', error);
+          });
+    }
+    function applyButtonFilter(filterType, filterValue) {
+      switch (filterType) {
+        case 'vegNonVeg':
+          document.querySelector(`input[name="vegNonVeg"][value="${filterValue}"]`).checked = true;
+          break;
+        case 'ratings':
+          
+          document.querySelector(`input[name="ratings"][value="${filterValue}"]`).checked = true;
+          break;
+        case 'price':
+          const priceRange = document.getElementById('priceRange');
+          if (filterValue === '300') { 
+            priceRange.value = 300;
+            document.getElementById('priceOutput').textContent = '₹300'; 
+          } else if (filterValue === '600') { 
+            priceRange.value = 600; 
+            document.getElementById('priceOutput').textContent = '₹600+'; 
+          } 
+          break;
+      }
+
+     
+      const queryParams = new URLSearchParams({
+        [filterType]: filterValue,
+      });
+
+      fetch(`/filteritems/?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        populateItems(data.items);
+      })
+      .catch(error => {
+        console.error('Error fetching filtered items:', error);
+      });
+    }
+
+    function populateItems(items){
+      allitemsDiv.innerHTML = ''; 
+      if (items.length === 0) {
+          allitemsDiv.innerHTML = `
+          <div class="noitemsfoundcontainer">
+            <img src="{% static '/images/noitemsfound.avif' %}" alt="No Items found">
+            <h4>Uh Oh! No items with applied filters are available at the moment</h4>  
+            <p>Remove filters to see items.</p>
+            <button class="clearfiltersbutton" onclick="clearFilters()">Clear Filters</button>
+          </div>
+          `;
+      } else {
+          items.forEach(item => {
+              const itemHtml = `
+                  <div class="item-card" data-item-id="${item.item_id}">
+                      <div class="item-info">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                              <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                              <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                          </svg>
+                          <h4>${item.item_name}</h4>
+                          <span class="price" id="item-name">₹${item.price}</span>
+                          <p>${item.description}</p>
+                          <p style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                          <p></p>
+                      </div>
+                      <div class="image-container">
+                          <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                          ${item.is_available ? (item.in_cart ? `
+                              <div class="quantity-control">
+                                  <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                          <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                      </svg>
+                                  </button>
+                                  <p class="quantity">${item.quantity}</p>
+                                  <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                              </div>
+                          ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                      </div>
+                      <hr class="styles_divider__2JelH">
+                  </div>
+              `;
+              allitemsDiv.innerHTML += itemHtml;
+          });
+      }
+    }
+    function clearFilters(){
+      document.querySelector('input[name="sort"][value="relevance"]').checked = true;
+
+      document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
+        el.checked = false;
+      });
+
+      document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
+        el.checked = false;
+      });
+
+      const priceRange = document.getElementById('priceRange');
+      priceRange.value = 5000;
+      document.getElementById('priceOutput').innerText = '₹5000';
+          const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+          const allitemsDiv = document.querySelector('.allitems'); 
+          allitemsSocket.onopen = function(event) {
+            console.log('Connected to All Items WebSocket server!');
+          };
+
+          allitemsSocket.onmessage = function(event) {
+              const data = JSON.parse(event.data);
+              if (data.data) {
+                  allitemsDiv.innerHTML = '';
+                  data.data.forEach(item => {
+                    const itemHtml = `
+                      <div class="item-card" data-item-id="${item.item_id}">
+                          <div class="item-info">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                  <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                              </svg>
+                              <h4>${item.item_name}</h4>
+                              <span class="price" id="item-name">₹${item.price}</span>
+                              <p>${item.description}</p>
+                              <p style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                              <p></p>
+                          </div>
+                          <div class="image-container">
+                              <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                              ${item.is_available ? (item.in_cart ? `
+                                  <div class="quantity-control">
+                                      <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                              <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                          </svg>
+                                      </button>
+                                      <p class="quantity">${item.quantity}</p>
+                                      <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                                  </div>
+                              ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                          </div>
+                          <hr class="styles_divider__2JelH">
+                      </div>
+                    `;
+                    allitemsDiv.innerHTML += itemHtml;
+                  });
+          } else {
+              console.log("No item data received in the message.");
+          }
+      };
+    }
+    
+
+    let activeFilters = {
+      vegNonVeg: null,
+      ratings: [],
+      price: null
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+      const pureVegButton = document.querySelector('.nav-sub-item:nth-child(2)'); 
+      pureVegButton.addEventListener('click', () => {
+        applyButtonFilter('vegNonVeg', 'veg');
+      });
+      const ratingsButton = document.querySelector('.nav-sub-item:nth-child(3)'); 
+      ratingsButton.addEventListener('click', () => {
+        applyButtonFilter('ratings', '4.0'); 
+      });
+      const lessThan300Button = document.querySelector('.nav-sub-item:nth-child(4)');
+      lessThan300Button.addEventListener('click', () => {
+        applyButtonFilter('price', '300');
+      });
+    });
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+            }
+        }
+        }
+        return cookieValue;
+    }
+
 </script>
 </html>

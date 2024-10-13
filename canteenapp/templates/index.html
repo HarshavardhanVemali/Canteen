@@ -33,7 +33,7 @@
                 <img src="{% static 'images/3.png' %}" alt="">
                </div>
                 <h1 class="hero-heading">Discover the Best Food & Drinks on Campus</h1>
-                <div class="search-bar">
+                <div class="search-bar" style="cursor: pointer;">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search for cuisines, dishes..." autocomplete="off">
                     
@@ -54,6 +54,9 @@
         
                 <section>
                     <div class="form-group">
+                        <label for="signup-error-message" id="signup-error-message" style="color: #ea4335;"></label>
+                    </div>
+                    <div class="form-group">
                         <input type="text" id="username" name="username" placeholder=" " required autocomplete="off">
                         <label class="user-label" for="username">Full Name*</label>
                     </div>
@@ -61,10 +64,14 @@
                         <input type="email" class="email" id="email" name="email" placeholder=" " required autocomplete="off">
                         <label class="email-label" for="email">Email*</label>
                     </div>
+                    <div class="form-group" id="email-field">
+                        <input type="tel" class="phone" id="phone" name="phone" placeholder=" " required autocomplete="off">
+                        <label class="phone-label" for="phone">Phone Numer*</label>
+                    </div>
                     <div class="terms-checkbox">
                         <input type="checkbox" id="agreeTerms">
                         <label for="agreeTerms">
-                            I agree to Canteen's 
+                            I agree to Food Hub's 
                             <a href="#" target="_blank">Terms of Service</a>, 
                             <a href="#" target="_blank">Privacy Policy</a> 
                         </label>
@@ -141,7 +148,7 @@
             <div class="overlay-content">
                 <section style="display: flex; align-items: center; justify-content: space-between;">
                     <h3>Verification Code</h3>
-                    <button class="close-overlay" id="close-verification-overlay" onclick="closeVerificationOverlay()" style="display: flex; align-items: center; justify-content: space-between;">
+                    <button class="close-overlay" id="close-verification-overlay" onclick="closeLoginVerificationOverlay()" style="display: flex; align-items: center; justify-content: space-between;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                             <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
                         </svg>
@@ -151,19 +158,58 @@
                     <p id="login-verification-error" style="color: #ea4335;"></p>
                     <p class="verification-message">One Time Password has been sent to your email <strong id="verification-email"></strong>. Please enter it below. Valid for 10 minutes.</p>
                     <div class="otp-inputs">
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
-                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
 
                     </div>
-                    <p class="timer">00:00</p>
-                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendLoginOTP()">Resend Now</span></p>
+                    <p class="timer" id="login-timer">00:00</p>
+                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendLoginOTP()" id="login-resend-link">Resend Now</span></p>
                 </section>
             </div>
-        </div>           
+        </div>  
+        <div class="cancel-overlay" id="cancel-overlay">
+            <div class="cancel-overlay-content">
+                <p>Are you sure you want to cancel the verification?</p>
+                <div>
+                    <button id="confirmTermination">Yes</button>
+                </div>
+                <div class="cancel-divider"></div>
+                <div>
+                    <button id="cancelTermination">No</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="signup-verification-overlay" id="signup-verification-overlay">
+            <div class="overlay-content">
+                <section style="display: flex; align-items: center; justify-content: space-between;">
+                    <h3>Verification Code</h3>
+                    <button class="close-overlay" id="close-verification-overlay" onclick="closeSignupVerificationOverlay()" style="display: flex; align-items: center; justify-content: space-between;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                </section>
+                <section>
+                    <p id="signup-verification-error" style="color: #ea4335;"></p>
+                    <p class="verification-message">One Time Password has been sent to your email <strong id="signup-verification-email"></strong>. Please enter it below. Valid for 10 minutes.</p>
+                    <div class="otp-inputs">
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" />
+                    </div>
+                    <p class="timer" id="signup-timer">00:00</p>
+                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendSignupOTP()" id="signup-resend-link">Resend Now</span></p>
+                </section>
+            </div>
+        </div>         
         <section class="top">
 
             <div class="cards">
@@ -377,65 +423,115 @@
       </footer>
 </body>
 <script>
+    let currentAction = '';
+    let timerId = null;
+
     function openSignupOverlay() {
-        document.getElementById("signupOverlay").style.display = "flex"; 
+        document.getElementById("signupOverlay").style.display = "flex";
         document.body.classList.add('overlay-open');
-        document.getElementById("loginOverlay").style.display = "none"; 
+        document.getElementById("loginOverlay").style.display = "none";
+        document.getElementById("signup-verification-overlay").style.display = "none"; 
     }
 
     function closeSignupOverlay() {
         document.getElementById("signupOverlay").style.display = "none";
-        document.body.classList.remove('overlay-open'); 
+        document.body.classList.remove('overlay-open');
     }
 
     function openLoginOverlay() {
-        document.getElementById("loginOverlay").style.display = "flex"; 
+        document.getElementById("loginOverlay").style.display = "flex";
         document.body.classList.add('overlay-open');
-        document.getElementById("signupOverlay").style.display = "none"; 
+        document.getElementById("signupOverlay").style.display = "none";
+        document.getElementById("login-verification-overlay").style.display = "none";
     }
 
     function closeLoginOverlay() {
         document.getElementById("loginOverlay").style.display = "none";
-        document.body.classList.remove('overlay-open'); 
+        document.body.classList.remove('overlay-open');
     }
-    function closeVerificationOverlay() {
-        document.getElementById('login-verification-overlay').style.visibility = 'hidden';
+    function closeLoginVerificationOverlay() {
+        document.getElementById("cancel-overlay").style.display = "flex";
+        document.getElementById("confirmTermination").addEventListener("click", function() {
+            clearOTPFields();
+            closeCancelOverlay() ; 
+            document.getElementById('login-verification-overlay').style.visibility = 'hidden';     
+        });
+        document.getElementById("cancelTermination").addEventListener("click", function() {
+            closeCancelOverlay() ;
+        });
+    }
+    function openCancelOverlay() {
+        document.getElementById("cancel-overlay").style.display = "flex";
     }
 
-    function openVerificationOverlay() {
+    function closeCancelOverlay() {
+        document.getElementById("cancel-overlay").style.display = "none";
+    }
+    function openLoginVerificationOverlay() {
         document.getElementById("signupOverlay").style.display = "none"; 
         document.getElementById("loginOverlay").style.display = "none"; 
-        document.getElementById('login-verification-overlay').style.visibility = 'visible';     
+        document.getElementById('login-verification-overlay').style.visibility = 'visible'; 
+        document.getElementById('login-verification-overlay').style.display = 'flex'; 
+        currentAction='login';    
+    }
+    function closeSignupVerificationOverlay() {
+        document.getElementById("cancel-overlay").style.display = "flex";
+        document.getElementById("confirmTermination").addEventListener("click", function() {
+            clearOTPFields();
+            closeCancelOverlay() ; 
+            document.getElementById('signup-verification-overlay').style.visibility = 'hidden';
+        });
+        document.getElementById("cancelTermination").addEventListener("click", function() {
+            closeCancelOverlay() ;
+        });
+    }
+    function openSignupVerificationOverlay() {
+        document.getElementById("signupOverlay").style.display = "none"; 
+        document.getElementById("loginOverlay").style.display = "none"; 
+        document.getElementById('signup-verification-overlay').style.visibility = 'visible';  
+        document.getElementById('signup-verification-overlay').style.display = 'flex';   
+        currentAction='signup';
     }
 
     function resendLoginOTP() {
-        
+        const email = document.getElementById('login-email').value;
+        sendLoginVerificationCode(email);
+        clearOTPFields();
+        resetLoginTimer();
+        document.getElementById("verificationButton").classList.add('loading');
+    }
 
+    function resendSignupOTP() {
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        sendSignupVerificationCode(email,phone,username);
+        clearOTPFields();
+        resetSignupTimer();
     }
 
     function moveToNext(input) {
         if (input.value.length >= 1) {
             const inputs = document.querySelectorAll('.otp-input');
             const currentIndex = Array.from(inputs).indexOf(input);
-            
+
             if (currentIndex < inputs.length - 1) {
                 inputs[currentIndex + 1].focus();
             }
         }
     }
+
     function moveBack(input, event) {
         if (event.key === "Backspace" && input.value.length === 0) {
             const inputs = document.querySelectorAll('.otp-input');
             const currentIndex = Array.from(inputs).indexOf(input);
-            
+
             if (currentIndex > 0) {
                 inputs[currentIndex - 1].focus();
             }
         }
     }
-    function showVerificationOverlay() {
-        openVerificationOverlay();
-    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const usernameInput = document.getElementById('username');
         const emailInput = document.getElementById('email');
@@ -444,38 +540,67 @@
 
         function validateForm() {
             const isUsernameValid = usernameInput.value.length > 3;
-            const isEmailValid = emailInput.value.trim() !== '';
+            const isEmailValid = validateEmail(emailInput.value);
             const isTermsChecked = agreeTermsCheckbox.checked;
 
             signupButton.disabled = !(isUsernameValid && isEmailValid && isTermsChecked);
         }
-        usernameInput.addEventListener('input', validateForm);
-        emailInput.addEventListener('input', validateForm);
-        agreeTermsCheckbox.addEventListener('change', validateForm);
-    });
-    document.addEventListener('DOMContentLoaded', function() {
+
+        if (usernameInput) {
+            usernameInput.addEventListener('input', validateForm);
+        }
+        if (emailInput) {
+            emailInput.addEventListener('input', validateForm);
+        }
+        if (agreeTermsCheckbox) {
+            agreeTermsCheckbox.addEventListener('change', validateForm);
+        }
+
         const verificationButton = document.getElementById('verificationButton');
-        if (verificationButton) { 
+        if (verificationButton) {
             verificationButton.addEventListener('click', () => {
                 const emailLogin = document.getElementById('login-email').value;
                 if (!validateEmail(emailLogin)) {
-                    document.getElementById('error-message').textContent='Invalid Email';
+                    document.getElementById('error-message').textContent = 'Invalid Email';
                     return;
                 }
-                verificationButton.classList.add('loading'); 
-                sendVerificationCode(emailLogin); 
+                verificationButton.classList.add('loading');
+                sendLoginVerificationCode(emailLogin); 
+                
             });
-        } else {
-            console.error('Element with ID "verificationButton" not found.');
         }
-        
+
+        const signupSubmitButton = document.getElementById('signupButton');
+        if (signupSubmitButton) {
+            signupSubmitButton.addEventListener('click', () => {
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                if (!validateEmail(email)) {
+                    document.getElementById('error-message').textContent = 'Invalid Email';
+                    return;
+                }
+                signupSubmitButton.classList.add('loading');
+                sendSignupVerificationCode(email, phone, username); 
+                
+            });
+        }
     });
+
     function validateEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
+    function validatePhoneNumber(phone) {
+        const phoneRegex = /^[6-9]\d{9}$/; 
+        return phoneRegex.test(phone);
+    }
 
-    function sendVerificationCode(email) {
+    function validateName(name) {
+        const nameRegex = /^[A-Za-z.\s]+$/; 
+        return nameRegex.test(name);
+    }
+    function sendLoginVerificationCode(email) {
         if (!validateEmail(email)) {
             document.getElementById('error-message').textContent='Invalid Email';
             return;
@@ -492,11 +617,9 @@
         .then(data => {
             document.getElementById('verificationButton').classList.remove('loading');
             if (data.success) {
-                closeSignupOverlay();
                 closeLoginOverlay();
-                closeVerificationOverlay();
-                openVerificationOverlay();
-                startTimer();
+                openLoginVerificationOverlay();
+                startLoginTimer();
             } else {
                 document.getElementById('error-message').textContent=data.error;
             }
@@ -507,13 +630,58 @@
             alert('Error sending verification code. Please try again later.');
         });
     }
-    function startTimer() {
-        let seconds = 30;
-        const timerElement = document.querySelector('.timer');
-        const resendLink = document.querySelector('.resend-link');
+    function sendSignupVerificationCode(email, phone, username) {
+        if (!validateEmail(email)) {
+            document.getElementById('signup-error-message').textContent = 'Invalid Email'; 
+            return;
+        }
+        if (!validatePhoneNumber(phone)) {
+            document.getElementById('signup-error-message').textContent = 'Invalid Phone Number';
+            return;
+        }
+
+        if (!validateName(username)) {
+            document.getElementById('signup-error-message').textContent = 'Invalid Name';
+            return;
+        }
+        fetch('/sendsignverificationcode/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ 
+                email: email, 
+                action: 'signup',
+                phone: phone,
+                username: username
+            }) 
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('signupButton').classList.remove('loading'); 
+
+            if (data.success) {
+                closeSignupOverlay();
+                openSignupVerificationOverlay();
+                startSignupTimer();
+            } else {
+                document.getElementById('signup-error-message').textContent = data.error; 
+            }
+        })
+        .catch(error => {
+            document.getElementById('signupButton').classList.remove('loading'); 
+            console.error('Error sending verification code:', error);
+            alert('Error sending verification code. Please try again later.');
+        });
+    }
+    function startLoginTimer() {
+        let seconds = 59; 
+        const timerElement = document.querySelector('#login-timer');
+        const resendLink = document.querySelector('#login-resend-link');
+        resendLink.style.display = 'none';
 
         timerId = setInterval(function() {
-            seconds--;
             const minutes = Math.floor(seconds / 60);
             const remainingSeconds = seconds % 60;
             timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -521,50 +689,87 @@
             if (seconds <= 0) {
                 clearInterval(timerId);
                 timerElement.textContent = "00:00";
-                resendLink.style.display = 'inline-block'; 
+                resendLink.style.display = 'inline-block';
             }
+            seconds--;
         }, 1000);
     }
-    let timerId = null;
-    function resendLoginOTP() {
-        const email = document.getElementById('login-email').value;
-        sendVerificationCode(email);
-        clearOTPFields();
-        resetTimer();
-        document.getElementById("verificationButton").classList.add('loading');
+    function startSignupTimer() {
+        let seconds = 59; 
+        const timerElement = document.querySelector('#signup-timer');
+        const resendLink = document.querySelector('#signup-resend-link');
+        resendLink.style.display = 'none';
+
+        timerId = setInterval(function() {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+            if (seconds <= 0) {
+                clearInterval(timerId);
+                timerElement.textContent = "00:00";
+                resendLink.style.display = 'inline-block';
+            }
+            seconds--;
+        }, 1000);
     }
+
     function clearOTPFields() {
         const otpInputs = document.querySelectorAll('.otp-input');
         otpInputs.forEach(input => input.value = '');
     }
 
-    function resetTimer() {
+    function resetLoginTimer() {
         clearInterval(timerId);
-        startTimer();
-        
+        startLoginTimer();
+    }
+    function resetSignupTimer() {
+        clearInterval(timerId);
+        startSignupTimer();
     }
 
     function validateOTP() {
         const otpInputs = document.querySelectorAll('.otp-input');
         const otp = Array.from(otpInputs).map(input => input.value).join('');
-        const email = document.getElementById('login-email').value;
+        let dataToSend = {}; 
 
+        if (currentAction === 'login'){
+            const email = document.getElementById('login-email').value;
+            dataToSend = { 
+                email: email,
+                code: otp,
+            };
+        }
+        if (currentAction === 'signup'){
+            const email = document.getElementById('email').value;
+            dataToSend = { 
+                email: email,
+                code: otp,
+                username: document.getElementById('username').value,
+                phone_number: document.getElementById('phone').value,
+            };
+        }
+        const username = document.getElementById('username').value; 
+        const phone = document.getElementById('phone').value;
         if (otp.length === 6) {
-            fetch('/loginverifymail/', {
+            let verificationUrl = (currentAction === 'login') ? '/loginverifymail/' : '/signupverifymail/';
+
+            fetch(verificationUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCookie('csrftoken')
                 },
-                body: JSON.stringify({ email: email, code: otp })
+                body: JSON.stringify(dataToSend)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     window.location.href = '/';
                 } else {
-                    document.getElementById('login-verification-error').textContent = data.error;
-                    otpInputs.forEach(input => input.value = ''); 
+                    let errorId = (currentAction === 'login') ? 'login-verification-error' : 'signup-verification-error';
+                    document.getElementById(errorId).textContent = data.error;
+                    otpInputs.forEach(input => input.value = '');
                 }
             })
             .catch(error => {
@@ -573,22 +778,34 @@
             });
         }
     }
-    const lastOTPInput = document.querySelectorAll('.otp-input')[5];
-    lastOTPInput.addEventListener('keyup', validateOTP); 
+
+    const lastOTPInput = document.querySelectorAll('#login-otp-input')[5];
+    if (lastOTPInput) {
+        lastOTPInput.addEventListener('keyup', validateOTP);
+    }
+    const signupLastOTPInput = document.querySelectorAll('#signup-otp-input')[5];
+    if (signupLastOTPInput) {
+        signupLastOTPInput.addEventListener('keyup', validateOTP);
+    }
+    const searchUrl = "{% url 'search' %}"; 
+
+    document.querySelector('.search-bar').addEventListener('click', (event) => {
+        window.location.href = searchUrl; 
+    });
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
-          }
         }
         return cookieValue;
-      }
+    }
 </script>
 <script>
     const track = document.querySelector('.carousel-track');
@@ -627,8 +844,35 @@
             behavior: 'smooth'
         });
     });
-    document.getElementById("google-login-button").onclick = function() {
-        window.location.href = "{% url 'social:begin' 'google-oauth2' %}";
+    document.getElementById('google-login-button').onclick = function() {
+        fetch('/logout/', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+        })
+        .then(() => {
+            window.location.href = "{% url 'social:begin' 'google-oauth2' %}";
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+        }); 
+    };
+    document.getElementById('google-signup-button').onclick = function() {
+        fetch('/logout/', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+        })
+        .then(() => {
+            window.location.href = "{% url 'social:begin' 'google-oauth2' %}";
+        })
+        .catch(error => {
+            console.error('Logout error:', error);
+        }); 
     };
 </script>
 </html>

@@ -1,0 +1,254 @@
+.dashboard-widgets{
+    margin: 20px;
+}
+.salesoverview {
+    max-width: 1200px; 
+    margin-top: 20px;
+}
+
+.salesoverview h3 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: left;
+}
+.comparisoncharts h4{
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+.comparisoncharts {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px; 
+    gap: 20px; 
+}
+
+.dashboard-chart {
+    flex: 1;  
+    background-color: #ffffff; 
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);  
+    padding: 20px; 
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;  
+}
+
+.dashboard-chart canvas {
+    width: 100%; 
+    height: 350px !important;  
+}
+
+@media (max-width: 768px) {
+    .comparisoncharts {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .dashboard-chart {
+        width: 100%;  
+    }
+}
+
+  .topsellingitems h3{
+    text-align: left;
+    margin-bottom: 20px;
+    color: #333;
+    margin-top: 20px;
+  }
+  
+  #topSellingItemsContainer {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px;  
+  }
+  
+  .top-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    flex: 1 0 250px; 
+    max-width: 300px;
+  }
+  
+  .top-item-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .top-item-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .top-item-quantity, .top-item-revenue {
+    display: block;
+    font-size: 14px;
+  }
+
+.orderbreakdown h3{
+    text-align: left;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.comparisoncharts h4{
+    color: #333;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+.order-breakdown-table {
+    width: 50%;  
+    border-radius: 8px;  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  
+    overflow: hidden; 
+  }
+  
+  #orderBreakdownTable {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Arial', sans-serif;  
+    background-color: #fff;  
+  }
+  
+  #orderBreakdownTable th {
+    background-color: dodgerblue; 
+    color: white;  
+    font-weight: bold;
+    font-size: 12px;
+    padding: 12px 10px;  
+    text-align: center; 
+  }
+  
+  #orderBreakdownTable td {
+    text-align: left;
+    padding: 10px 12px; 
+    border: 1px solid #ddd;
+    font-size: 13px;  
+    color: #333;  
+  }
+  
+  #orderBreakdownTable tr:nth-child(even) {
+    background-color: #f2f2f2; 
+  }
+  #orderBreakdownTable tr:hover {
+    background-color: #eff4f4; 
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+
+  #orderBreakdownTable tr td {
+    border-bottom: 2px solid #f0f0f0;
+  }
+  
+  #orderBreakdownTable {
+    border: 1px solid #ccc;
+  }
+  
+  @media (max-width: 768px) {
+    .order-breakdown-table {
+      width: 90%;  
+    }
+  
+    #orderBreakdownTable th,
+    #orderBreakdownTable td {
+      padding: 8px 6px;  
+    }
+  
+    #orderBreakdownTable th {
+      font-size: 12px; 
+    }
+  
+    #orderBreakdownTable td {
+      font-size: 12px;  
+    }
+  }
+
+.quickstatslist {
+
+    border-radius: 10px;
+    background: #fff;
+    overflow-x: auto;
+    min-height: 200px;
+}
+#quickstatstable-container{
+    margin-top: 30px;
+    
+}
+#quickstatstable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    table-layout: fixed;
+    white-space: nowrap;
+    overflow-x: auto;
+    text-align: center;
+    
+}
+
+#quickstatstable th,
+#quickstatstable td {
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 200;
+    white-space: nowrap;
+    min-width: 200px;
+    text-align: center;
+    display: inline-block;  
+    text-align: center;    
+    vertical-align: middle; 
+    white-space: nowrap;    
+    padding: 3px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+#quickstatstable th {
+    color: black;
+    font-size: 16px;
+    font-weight: 300;
+    display: inline-block;  
+    text-align: center;    
+    vertical-align: middle; 
+    white-space: nowrap;    
+    padding: 3px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+#quickstatstable th svg {
+    display: inline-block;
+    vertical-align: middle; 
+}
+
+#quickstatstable th span {
+    display: inline-block;
+    vertical-align: middle;  
+}
+
+#quickstatstable tbody tr {
+    border-bottom: none;
+}
+
+#quickstatstable th,#quickstatstable  td {
+    padding:8px;
+    font-size: 13px;
+    text-align: center;
+    font-weight: 200;
+    white-space: nowrap;
+}
+#quickstatstable th {
+    border-bottom: 1px solid rgba(203, 208, 221, 0.54);
+    color: black;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 300;
+}
+#quickstatstable td{
+    padding-top: 50px;
+    font-size: 20px;
+}

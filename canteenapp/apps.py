@@ -5,4 +5,4 @@ class CanteenappConfig(AppConfig):
     name = 'canteenapp' 
 
     def ready(self):
-        import canteenapp.signals  
+        import canteenapp.signals

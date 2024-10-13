@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Hub - Profile</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+</head>
+<body>
+    <header class="header-container">
+        <div class="header-content">
+          <div class="header-title">
+            <a href="{% url 'home' %}" class="logo-link" title="Food Delivery">
+                <img src="{% static 'images/3.png' %}" alt="">
+              </a>
+              <h3>Food Hub</h3>
+          </div>
+          
+          <ul class="nav-items-container">   
+            <li class="nav-item search-item">
+                <a href="/search"> 
+                    <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                    Search
+                </a>
+            </li>
+              <li class="nav-item cart-item">
+                <a href="/checkout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
+                </a>
+              </li>
+              <li class="nav-item active">
+                <a href="/profile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+              </li>
+              <li class="nav-item">
+                  <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                  </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="profile-container">
+            <aside class="profile-sidebar">
+                <div class="profile-sidebar-header">
+                    <div class="nav-profile-header">
+                        <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/profile-pic-male_4811a1.svg" alt="Profile Picture" class="profile-picture">
+                        <div class="sidebar-profile-info">
+                            <p>Hello,</p>
+                            <h3>{{ user.first_name }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <ul class="sidebar-nav">
+                    <li><a href="#profile" class="active"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                      </svg>Profile Information</a></li>
+                    <li><a href="#orders"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                        <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/>
+                        <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/>
+                        <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
+                      </svg>Order History</a></li>
+                    <li><a href="#payments"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
+                        <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
+                      </svg>Saved Payments</a></li>
+                    <li>
+                        <a href="{% url 'user_logout_view' %}" id="logout-link"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
+                                <path d="M7.5 1v7h1V1z"/>
+                                <path d="M3 8.812a5 5 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812"/>
+                              </svg>Logout
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+    
+            <div class="profile-content"> 
+                <div class="profile-section" id="profile"> 
+                    <div class="profile-header">
+                        <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/profile-pic-male_4811a1.svg" alt="Profile Picture" class="profile-picture">
+                        <div class="profile-info">
+                                <div class="personal-info">
+                                    <h3>Personal Information</h3>
+                                    <form action="">
+                                        <input type="text" name="firstName" id="firstname" value="{{ user.first_name }}" disabled>
+                                        <input type="text" name="lastName" id="lastname" value="{{ user.last_name }}" disabled>
+                                    </form>
+                                </div>
+                                <div class="emialinfo">
+                                    <h3>Email Address</h3>
+                                    <input type="text" name="email" value="{{ user.email }}" disabled>
+                                </div>
+                                <div class="mobilenumber">
+                                    <h3>Mobile Number</h3>
+                                    <div style="display: flex;align-items: center;gap: 10px;">
+                                        <input type="text" name="mobileNumber" value="{{user.phone_number}}" disabled>
+                                        <div>
+                                            <button class="edit-button" onclick="toggleMobileEdit(this)">Edit</button> 
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="profile-section" id="orders" style="display: none;">
+                    <h2>Order History</h2>
+                    <div class="noorders">
+                        <div>
+                            <img src="{% static '/images/noorders.webp' %}" alt="Noorders">
+                        </div>
+                        <div style="text-align: center;">
+                            <h2 style="color: #535665;">No Orders</h2>
+                            <p style="color: #7e808c;">You haven't placed any order yet.</p>
+                        </div>
+                    </div>
+                    <div class="order-list" id="order-list-container">
+                    </div>
+                </div>
+        
+                <div class="profile-section" id="payments" style="display: none;">
+                    <h2>Saved Payment Methods</h2>
+                    <div class="payment-method">  
+                        <div style="display: flex;align-items: center;gap: 10px;">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Visa ending in 1234</span>
+                           
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" style="cursor: pointer;">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="message-overlay" id="success-overlay">
+        <div class="message-overlay-content">
+            <p id="displaymessage"></p>
+            <div>
+                <button id="confirmMessage">Ok</button>
+            </div>
+        </div>
+      </div>
+    <script>
+        const sidebarLinks = document.querySelectorAll('.sidebar-nav a:not(#logout-link)');
+        const contentSections = document.querySelectorAll('.profile-section');
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const targetId = link.getAttribute('href');
+
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                contentSections.forEach(section => section.style.display = 'none');
+
+                document.querySelector(targetId).style.display = 'block';
+                link.classList.add('active');
+            });
+        });
+
+        const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const cartIcon = document.querySelector('.cart-icon');
+            const cartCount = document.querySelector('.cart-count');
+
+            if (data.data && data.data.length > 0) {
+                cartIcon.style.fill = '#60b246';
+                cartCount.style.color = '#60b246';
+                cartCount.textContent = data.data.length;
+            
+            }
+            else {
+                cartIcon.style.fill = 'currentColor';
+                cartCount.style.color = 'inherit';
+                cartCount.textContent = '0';
+            }
+        };
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+        function toggleMobileEdit(button) {
+            const grandparentDiv = button.parentNode.parentNode; 
+            const inputField = grandparentDiv.querySelector('input[type="text"]'); 
+            if (inputField.disabled) {
+                inputField.disabled = false;
+                inputField.focus();
+                button.textContent = "Save";
+            } else {
+                const mobileNumber = inputField.value; 
+                if (/^[6-9]\d{9}$/.test(mobileNumber)) { 
+                    const formData = new FormData();
+                    formData.append('mobileNumber', mobileNumber);
+
+                    fetch('/updatemobilenumber/', { 
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('displaymessage').textContent = 'Mobile Number Updated successfully!';
+                            document.getElementById('success-overlay').style.display = 'flex';
+                        } else {
+                            document.getElementById('displaymessage').textContent = 'Error updating mobile number: ' + data.error;
+                            document.getElementById('success-overlay').style.display = 'flex';
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('displaymessage').textContent = 'Error in updating mobile number. Please try again later.';
+                        document.getElementById('success-overlay').style.display = 'flex';
+                    });
+
+                    inputField.disabled = true;
+                    button.textContent = "Edit";
+                } else {
+                    document.getElementById('displaymessage').textContent = 'Invalid mobile number';
+                    document.getElementById('success-overlay').style.display = 'flex';
+                }
+            }
+        }
+        document.getElementById('confirmMessage').addEventListener('click', () => {
+            document.getElementById('success-overlay').style.display = 'none';
+        });
+        function populateOrders() {
+            fetch('/getorders/',{
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const orderListContainer = document.getElementById('order-list-container');
+                orderListContainer.innerHTML = '';
+
+                if (data.orders.length === 0) {
+                    const noOrdersDiv = document.querySelector('.noorders');
+                    if (noOrdersDiv) {
+                        noOrdersDiv.style.display = 'block'; 
+                    }
+                } else {
+                    const noOrdersDiv = document.querySelector('.noorders');
+                    if (noOrdersDiv) {
+                        noOrdersDiv.style.display = 'none';
+                    }
+                    data.orders.forEach(order => {
+                        const orderCard = document.createElement('div');
+                        orderCard.classList.add('order-card');
+
+                        let orderStatusClass = '';
+                        switch (order.status.toLowerCase()) {
+                            case 'pending':
+                                orderStatusClass = 'pending';
+                                break;
+                            case 'confirmed':
+                                orderStatusClass = 'confirmed';
+                                break;
+                            case 'prepared':
+                                orderStatusClass = 'prepared';
+                                break;
+                            case 'shipped':
+                                orderStatusClass = 'shipped';
+                                break;
+                            case 'delivered':
+                                orderStatusClass = 'delivered';
+                                break;
+                            case 'cancelled':
+                                orderStatusClass = 'cancelled';
+                                break;
+                            default:
+                                orderStatusClass = 'pending';
+                        }
+
+                        let orderItemsHTML = '';
+                        order.items.forEach(item => {
+                            orderItemsHTML += `
+                                <div class="order-item">
+                                    <div style="display:flex;gap:20px;">
+                                        <div class="item-image-container">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                            <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                        </svg>
+                                        <img src="${item.item_image}" class="item-image" alt="${item.item_name}">    
+                                        </div>
+                                        <div class="item-content">
+                                            <span class="item-name">${item.item_name}</span>
+                                            <span class="item-quantity">Quantity: ${item.quantity}</span>
+                                        </div>    
+                                    </div>
+                                    <span class="item-order-price">₹ ${item.price_at_order_time}</span>
+                                </div>
+                            `;
+                        });
+
+                        orderCard.innerHTML = `
+                            <div class="order-header">
+                                <span class="order-id">Order ID: ${order.order_id}</span>
+                                <span class="order-date">${order.created_at}</span>
+                            </div>
+                            <div class="order-items">
+                                ${orderItemsHTML}
+                            </div>
+                            <div class="order-total">
+                                <span>Total: Rs. ${order.total_price}</span>
+                                <span class="order-status ${orderStatusClass}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                    </svg>${order.status}</span>
+                            </div>
+                        `;
+                        orderCard.addEventListener('click', (event) => {
+                            event.preventDefault(); 
+                            window.location.href = `/orderhistory/?order_id=${order.order_id}`; 
+                        });
+
+                        orderListContainer.appendChild(orderCard);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching orders:', error);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            populateOrders();
+        });
+
+        const orderHistoryLink = document.querySelector('.sidebar-nav a[href="#orders"]');
+        orderHistoryLink.addEventListener('click', (event) => {
+            populateOrders(); 
+        });
+    </script>
+</body>
+</html>

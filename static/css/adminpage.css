@@ -1,5 +1,5 @@
 body {
-    font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -13,7 +13,7 @@ body {
 
 header {
     width: 100%;
-    background-color: #fff;
+    background-color: rgba(240, 240, 240, 0.8);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     border-bottom: 1px solid #cbd0dd;
 }
@@ -28,7 +28,7 @@ header {
     font-weight: 500;
     letter-spacing: -0.04em;
     margin-bottom: 0; 
-    color: #ea4335;
+    color: rgb(239, 79, 95);
 }
 
 #title_name {
@@ -44,11 +44,11 @@ body{
     display: flex;
     flex-direction: column;
     align-items: flex-start; 
-    background-color: #f5f7fa;
+    background-color: #e8ecf1;
 }
 header {
     width: calc(100%-250px);
-    background-color: #fff;
+    background-color: rgba(240, 240, 240, 0.8);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -213,8 +213,6 @@ header {
     flex: 1; 
     transition: all 0.3s ease; 
     scroll-behavior: smooth;
-    margin-bottom: 40px;
-    padding-bottom: 50px;
 }
 #sidebarToggle {
     display: none;
@@ -296,7 +294,7 @@ body.dark-mode header{
 
 .nav-link:hover {
   background-color: #4d5766;
-  color: #ea4335;
+  color: #f86254;
 }
 .nav-link-icon {
   margin-right: 10px;
@@ -331,7 +329,7 @@ body.dark-mode header{
 }
 
 .nav-link.active{
-    color: #007bff; 
+    color: #f86254;
 }
 .has-submenu .dropdown-icon {
     position: absolute;
@@ -427,6 +425,57 @@ footer a:hover{
 }
 .menu-toggle{
     display: none;
+}
+.message-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.message-overlay-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+.message-overlay-content p{
+    margin-top: 20px;
+    margin-bottom: 3rem;
+    font-weight: 100;
+}
+.message-overlay-content button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+}
+  
+#confirmDelete,#confirmMessage {
+    background-color: rgb(239, 79, 95);
+    color: white;
+}
+#confirmDelete:hover,#confirmMessage:hover{
+    background-color: #e74c3c;
+}
+#cancelDelete {
+    background-color: transparent;
+    color: black;
+}
+.delete-divider {
+    margin: 10px 0;
+    height: 1px;
 }
 @media only screen and (max-width: 375px) {
     .menu-toggle{

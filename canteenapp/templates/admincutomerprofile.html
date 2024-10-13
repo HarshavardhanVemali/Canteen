@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  {% endblock %}
+  
+</head>
+<body>
+    {% block users %}
+    <li class="nav-item has-submenu">
+        <a href="#" class="nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                  <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
+                </svg>
+                
+            <span class="nav-link-text">Users</span>       
+        </a>
+        <ul class="submenu">
+            <li><a class="nav-link active" href="{% url 'adminallusers' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+              </svg>Customer Profiles</a></li>      
+        </ul>
+    </li>  
+    {% endblock %}
+    {% block main_content %}
+    <style>
+    .profile-section{
+        margin: 20px;
+    }
+    .noorders{
+        display: none;
+        justify-content: center;
+        margin: 0 auto;
+        flex-direction: column;
+        align-items: center;
+    }
+    .noorders img{
+        width: 500px;
+    }
+    .noorders h3{
+        margin-bottom: 0px;
+    }
+    #orders .order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .order-card {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+        cursor: pointer;
+    }
+    .order-card:hover{
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .order-id {
+        font-weight: bold;
+        color: #3874ff;
+    }
+
+    .order-date {
+        font-size: 0.9rem;
+        color: #7e808c;
+    }
+
+    .order-items {
+        margin-bottom: 15px;
+    }
+
+    .order-item {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .item-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+    .item-image-container{
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+    .item-content{
+        display: flex;
+        flex-direction: column;
+        
+    }
+    .item-name {
+        font-weight: 500;
+    }
+
+    .item-quantity {
+        font-size: 0.9rem;
+        color: #7e808c;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    .order-status {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+    }
+
+    .order-status.pending {
+        color: #ffc107;
+    }
+
+    .order-status.confirmed {
+        color: #007bff; 
+    }
+
+    .order-status.delivered {
+        color: #28a745;
+    }
+    .order-status.cancelled {
+        color: #dc3545;
+    }
+    </style>
+        <div class="customerprofile">
+            <div class="profile-section" id="orders">
+                <h2>Order History</h2>
+                <div class="noorders">
+                    <div>
+                        <img src="{% static '/images/noorders.webp' %}" alt="Noorders">
+                    </div>
+                    <div style="text-align: center;">
+                        <h2 style="color: #535665;">No Orders</h2>
+                    </div>
+                </div>
+                <div class="order-list" id="order-list-container">
+                </div>
+            </div>
+        </div>
+        <script>
+            function populateOrders(email) {
+                fetch(`/admingetcustomerorders/${email}`,{
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const orderListContainer = document.getElementById('order-list-container');
+                    orderListContainer.innerHTML = '';
+
+                    if (data.orders.length === 0) {
+                        const noOrdersDiv = document.querySelector('.noorders');
+                        if (noOrdersDiv) {
+                            noOrdersDiv.style.display = 'block'; 
+                        }
+                    } else {
+                        const noOrdersDiv = document.querySelector('.noorders');
+                        if (noOrdersDiv) {
+                            noOrdersDiv.style.display = 'none';
+                        }
+                        data.orders.forEach(order => {
+                            const orderCard = document.createElement('div');
+                            orderCard.classList.add('order-card');
+
+                            let orderStatusClass = '';
+                            switch (order.status.toLowerCase()) {
+                                case 'pending':
+                                    orderStatusClass = 'pending';
+                                    break;
+                                case 'confirmed':
+                                    orderStatusClass = 'confirmed';
+                                    break;
+                                case 'prepared':
+                                    orderStatusClass = 'prepared';
+                                    break;
+                                case 'shipped':
+                                    orderStatusClass = 'shipped';
+                                    break;
+                                case 'delivered':
+                                    orderStatusClass = 'delivered';
+                                    break;
+                                case 'cancelled':
+                                    orderStatusClass = 'cancelled';
+                                    break;
+                                default:
+                                    orderStatusClass = 'pending';
+                            }
+
+                            let orderItemsHTML = '';
+                            order.items.forEach(item => {
+                                orderItemsHTML += `
+                                    <div class="order-item">
+                                        <div style="display:flex;gap:20px;">
+                                            <div class="item-image-container">
+                                            <img src="${item.item_image}" class="item-image" alt="${item.item_name}">   
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                                <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                            </svg> 
+                                            </div>
+                                            <div class="item-content">
+                                                <span class="item-name">${item.item_name}</span>
+                                                <span class="item-quantity">Quantity: ${item.quantity}</span>
+                                            </div>    
+                                        </div>
+                                        <span class="item-order-price">₹ ${item.price_at_order_time}</span>
+                                    </div>
+                                `;
+                            });
+
+                            orderCard.innerHTML = `
+                                <div class="order-header">
+                                    <span class="order-id">Order ID: ${order.order_id}</span>
+                                    <span class="order-date">${order.created_at}</span>
+                                </div>
+                                <div class="order-items">
+                                    ${orderItemsHTML}
+                                </div>
+                                <div class="order-total">
+                                    <span>Total: Rs. ${order.total_price}</span>
+                                    <span class="order-status ${orderStatusClass}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                            <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                        </svg>${order.status}</span>
+                                </div>
+                            `;
+                            orderCard.addEventListener('click', (event) => {
+                                event.preventDefault(); 
+                                window.location.href = `/adminorderhistory/?order_id=${order.order_id}`; 
+                            });
+
+                            orderListContainer.appendChild(orderCard);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching orders:', error);
+                });
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            email = urlParams.get('email');
+            if (email) {
+                populateOrders(email);
+                localStorage.setItem('email', email);
+            }
+        });
+        </script>
+    {% endblock %} 
+</body>
+</html>

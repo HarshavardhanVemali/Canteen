@@ -1,6 +1,8 @@
 from django.utils.text import slugify
 from allauth.socialaccount.signals import social_account_added
 from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.db.models import Q
 
 def create_unique_username(strategy, details, backend, user=None, *args, **kwargs):
     from .models import RegularUser  
@@ -46,3 +48,10 @@ def create_unique_username(strategy, details, backend, user=None, *args, **kwarg
 
             except Exception as e:
                 print(f"Error while saving user: {e}")
+
+@receiver(post_save, sender='canteenapp.Item') 
+def remove_unavailable_item_from_cart(sender, instance, **kwargs):
+    from .models import Cart 
+    
+    if not instance.is_available:
+        Cart.objects.filter(item=instance).delete()

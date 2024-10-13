@@ -1,0 +1,765 @@
+body {
+    font-family: "SF Pro Text", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+header {
+    width: 100%;
+    background-color: rgba(240, 240, 240, 0.8);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border-bottom: 1px solid #cbd0dd;
+}
+
+#college_logo img {
+    height: 55px;
+}
+
+#college_sub_title h5 {
+    margin: 0;
+    font-size: 1.43625rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    margin-bottom: 0; 
+    color: rgb(239, 79, 95);
+}
+
+#title_name {
+    font-size: 1.2rem; 
+    color: #555; 
+}
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    background-color: #e8ecf1;
+}
+header {
+    width: calc(100%-250px);
+    background-color: rgba(240, 240, 240, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
+    align-items: center;
+    padding: 15px ;
+    width: 100%; 
+    
+}
+
+#college_title {
+    display: flex;
+    align-items: center;
+}
+
+#college_logo img {
+    height: 50px;
+    margin-left: 10px;
+}
+#college_logo a {
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+}
+#college_sub_title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: #ea4335;
+}
+
+.theme-control-toggle {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.theme-control-toggle-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-control-toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.theme-control-toggle-light {
+    opacity: 1;
+    visibility: visible; 
+}
+
+.theme-control-toggle-dark {
+    opacity: 0;
+    visibility: hidden;
+}
+.theme-control-toggle-input:checked + .theme-control-toggle-light {
+    opacity: 0;
+    visibility: hidden; 
+}
+
+.theme-control-toggle-input:checked + .theme-control-toggle-light + .theme-control-toggle-dark {
+    opacity: 1;
+    visibility: visible;
+}
+.theme-control-toggle-light {
+    background-color: rgba(255, 204, 133, 0.24);
+    color: #e5780b;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.theme-control-toggle-light:hover {
+    background-color: #e5780b;
+    color: white;
+}
+
+.theme-control-toggle-dark {
+    background-color: rgba(133, 169, 255, 0.24);
+    color: #3874ff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.theme-control-toggle-dark:hover {
+    background-color: #3874ff;
+    color: white;
+}
+
+.main-container {
+    display: flex; 
+    height: 100vh;
+    width: 100%; 
+}
+
+
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 2px 0; 
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.sidebar a {
+    display: block; 
+    padding: 10px 20px;
+    text-decoration: none;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease; 
+    font-weight: 500 !important;
+    color:  #fff;
+    align-items: center;
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+}
+.mainnavbar{
+    height: calc(100vh - 60px);
+    overflow: auto;
+}
+.sidebar .logout-item {
+    position: fixed;
+    bottom: 10px; 
+    margin-left: 10px;
+    align-items: center;
+    transition: transform 0.3s ease-in-out;
+}
+.logout-item{
+    width: 230px;
+}
+.sidebar .logout-item :hover{
+    background-color: #ea4335;
+    color: white;
+}
+.content {
+    overflow-y: scroll;
+    flex: 1; 
+    transition: all 0.3s ease; 
+    scroll-behavior: smooth;
+}
+#sidebarToggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 1.5rem;
+  }
+  
+  #sidebarToggle .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: black; 
+    margin: 5px 0; 
+  }
+body.dark-mode {
+    background-color: #0f111a;
+    color: #fff;
+}
+body.dark-mode header{
+    border-bottom: 1px solid #31374a;
+}
+.dark-mode .sidebar {
+    background-color: #141824; 
+    border-right: 1px solid #31374a;
+}
+
+.dark-mode .sidebar a {
+    color: #9fa6bc;; 
+}
+
+ 
+.dark-mode .sidebar a:hover {
+    background-color: #31374a; 
+    color: #eff2f6;
+}
+.dark-mode .sidebar a.active{
+    color: #3874ff;
+}
+.dark-mode header {
+    background-color: #141824; 
+}
+
+.dark-mode #college_sub_title h1, 
+.dark-mode #title_name {
+    color: #fff; 
+}
+.dark-mode .tablelist{
+    background: #141824;
+    border: 1px solid #373e53;
+    border-left: none;
+    border-right: none;
+}
+.dark-mode .tables th{
+    color: #9fa6bc;
+    border-bottom: 1px solid #373e53;
+}
+.dark-mode .complaintstatusgraph{
+    background:#141824;
+    border: 1px solid #373e53;
+}
+.dark-mode .tables  tbody tr{
+    border-bottom: 1px solid #373e53;
+}
+.nav-item-wrapper {
+  margin-bottom: 10px; 
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: #333; 
+  text-decoration: none; 
+  border-radius: 5px; 
+  transition: background-color 0.3s, color 0.3s; 
+}
+
+.nav-link:hover {
+  background-color: #4d5766;
+  color: #f86254;
+}
+.nav-link-icon {
+  margin-right: 10px;
+  width: 1.2em; 
+  height: 1.2em; 
+}
+.sidebar {
+    width: 15.875rem;
+    border-right: 1px solid #cbd0dd;
+    margin: 0;
+    -webkit-transition: width .2s ease;
+    -o-transition: width .2s ease;
+    transition: width .2s ease;
+    background-color: #313a46;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+.nav-link {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px; 
+    transition: background-color 0.3s, color 0.3s; 
+    position: relative; 
+}
+
+.nav-link.active{
+    color: #f86254;
+}
+.has-submenu .dropdown-icon {
+    position: absolute;
+    right: 15px; 
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+.has-submenu.active .dropdown-icon {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+.submenu {
+    display: none; 
+    padding-left: 20px !important;
+    margin-top: 5px !important; 
+    margin-left: 10px !important;
+    max-height: 350px !important;
+}
+
+.submenu .nav-link {
+    padding: 8px 15px; 
+}
+main{
+    width: 100%;
+}
+.subnav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+
+body.dark-mode footer {
+    border-top: 1px solid #31374a;
+    background-color: #0f111a;
+    border-left: 1px solid #31374a;
+
+}
+body.dark-mode footer p{
+    color: rgb(159, 166, 188);
+}
+.footer {
+    bottom: 0;
+    width: calc(100% - 250px);
+    height: 3.5rem;
+    left: 4px;
+    border-top: 1px solid #cbd0dd;
+    border-left: 1px solid #cbd0dd;
+    margin-left: 250px;
+    font-size: 14px; 
+    align-items: center;
+    display: flex;
+    background-color: #f5f7fa;;
+    justify-content: space-between;
+}
+.footer p{
+    padding: 0 1.3rem 0 1.3rem;
+    font-weight: 100;
+    color: rgb(49, 55, 74);
+
+}
+.footer a{
+    color: #3874ff;
+    text-decoration: none;
+    font-weight: 100;
+}
+footer a:hover{
+    text-decoration: underline;
+}
+.position-absolute {
+    position: absolute !important;
+}
+
+
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.spinner img{
+    width: 30px;
+    height: 30px;
+}
+.menu-toggle{
+    display: none;
+}
+.message-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.message-overlay-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+}
+.message-overlay-content p{
+    margin-top: 20px;
+    margin-bottom: 3rem;
+    font-weight: 100;
+}
+.message-overlay-content button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+}
+  
+#confirmDelete,#confirmMessage {
+    background-color: rgb(239, 79, 95);
+    color: white;
+}
+#confirmDelete:hover,#confirmMessage:hover{
+    background-color: #e74c3c;
+}
+#cancelDelete {
+    background-color: transparent;
+    color: black;
+}
+.delete-divider {
+    margin: 10px 0;
+    height: 1px;
+}
+@media only screen and (max-width: 375px) {
+    .menu-toggle{
+        display: block;
+        font-size: 20px;
+        font-weight: 100;
+        width: 25px;
+    }
+    #college_sub_title{
+        display: none;
+    }
+    .header-container {
+        flex-direction: row; 
+        align-items: flex-start;
+         align-items: center;
+         padding: 10px;
+
+    }
+    #college_title{
+        gap: 5px;
+    }
+    #college_logo a img{
+        width: 60px;
+        height: 40px;
+    }
+    .sidebar {
+        width: 0;
+        height: auto;
+        position: relative;
+        border: none;
+    }
+    .sidebar.show {
+        width: 100%; 
+    }
+    .main-container {
+        margin-left: 0;
+    }
+    .subnav{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 5px;
+        margin-left: 10px;
+    }
+    .sidebar .logout-item :hover{
+        background-color: transparent;
+        color: #525b75;
+    }
+    .nav-link:hover {
+        background-color: transparent;
+      }
+      .dark-mode .sidebar a:hover {
+        background-color: transparent; 
+        color: #9fa6bc;
+    }
+    h3{
+        font-size: 15px;
+    }
+
+    .theme-control-toggle-light:hover {
+        background-color: rgba(255, 204, 133, 0.24);
+        color: #e5780b;
+    }
+
+    .theme-control-toggle-dark:hover {
+        background-color: rgba(133, 169, 255, 0.24);
+        color: #3874ff;
+    } 
+    
+    .footer {
+        width: 100%;
+        height: 1.5rem;
+        left: 0;
+        border-left: none;
+        margin-left: 0px;
+        font-size: 6px;
+        
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
+    
+    
+
+}
+@media only screen and (min-width: 376px) and (max-width: 480px) {
+    .menu-toggle {
+        display: block;
+        font-size: 22px; 
+        font-weight: 100;
+        width: 28px; 
+        cursor: pointer;
+    }
+
+    #college_sub_title {
+        display: none;
+    }
+
+    .header-container {
+        flex-direction: row;
+        align-items: center;
+        padding: 12px; 
+    }
+
+    #college_title {
+        gap: 8px; 
+    }
+
+    #college_logo a img {
+        width: 70px;
+        height: 45px; 
+    }
+
+    .sidebar {
+        width: 0;
+        height: auto;
+        position: relative;
+        border: none;
+    }
+    .sidebar.show {
+        width: 100%; 
+    }
+
+    .main-container {
+        margin-left: 0;
+        transition: margin-left 0.5s;
+    }
+
+    .sidebar .logout-item:hover {
+        background-color: transparent;
+        color: #525b75; 
+    }
+
+    .nav-link:hover {
+        background-color: transparent;
+    }
+
+    .dark-mode .sidebar a:hover {
+        background-color: transparent; 
+        color: #9fa6bc;
+    }
+
+    h3 {
+        font-size: 18px; 
+    }
+
+    .theme-control-toggle-light:hover {
+        background-color: rgba(255, 204, 133, 0.24);
+        color: #e5780b;
+    }
+
+    .theme-control-toggle-dark:hover {
+        background-color: rgba(133, 169, 255, 0.24);
+        color: #3874ff;
+    } 
+
+    .footer {
+        width: 100%; 
+        height: 2rem; 
+        left: 0; 
+        border-left: none;
+        margin-left: 0; 
+        font-size: 6px; 
+    }
+    .sidebar .logout-item :hover{
+        background-color: transparent;
+        color: #525b75;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
+    
+}
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+   .menu-toggle {
+        display: block;
+        font-size: 22px; 
+        font-weight: 100;
+        width: 28px; 
+        cursor: pointer;
+    }
+
+    #college_sub_title {
+        display: none;
+    }
+
+    .header-container {
+        flex-direction: row;
+        align-items: center;
+        padding: 12px; 
+    }
+
+    #college_title {
+        gap: 8px; 
+    }
+
+    #college_logo a img {
+        width: 70px;
+        height: 45px; 
+    }
+
+    .sidebar {
+        width: 0;
+        height: auto;
+        position: relative;
+        border: none;
+    }
+    .sidebar.show {
+        width: 100%; 
+    }
+
+    .main-container {
+        margin-left: 0;
+        transition: margin-left 0.5s;
+    }
+
+    .sidebar .logout-item:hover {
+        background-color: transparent;
+        color: #525b75; 
+    }
+
+    .nav-link:hover {
+        background-color: transparent;
+    }
+
+    .dark-mode .sidebar a:hover {
+        background-color: transparent; 
+        color: #9fa6bc;
+    }
+
+    h3 {
+        font-size: 18px; 
+    }
+
+    .theme-control-toggle-light:hover {
+        background-color: rgba(255, 204, 133, 0.24);
+        color: #e5780b;
+    }
+
+    .theme-control-toggle-dark:hover {
+        background-color: rgba(133, 169, 255, 0.24);
+        color: #3874ff;
+    } 
+
+    .footer {
+        width: 100%; 
+        height: 2rem; 
+        left: 0; 
+        border-left: none;
+        margin-left: 0; 
+        font-size: 9px; 
+    }
+    .sidebar .logout-item :hover{
+        background-color: transparent;
+        color: #525b75;
+    }
+    a:focus {
+        outline: none;
+    }
+    
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
+    
+}
+@media only screen and (min-width: 769px) and (max-width: 979px) {
+
+}
+@media only screen and (min-width: 980px) and (max-width: 1024px){
+
+}
+@media only screen and (min-width: 1025px) and (max-width: 1399px){
+    
+}
+
