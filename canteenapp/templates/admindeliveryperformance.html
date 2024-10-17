@@ -275,7 +275,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Destroy any existing charts on the canvas
                         if (deliveryPerformanceChartLast7Days) {
                             deliveryPerformanceChartLast7Days.destroy(); 
                         }

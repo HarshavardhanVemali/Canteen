@@ -32,6 +32,8 @@ from django.db.models import Sum, Count
 from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from django.utils import timezone
 from django.utils.timezone import timedelta
+from django.db.models import F, Case, When
+from django.contrib.auth.decorators import login_required
 
 def admin_required(view_func):
     return user_passes_test(
@@ -42,7 +44,7 @@ def admin_required(view_func):
 def deliveryperson_required(view_func):
     return user_passes_test(
         lambda u: u.has_perm('canteenapp.is_deliveryperson') and not u.is_superuser,
-        login_url='/deliverypersonlogin/'
+        login_url='/deliverylogin/'
     )(view_func)
 
 def user_required(view_func):
@@ -404,14 +406,14 @@ def adminaddpersonnel(request):
         number = request.POST.get('personnelphonenumber')
         email = request.POST.get('personnelemail')
         photo = request.FILES.get('personnelimage')
-        hashed_password = make_password(number)
+        hashed_password = make_password(email)
         if not all([name, number, email]):
             return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
 
         if DeliveryPerson.objects.filter(phone_number=number).exists():
             return JsonResponse({'success': False, 'error': 'Delivery Personnel with this phone number already exists.'}, status=400)
         delivery_personnel = DeliveryPerson.objects.create_user(
-            username=name,
+            username=email,
             first_name=name,
             email=email,
             phone_number=number,
@@ -420,6 +422,12 @@ def adminaddpersonnel(request):
             password= hashed_password,
             date_joined=timezone.localtime()
         )
+        delivery_personnel_permission, created = Permission.objects.get_or_create(
+            codename='is_deliveryperson',
+            name='Can access delivery-specific features',
+            content_type=ContentType.objects.get_for_model(DeliveryPerson)
+        )
+        delivery_personnel.user_permissions.add(delivery_personnel_permission)
         if delivery_personnel:
             return JsonResponse({'success': True})
         else:
@@ -1258,6 +1266,9 @@ def admingetallorder(request):
                 'phone_number': order.user.phone_number,
                 'delivery_address':order.delivery_address,
                 'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                'delivered_at': timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S') if order.delivered_at else None,
+                'cancelled_at': timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                'cancel_reason':order.cancel_reason,
                 'customer': order.user.first_name + ' ' + order.user.last_name,
                 'total_price': str(order.total_price), 
                 'total_item_price': str(item_total_price),  
@@ -1396,6 +1407,7 @@ def admingetcancelledorders(request):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'cancel_reason':order.cancel_reason,
                 'customer_status': order.customer_status.capitalize(),
                 'payment_method': order.payment.get_payment_method_display(),
                 'payment_amount': str(order.payment.amount),
@@ -1800,6 +1812,43 @@ def admingetorderdetails(request,order_id):
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+@admin_required
+def adminsalesreports(request):
+    return render(request,'adminsalesreports.html')
+
+@require_http_methods(['GET'])
+@admin_required
+@csrf_protect
+def top_ordered_customers(request):
+    top_customers = (CustomUser.objects.annotate(
+        total_orders=Count('order', distinct=True),
+        cancelled_orders=Count(
+            Case(When(order__status='cancelled', then=1)),
+            distinct=True
+        ),
+        delivered_orders=Count(
+            Case(When(order__status='delivered', then=1)),
+            distinct=True
+        ),
+        revenue_generated=Sum(F('order__total_price'))
+    ).filter(total_orders__gt=0)
+    .order_by('-total_orders')[:10]
+    )
+
+    customer_data = [
+        {
+            'email': customer.email,
+            'name': f"{customer.first_name} {customer.last_name}",
+            'total_orders': customer.total_orders,
+            'cancelled_orders': customer.cancelled_orders,
+            'delivered_orders': customer.delivered_orders,
+            'revenue_generated': customer.revenue_generated,
+        } for customer in top_customers
+    ]
+
+    return JsonResponse({'success': True, 'data': customer_data})
+
+
 #users
 
 def verify_email_smtp(email):
@@ -1944,6 +1993,12 @@ def signupverifymail(request):
                         role='user'
                     )
                     user.save()
+                    user_permission, created = Permission.objects.get_or_create(
+                    codename='is_user',
+                    name='Can access user-specific features',
+                    content_type=ContentType.objects.get_for_model(RegularUser)
+                    )
+                    user.user_permissions.add(user_permission)
                     user.backend = 'django.contrib.auth.backends.ModelBackend'
                     login(request, user)
                     return JsonResponse({'success': True})
@@ -2506,3 +2561,189 @@ def getlocations(request):
 def user_logout_view(request):
     logout(request)
     return redirect('index')
+
+#delivery
+def deliverylogin(request):
+    if request.method == 'POST':
+        email = request.POST.get('email') 
+        password = request.POST.get('password')
+        print(email,password)
+        try:
+            user = CustomUser.objects.get(email=email)
+            if user is not None:
+                if user.has_perm('canteenapp.is_deliveryperson'):
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                    return redirect('deliverydashboard')
+                else:
+                    return render(request, 'deliverylogin.html', {'error_message': 'Invalid user role.'})
+            else:
+                return render(request, 'deliverylogin.html', {'error_message': 'Invalid user role.'})
+        except CustomUser.DoesNotExist:
+            return render(request, 'deliverylogin.html', {'error_message': 'User does not exist.'})
+
+    return render(request, 'deliverylogin.html')
+
+@deliveryperson_required
+def deliverytemplate(request):
+    return render(request,'deliverytemplate.html')
+
+@deliveryperson_required
+def deliveryneworders(request):
+    return render(request,'deliveryneworders.html')
+
+@deliveryperson_required
+def deliverydashboard(request):
+    return render(request,'deliverydashboard.html')
+
+@deliveryperson_required
+def deliverygetneworders(request):
+    if request.method == 'GET':
+        user = request.user
+        orders = Order.objects.filter(status='prepared',delivery_person=user,delivery_type='delivery').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0 
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price  
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price),  
+                'total_item_price': str(item_total_price), 
+                'total_additional_charges': str(total_additional_charges), 
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display(),
+                'payment_amount': str(order.payment.amount),
+                'transaction_id': order.payment.transaction_id,
+                'payment_status': order.payment.get_status_display(),
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'),
+                'items': order_items, 
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@deliveryperson_required
+@require_POST
+@csrf_protect
+def deliveryupdatetoshipped(request):
+    if request.method == 'POST':
+        data=json.loads(request.body)
+        order_id = data.get('order_id')
+        if order_id:
+            try:
+                order = Order.objects.get(order_id=order_id,delivery_type='delivery')
+                if order.status == 'prepared':
+                    order.status = 'shipped' 
+                    order.save()
+                    return JsonResponse({'success': True})
+                else:
+                    return JsonResponse({'success': False, 'error': 'Order is not in prepared state.'}) 
+            except Order.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Order not found.'})
+        else:
+            return JsonResponse({'success': False, 'error': 'Order ID is missing.'}) 
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@deliveryperson_required
+def deliveryupdatestatus(request):
+    return render(request,'deliveryupdatestatus.html')
+
+@deliveryperson_required
+@require_http_methods(['GET'])
+@csrf_protect
+def get_delivery_performance_chart_data(request):
+    user = request.user
+    if user:
+        try:
+            personnel = DeliveryPerson.objects.get(email=user.email)
+            today = timezone.now().date()
+
+            last_7_days_data = []
+            for i in range(7):
+                date = today - timedelta(days=i)
+                delivered_orders = Order.objects.filter(
+                    delivery_person=personnel,
+                    created_at__date=date,
+                    status='delivered'
+                ).count()
+                last_7_days_data.append({'date': date.strftime('%Y-%m-%d'), 'count': delivered_orders})
+
+            last_5_weeks_data = []
+            for i in range(5):
+                start_date = today - timedelta(weeks=i+1)
+                end_date = today - timedelta(weeks=i)
+                delivered_orders = Order.objects.filter(
+                    delivery_person=personnel,
+                    created_at__date__gte=start_date,
+                    created_at__date__lte=end_date,
+                    status='delivered'
+                ).count()
+                last_5_weeks_data.append({'week': start_date.strftime('%Y-%m-%d'), 'count': delivered_orders})
+
+            last_12_months_data = []
+            for i in range(12):
+                year = today.year - i
+                if i == 0:
+                    month = today.month
+                else:
+                    month = 12
+                start_date = timezone.datetime(year, month, 1)
+                end_date = timezone.datetime(year, month, 1) + timedelta(days=31)
+                delivered_orders = Order.objects.filter(
+                    delivery_person=personnel,
+                    created_at__date__gte=start_date,
+                    created_at__date__lte=end_date,
+                    status='delivered'
+                ).count()
+                last_12_months_data.append({'month': start_date.strftime('%Y-%m'), 'count': delivered_orders})
+
+            context = {
+                'last_7_days_data': list(reversed(last_7_days_data)),
+                'last_5_weeks_data': list(reversed(last_5_weeks_data)),
+                'last_12_months_data': list(reversed(last_12_months_data))
+            }
+
+            return JsonResponse({'success': True, 'context': context})
+
+        except DeliveryPerson.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Delivery Personnel not found.'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'success':False,'error':'Required missing fields.'})

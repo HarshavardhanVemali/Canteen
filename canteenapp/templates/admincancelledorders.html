@@ -6,6 +6,7 @@
   {% block link_section %}
   <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
   <link rel="stylesheet" href="{% static '/css/adminorderstyles.css' %}">
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
   {% endblock %}
   
 </head>
@@ -104,109 +105,7 @@
                   
                 </svg></button>
                 <div class="order-content">
-                    <div class="order-content-left">
-                        <div class="ordered-items">
-                            <h3 id="order-id">Order</h3>
-                            <table id="items-table" class="tables">
-                              <thead>
-                                <tr>
-                                  <th></th>
-                                  <th>Item</th>
-                                  <th>Quantity</th>
-                                  <th>Type</th>
-                                  <th>Availability</th>
-                                  <th>Price</th>   
-                                </tr>
-                              </thead>
-                              <tbody>
-                              </tbody>
-                            </table>
-                        </div>
-                        <div style="margin-top:20px ;">
-                            <h3>Order Status</h3>
-                            <div class="order-status-timeline">
-                               
-                            </div>
-                        </div> 
-                        <div class="price-container">
-                            <h3>Price Summary</h3>
-                            <div class="price-content-container">
-                                <div class="price-item">
-                                    <div class="label" id="total-items-price-label">Item Total</div>
-                                    <div class="price" id="total-items-price"></div>
-                                </div>
-                                <div id="additional-costs">
-                                   
-                                </div>
-                                <div class="price-item">
-                                    <div class="label">Total</div>
-                                    <div class="price" id="total-cost"></div>
-                                </div>
-                            </div>
-                        </div>                       
-                    </div>
-                    <div class="order-content-right" style="display: flex;flex-direction: column;gap: 20px;">
-                        <div class="order-info">
-                            
-                            <div class="customer-details">
-                                <h3>Customer Details</h3>
-                                <div class="row">
-                                    <label for="customer-name">Name:</label>
-                                    <p id="customer-name"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="customer-email">Email:</label>
-                                    <p id="customer-email"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="customer-phonenumber">Mobile Number:</label>
-                                    <p id="customer-phonenumber"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="delivery-type">Delivery Type:</label> 
-                                    <p id="delivery-type"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="order-date">Order Date:</label>
-                                    <p id="order-date"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="cancelled-date">Cancelled Date:</label>
-                                    <p id="cancelled-date"></p>
-                                </div>   
-                            </div>
-                            <div class="order-summary">
-                                <h3>Summary</h3> 
-                                <div class="row">
-                                    <label for="Total Amount">Total Amount:</label>
-                                    <p id="total-amount"></p>
-                                </div>
-                                <div class="row">
-                                    <label for="payment-status">Payment Status:</label>
-                                    <p id="payment-status"></p>
-                                </div>
-                            </div>
-                          </div>
-                          <div class="payment-details">
-                            <h3>Payment Details</h3>
-                            <div class="row">
-                                <label for="payment-method">Payment Method:</label>
-                                <p id="payment-method"></p>
-                            </div>
-                            <div class="row">
-                                <label for="transaction-id">Transaction ID:</label>
-                                <p id="transaction-id"></p>
-                            </div>
-                            <div class="row">
-                                <label for="payment-amount">Payment Amount:</label>
-                                <p id="payment-amount"></p>
-                            </div>
-                            <div class="row">
-                                <label for="payment-date">Payment Date:</label>
-                                <p id="payment-date"></p>
-                            </div>
-                          </div>
-                    </div>
+                    
                 </div>
               </div>
             </div>
@@ -352,8 +251,11 @@
             function viewOrder(orderId) {
                 const order = ordersData.find(o => o.order_id === orderId);
                 if (order) {
-                    let statusChoices = [];
+                    const orderDetailsContainer = document.querySelector('.order-content');
+
+                    let orderItemsHTML = '';
                     let orderStatusTimelineHTML = '';
+                    let statusChoices = [];
                     if (order.delivery_type === 'Delivery') {
                         statusChoices = [
                         { status: 'Pending', label: 'Ordered' },
@@ -378,6 +280,49 @@
                         { status: 'Served to Customer', label: 'Served' }
                         ];
                     }
+                    order.items.forEach(item => {
+                        orderItemsHTML += `
+                            <div class="order-details-item">
+                                
+                                <div class="item-image-container">
+                                    <img src="${item.item_image}" class="item-image" alt="${item.item_name}">  
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                        <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                    </svg>  
+                                </div>
+                                <div class="item-details"> 
+                                    <span class="order-details-item-name">${item.item_name}</span>
+                                    <span class="order-details-item-description">${item.description}</span>
+                                    <span class="order-details-item-quantity">Quantity: ${item.quantity}</span>
+                                    
+                                </div>
+                                <span class="order-details-item-price">₹${item.price_at_order_time}</span>
+                            </div>
+                        `;
+                    });
+
+                    let additionalChargesHTML = '';
+                    if (order.additional_charges && order.additional_charges.length > 0) {
+                        order.additional_charges.forEach(charge => {
+                            const formattedChargeType = charge.charge_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                            additionalChargesHTML += `
+                            <div class="price-summary-item">
+                                <span class="price-summary-label">${formattedChargeType} (${charge.value_type === 'fixed' ? 'Fixed' : `${charge.value}%`}):</span>
+                                <span class="price-summary-value">₹${charge.calculated_value}</span>
+                            </div>
+                            `;
+                        });
+                    }else {
+                        additionalChargesHTML = `
+                            <div class="price-summary-item">
+                                <span class="price-summary-label">Additional Charges:</span>
+                                <span class="price-summary-value">None</span>
+                            </div>
+                        `;
+                    }
+
                     orderStatusTimelineHTML = `
                         <div class="order-status-timeline">
                     `;
@@ -400,75 +345,152 @@
                     orderStatusTimelineHTML += `
                         </div>
                     `;
-                    document.querySelector('.order-status-timeline').innerHTML = orderStatusTimelineHTML; 
-                    document.getElementById('order-id').textContent = `Order: ${order.order_id}`;
-                    document.getElementById('customer-name').textContent = `${order.customer}`;
-                    document.getElementById('customer-email').textContent = `${order.email}`;
-                    document.getElementById('customer-phonenumber').textContent=`${order.phone_number}`;
-                    document.getElementById('total-amount').textContent = `Rs. ${order.total_price}`;
-                    document.getElementById('payment-status').textContent = `${order.payment_status}`;
-                    document.getElementById('delivery-type').textContent = `${order.delivery_type}`;
-                    document.getElementById('order-date').textContent = `${order.created_at}`;
-                    document.getElementById('cancelled-date').textContent=`${order.cancelled_at}`;
-                    document.getElementById('payment-method').textContent = `${order.payment_method}`;
-                    document.getElementById('transaction-id').textContent = `${order.transaction_id}`;
-                    document.getElementById('payment-amount').textContent = `${order.payment_amount}`;
-                    document.getElementById('payment-date').textContent = `${order.payment_date}`;
 
-                    const itemsTable = document.getElementById('items-table').getElementsByTagName('tbody')[0];
-                    itemsTable.innerHTML = ''; 
-                    order.items.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>
-                                <img src="${item.item_image}" class="item-image" alt="${item.item_name}">
-                            </td>
-                            <td style="color:#3874ff;">${item.item_name}</td>
-                            <td>${item.quantity}</td>
-                            <td style="color: ${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'};">${item.type}</td>
-                            <td style="color:${item.is_available ? 'green' : 'red'}">${item.is_available ? 'Available' : 'Unavailable'}</td>
-                            <td style="color:#31374a;font-weight:600;">Rs. ${item.price_at_order_time}</td>
-                            
+                    let refundSectionHTML = '';
+                    if (order.status === 'Cancelled') {
+                        refundSectionHTML = `
+                            <div class="refund-section">
+                                <p><span class="refund-status">Refund Completed</span> - ${order.cancel_reason ? order.cancel_reason : 'No reason provided'}</p>
+                            </div>
                         `;
-                        itemsTable.appendChild(row);
-                    });
-                    const row=document.createElement('tr');
-                    row.innerHTML=`
-                        <td colspan="5">Item Total</td>
-                        <td style="color:#31374a;font-weight:600;">Rs. ${order.total_item_price}</td>
-                    `
-                    itemsTable.appendChild(row);
-                    const itemTotalPrice = parseFloat(order.total_item_price);
-                    document.getElementById('total-items-price').textContent = `Rs. ${itemTotalPrice.toFixed(2)}`;
+                    }
+                    const qrCodeText = `Order ID: ${order.order_id}\nDate Ordered: ${order.created_at}\nPhone Number: ${order.phone_number}`; 
+                    orderDetailsContainer.innerHTML = `
+                        <div class="order-info-section">
+                            <div class="order-details-header">
+                                <h3>Order Details</h3>
 
-                    const additionalCharges = order.additional_charges || [];
-                    const additionalCostsContainer = document.getElementById('additional-costs');
+                                <div class="order-details-summary-item">
+                                    <h4 class="orer-details-orderid" style="color:#3874ff;">${order.order_id}</h4>
+                                    <span class="order-details-date">${order.created_at}</span>
+                                </div>
+                                <span class="order-details-name" style="color:#333;font-weight:520;">${order.customer}</span>
+                                <span class="order-details-number" style="color:#333;font-weight:520;">This Order is tracking by: ${order.phone_number}</span>
+                                <span class="order-details-email" style="color:#333;font-weight:520;">${order.email}</span>
+                                <div class="order-details-summary-item">
+                                    <span class="order-details-summary-label">Status:</span>
+                                    <span class="order-details-status">${order.status}</span>
+                                </div>
+                                <div class="order-details-summary-item">
+                                    <span class="order-details-summary-label">Delivery Type:</span>
+                                    <span class="order-details-delivery-type">${order.delivery_type}</span>
+                                </div>
+                                <div class="order-details-summary-item">
+                                    <span class="order-details-summary-label">Customer Status:</span>
+                                    <span class="order-details-summary-value">${order.customer_status}</span>
+                                </div>
+                                ${
+                                    (order.status === 'Delivered' && order.delivery_type === 'Delivery') ?
+                                    `
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Delivery Place:</span>
+                                            <span class="order-details-summary-value">${order.delivery_address}</span>
+                                        </div>
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Delivered By:</span>
+                                            <span class="order-details-summary-value">${order.delivery_person}</span>
+                                        </div>
+                                    ` : ''
+                                }
+                                ${
+                                    (order.status == 'Cancelled') ?
+                                    `
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Cancelled At:</span>
+                                            <span class="order-details-summary-value">${order.cancelled_at}</span>
+                                        </div>
+                                         <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Cancel Reason:</span>
+                                            <span class="order-details-summary-value">${order.cancel_reason}</span>
+                                        </div>
+                                    ` : ''
+                                }
+                                ${
+                                    (order.status !== 'Delivered' && order.status !== 'shipped' && order.delivery_type === 'Delivery') ?
+                                    `
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Delivery Place:</span>
+                                            <span class="order-details-summary-value">${order.delivery_address}</span>
+                                        </div>
+                                    ` : ''
+                                }
+                                ${
+                                    (order.status === 'shipped' && order.delivery_type === 'Delivery') ?
+                                    `
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Delivery Place:</span>
+                                            <span class="order-details-summary-value">${order.delivery_address}</span>
+                                        </div>
+                                        <div class="order-details-summary-item">
+                                            <span class="order-details-summary-label">Assigned to:</span>
+                                            <span class="order-details-summary-value">${order.delivery_person}</span>
+                                        </div>
+                                    ` : ''
+                                }
 
+                                <div id="qrcode"></div>     
+                            </div>  
+                        </div>
 
-                    additionalCostsContainer.innerHTML = ''; 
+                        <div class="order-items-section">
+                            <h3>Ordered Items</h3>
+                            ${orderItemsHTML}
+                            ${orderStatusTimelineHTML}
+                        </div>
 
-                    let totalAdditionalCost = 0;
-                    additionalCharges.forEach(charge => {
-                        let chargeAmount = parseFloat(charge.calculated_value); 
-                        totalAdditionalCost += chargeAmount; 
-
-                        const chargeDiv = document.createElement('div');
-                        chargeDiv.className = 'price-item'; 
-                        const formattedChargeType = charge.charge_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                        chargeDiv.innerHTML = `
-                            <div class="label">${formattedChargeType} (${charge.value_type === 'fixed' ? 'Fixed' : `${charge.value}%`}):</div>
-                            <div class="price">Rs. ${chargeAmount.toFixed(2)}</div>
-                        `;
-                        additionalCostsContainer.appendChild(chargeDiv);
-                    });
-
-                    const totalCost = itemTotalPrice + totalAdditionalCost;
-
-                    document.getElementById('total-cost').textContent = `Rs. ${totalCost.toFixed(2)}`;
+                        <div class="price-summary-container order-summary-section">
+                            <h3>Order Payment Details</h3>
+                            <div class="price-summary-item">
+                                <span class="price-summary-label">Item Total:</span>
+                                <span class="price-summary-value">₹${order.total_item_price}</span>
+                            </div>
+                            ${additionalChargesHTML}
+                            <hr>
+                            <div class="price-summary-item">
+                                <span class="price-summary-label">Total:</span>
+                                <span class="price-summary-value total-price">₹${order.total_price}</span>
+                            </div>
+                        </div>
+                        <div class="payment-details-section">
+                            <h3>Payment Mode</h3>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Payment Method:</span>
+                                <span class="order-details-summary-value">${order.payment_method}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Transaction ID:</span>
+                                <span class="order-details-summary-value">${order.transaction_id}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Payment Amount:</span>
+                                <span class="order-details-summary-value">₹${order.payment_amount}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Payment Status:</span>
+                                <span class="order-details-summary-value">${order.payment_status}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Payment Date:</span>
+                                <span class="order-details-summary-value">${order.payment_date}</span>
+                            </div>
+                        </div>
+                        ${refundSectionHTML} 
+                    `;
+                    generateQRCode(qrCodeText); 
                     document.getElementById('allordersoverlay').style.display = 'flex';
                 } else {
                     console.error('Order not found in data:', orderId);
                 }
+            }
+            function generateQRCode(text) {
+                new QRCode(document.getElementById("qrcode"), {
+                    text: text,
+                    width: 150,  
+                    height: 150, 
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
             }
             
 

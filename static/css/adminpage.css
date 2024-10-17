@@ -1,3 +1,14 @@
+::-webkit-scrollbar {
+    display: none; 
+  }
+  
+  * {
+    scrollbar-width: none; 
+  }
+  
+  ::-ms-overflow-style {
+    display: none;
+  }
 body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -484,9 +495,6 @@ footer a:hover{
         font-weight: 100;
         width: 25px;
     }
-    #college_sub_title{
-        display: none;
-    }
     .header-container {
         flex-direction: row; 
         align-items: flex-start;
@@ -573,10 +581,6 @@ footer a:hover{
         font-weight: 100;
         width: 28px; 
         cursor: pointer;
-    }
-
-    #college_sub_title {
-        display: none;
     }
 
     .header-container {
@@ -668,9 +672,6 @@ footer a:hover{
         cursor: pointer;
     }
 
-    #college_sub_title {
-        display: none;
-    }
 
     .header-container {
         flex-direction: row;

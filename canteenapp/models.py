@@ -255,7 +255,7 @@ class Order(models.Model):
     status = models.CharField(max_length=50, default='pending')
     customer_status = models.CharField(max_length=20, default='pending')
     delivery_type = models.CharField(max_length=20, choices=DELIVERY_CHOICES, default='pickup')  
-    delivery_person = models.ForeignKey(DeliveryPerson, blank=True,null=True,on_delete=models.CASCADE, related_name='orders_as_delivery_person')
+    delivery_person = models.ForeignKey(DeliveryPerson, blank=True,null=True, on_delete=models.SET_NULL,related_name='orders_as_delivery_person')
     cancel_reason = models.TextField(blank=True)
     delivery_address = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -335,7 +335,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+    item = models.ForeignKey('Item', on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
     price_at_purchase = models.DecimalField(max_digits=8, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
