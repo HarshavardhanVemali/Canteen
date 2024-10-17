@@ -14,7 +14,6 @@
 
 <body>
     {% block orders_block %}
-    <!-- Orders Navigation Block -->
     <li class="nav-item has-submenu">
         <a href="#" class="nav-link active">
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
@@ -28,7 +27,7 @@
         <ul class="submenu">
             <li class="nav-item"><a class="nav-link" href="{% url 'deliveryneworders' %}">New Orders</a></li>
             <li class="nav-item"><a class="nav-link active" href="{% url 'deliveryupdatestatus' %}">Update Status</a></li>
-            <li class="nav-item"><a class="nav-link" href="">Delivered</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'deliverydelivered' %}">Delivered</a></li>
         </ul>
     </li>
     {% endblock %}

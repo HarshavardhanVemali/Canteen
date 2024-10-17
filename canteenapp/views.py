@@ -2643,11 +2643,8 @@ def deliverygetneworders(request):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
                 'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
                 'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'),
                 'items': order_items, 
                 'additional_charges': additional_charges_data  
             })
@@ -2747,3 +2744,68 @@ def get_delivery_performance_chart_data(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:
         return JsonResponse({'success':False,'error':'Required missing fields.'})
+    
+@deliveryperson_required
+def deliverydelivered(request):
+    return render(request,'deliverydelivered.html')
+
+@require_http_methods(['GET'])
+@deliveryperson_required
+@csrf_protect
+def deliverydeliveredorders(request):
+    if request.method == 'GET':
+        user = request.user
+        orders = Order.objects.filter(status='delivered',delivery_person=user).select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0  
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price 
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price), 
+                'total_item_price': str(item_total_price),  
+                'total_additional_charges': str(total_additional_charges),  
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'delivered_at':timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'customer_status': order.customer_status.capitalize(),
+                'payment_amount': str(order.payment.amount),
+                'payment_status': order.payment.get_status_display(),
+                
+                'items': order_items,
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
