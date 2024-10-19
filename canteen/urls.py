@@ -78,6 +78,8 @@ urlpatterns = [
     path('admingetcustomerorders/<str:email>/',views.admingetcustomerorders,name='admingetcustomerorders'),
     path('admingetorderdetails/<str:order_id>/',views.getorderdetails,name='getorderdetails'),
     path('adminorderhistory/',views.adminorderhistory,name='adminorderhistory'),
+    path('adminsalesreports/',views.adminsalesreports,name='adminsalesreports'),
+    path('admin_top_ordered_customers/',views.top_ordered_customers,name='admin_top_ordered_customers'),
 
     path('getmenu/',views.getmenu,name='getmenu'),
     path('getallitems/',views.getallitems,name='getallitems'),
@@ -99,4 +101,15 @@ urlpatterns = [
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('accounts/', include('allauth.urls')),
+
+    path('deliverylogin/',views.deliverylogin,name='deliverylogin'),
+    path('deliverydashboard/',views.deliverydashboard,name='deliverydashboard'),
+    path('deliveryneworders/',views.deliveryneworders,name='deliveryneworders'),
+    path('deliverygetneworders/',views.deliverygetneworders,name='deliverygetneworders'),
+    path('deliveryupdatetoshipped/',views.deliveryupdatetoshipped,name='deliveryupdatetoshipped'),
+    path('deliveryupdatestatus/',views.deliveryupdatestatus,name='deliveryupdatestatus'),
+    path('deliverydelivered/',views.deliverydelivered,name='deliverydelivered'),
+    path('deliverydeliveredorders/',views.deliverydeliveredorders,name='deliverydeliveredorders'),
+    path('get_delivery_performance_chart_data/',views.get_delivery_performance_chart_data,name='get_delivery_performance_chart_data'),
+    path('deliverytemplate/',views.deliverytemplate,name='deliverytemplate'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

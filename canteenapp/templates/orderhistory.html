@@ -468,7 +468,8 @@
                     </div>
                 `;
             }
-            const qrCodeText = `Order ID: ${order.order_id}\nDate Ordered: ${order.created_at}\nPhone Number: ${order.phone_number}`; 
+            const code=generateCodeFromOrderId(order.order_id);
+            const qrCodeText = `Code: ${code}\nDate Ordered: ${order.created_at}\nPhone Number: ${order.phone_number}`; 
             orderDetailsContainer.innerHTML = `
                 <div class="order-info-section">
                     <div class="order-details-header">
@@ -542,6 +543,23 @@
                 ${refundSectionHTML} 
             `;
             generateQRCode(qrCodeText); 
+        }
+        function generateCodeFromOrderId(orderId) {
+        const partLength = orderId.length / 5;
+        const parts = [];
+        for (let i = 0; i < 5; i++) {
+            parts.push(orderId.substring(i * partLength, (i + 1) * partLength));
+        }
+        [parts[0], parts[2]] = [parts[2], parts[0]];
+        [parts[1], parts[4]] = [parts[4], parts[1]];
+        const swappedOrderId = parts.join('');
+        const newPartLength = swappedOrderId.length / 4;
+        const newParts = [];
+        for (let i = 0; i < 4; i++) {
+            newParts.push(swappedOrderId.substring(i * newPartLength, (i + 1) * newPartLength));
+        }
+        [newParts[0], newParts[2]] = [newParts[2], newParts[0]];
+        return newParts.join('');
         }
         function generateQRCode(text) {
             new QRCode(document.getElementById("qrcode"), {

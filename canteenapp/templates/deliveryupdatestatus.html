@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+{% extends 'deliverytemplate.html' %}
+{% load static %}
+<head>
+    <title>{% block title %}Delivery Dashboard{% endblock %}</title>
+    {% block link_section %}
+    <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+    <link rel="stylesheet" href="{% static '/css/adminorderstyles.css' %}">
+    <link rel="stylesheet" href="{% static '/css/deliverydashboard.css' %}">
+    <link rel="stylesheet" href="{% static '/css/qrscanner.css' %}"> <!-- New CSS for the scanner -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
+    {% endblock %}
+</head>
+
+<body>
+    {% block orders_block %}
+    <li class="nav-item has-submenu">
+        <a href="#" class="nav-link active">
+            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
+                <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
+            </svg>
+            <span class="nav-link-text">Orders</span>
+        </a>
+        <ul class="submenu">
+            <li class="nav-item"><a class="nav-link" href="{% url 'deliveryneworders' %}">New Orders</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'deliveryupdatestatus' %}">Update Status</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'deliverydelivered' %}">Delivered</a></li>
+        </ul>
+    </li>
+    {% endblock %}
+
+    {% block main_content %}
+    <div class="scanner-main">
+        <div id="scan-status" class="scan-status" hidden></div>
+        <div class="container">
+            <h3 class="scanner-title"></h3>
+            <div class="scanner-container">
+                <video id="qr-video" autoplay muted></video>
+                <div class="scanner-line"></div>
+                <div class="qr-overlay">
+                    <div class="processing" style="display: none;">Processing...</div>
+                    <div class="result" style="display: none;">
+                        <div id="qr-data"></div>
+                        <button id="ok-button">OK</button>
+                    </div>
+                </div>
+            </div>
+            <canvas id="qr-canvas" style="display:none;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('qr-video');
+        const canvas = document.getElementById('qr-canvas');
+        const context = canvas.getContext('2d');
+        const scanStatusDiv = document.getElementById('scan-status');
+        const qrOverlay = document.querySelector('.qr-overlay');
+        const processingDiv = document.querySelector('.qr-overlay .processing');
+        const resultDiv = document.querySelector('.qr-overlay .result'); 
+        const qrDataDiv = document.getElementById('qr-data');
+        const okButton = document.getElementById('ok-button');
+        let stream = null;
+        const scanInterval = 100;
+        const scanTimeout = 5000;
+        let scanningTimeout;
+        let scanning = true;
+
+        function initializeCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(localStream => {
+                    stream = localStream;
+                    video.srcObject = stream;
+                    video.setAttribute('playsinline', true);
+                    video.play();
+                    scanQRCode(); 
+                })
+                .catch(err => {
+                    scanStatusDiv.innerHTML = 'Error accessing camera: ' + err.message;
+                });
+        }
+
+        function scanQRCode() {
+            if (!scanning) return;
+
+            clearTimeout(scanningTimeout);
+
+            scanningTimeout = setTimeout(() => {
+                scanStatusDiv.innerHTML = 'No QR code detected. Please try again.';
+            }, scanTimeout);
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    clearTimeout(scanningTimeout);
+                    scanning = false;
+                    qrOverlay.style.display = 'block'; 
+                    processingDiv.style.display = 'block'; 
+                    resultDiv.style.display = 'none';    
+
+                    sendDataToDjango(code.data);
+                }
+            } 
+            if (scanning) { 
+                setTimeout(scanQRCode, scanInterval); 
+            }
+        }
+
+        okButton.addEventListener('click', () => {
+            qrOverlay.style.display = 'none'; 
+            scanning = true; 
+            scanQRCode(); 
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM content loaded.');
+            initializeCamera(); 
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

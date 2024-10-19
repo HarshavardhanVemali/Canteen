@@ -252,3 +252,18 @@
     padding-top: 50px;
     font-size: 20px;
 }
+
+.toporderedcustomers{
+  margin-top: 20px;
+}
+
+.toporderedcustomers table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: auto;
+}
+.toporderedcustomers .tablelist{
+  border-radius: 8px;
+  background-color: #fff; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+{% extends 'deliverytemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Delivery Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminorderstyles.css' %}">
+
+  {% endblock %}
+  
+</head>
+
+<body>
+    {% block dashboard_block %}
+    <li><a class="nav-link active" href="{% url 'admindashboard' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-speedometer" viewBox="0 0 16 16">
+        <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+        <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0"/>
+      </svg>Dashboard</a></li>
+    {% endblock %}
+  {% block main_content %}
+  <style>
+.delivery-performance-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px;
+    max-width: 90%; 
+}
+
+.chart-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px;
+    background-color: #ffffff; 
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);  
+    flex-grow: 1;
+}
+
+.chart-container canvas {
+    width: 100%;
+    height: auto;
+}
+  </style>
+        <div class="delivery-performance-charts">
+            <h3>Delivery Performance</h3>
+            <div class="chart-container" style="width: 100%; height: 300px;">
+                Day Wise
+                <canvas id="deliveryPerformanceChartLast7Days"></canvas>
+            </div>
+            <div class="chart-container" style="width: 100%; height: 300px;">
+                Week Wise
+                <canvas id="deliveryPerformanceChartLast5Weeks"></canvas>
+            </div>
+            <div class="chart-container" style="width: 100%; height: 300px;">
+                Month Wise
+                <canvas id="deliveryPerformanceChartLast12Months"></canvas>
+            </div>
+        </div>
+        <script>
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                    }
+                }
+                }
+                return cookieValue;
+            }
+            let deliveryPerformanceChartLast7Days;
+            let deliveryPerformanceChartLast5Weeks;
+            let deliveryPerformanceChartLast12Months;
+            document.addEventListener('DOMContentLoaded', function() {
+                DeliveryPersonPerformance();
+            });
+            function DeliveryPersonPerformance(){
+                fetch('/get_delivery_performance_chart_data/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (deliveryPerformanceChartLast7Days) {
+                            deliveryPerformanceChartLast7Days.destroy(); 
+                        }
+                        if (deliveryPerformanceChartLast5Weeks) {
+                            deliveryPerformanceChartLast5Weeks.destroy(); 
+                        }
+                        if (deliveryPerformanceChartLast12Months) {
+                            deliveryPerformanceChartLast12Months.destroy(); 
+                        }
+                        const chartDataLast7Days = {
+                            labels: data.context.last_7_days_data.map(item => item.date), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_7_days_data.map(item => item.count),
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const chartDataLast5Weeks = {
+                            labels: data.context.last_5_weeks_data.map(item => item.week), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_5_weeks_data.map(item => item.count),
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const chartDataLast12Months = {
+                            labels: data.context.last_12_months_data.map(item => item.month), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_12_months_data.map(item => item.count),
+                                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const deliveryPerformanceChartLast7DaysCanvas = document.getElementById('deliveryPerformanceChartLast7Days');
+                        deliveryPerformanceChartLast7Days = new Chart(deliveryPerformanceChartLast7DaysCanvas, {
+                            type: 'bar',
+                            data: chartDataLast7Days,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                        const deliveryPerformanceChartLast5WeeksCanvas = document.getElementById('deliveryPerformanceChartLast5Weeks');
+                        deliveryPerformanceChartLast5Weeks = new Chart(deliveryPerformanceChartLast5WeeksCanvas, {
+                            type: 'bar',
+                            data: chartDataLast5Weeks,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                        const deliveryPerformanceChartLast12MonthsCanvas = document.getElementById('deliveryPerformanceChartLast12Months');
+                        deliveryPerformanceChartLast12Months = new Chart(deliveryPerformanceChartLast12MonthsCanvas, {
+                            type: 'bar',
+                            data: chartDataLast12Months,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 10
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                        document.getElementById('deliveryPersonnelPerformanceOverlay').style.display = 'flex';
+                    } else {
+                        console.error('Error fetching chart data:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching chart data:', error);
+                });
+            }
+        </script>
+  {% endblock %} 
+</body>
+</html>

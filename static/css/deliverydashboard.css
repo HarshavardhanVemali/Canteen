@@ -1,0 +1,81 @@
+
+.container {
+    max-width: 600px;
+    width: 100%; 
+    padding: 20px;
+    border-radius: 8px;
+    margin: 0px auto;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10%;
+}
+
+.scanner-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333; 
+}
+
+.scanner-container {
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed #007bff; 
+    border-radius: 8px;
+}
+
+#qr-video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.scanner-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: rgba(0, 123, 255, 0.7);
+    animation: scan 3s infinite;
+}
+
+@keyframes scan {
+    0% {
+        top: -10%;
+    }
+    50% {
+        top: 50%;
+    }
+    100% {
+        top: 110%;
+    }
+}
+
+.qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.processing {
+    color: white;
+    font-size: 18px;
+}
+
+.result {
+    color: white;
+    text-align: center;
+}
+
+#qr-data {
+    margin: 20px 0;
+    font-size: 18px;
+    color: #00ff00; 
+}
