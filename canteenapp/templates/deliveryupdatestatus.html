@@ -7,8 +7,13 @@
     <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
     <link rel="stylesheet" href="{% static '/css/adminorderstyles.css' %}">
     <link rel="stylesheet" href="{% static '/css/deliverydashboard.css' %}">
+<<<<<<< HEAD
     <link rel="stylesheet" href="{% static '/css/qrscanner.css' %}"> 
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+=======
+    <link rel="stylesheet" href="{% static '/css/qrscanner.css' %}"> <!-- New CSS for the scanner -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
     {% endblock %}
 </head>
 
@@ -67,7 +72,11 @@
         const scanTimeout = 5000;
         let scanningTimeout;
         let scanning = true;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
         function initializeCamera() {
             navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
                 .then(localStream => {
@@ -81,6 +90,7 @@
                     scanStatusDiv.innerHTML = 'Error accessing camera: ' + err.message;
                 });
         }
+<<<<<<< HEAD
     
         function scanQRCode() {
             if (!scanning) return;
@@ -91,21 +101,44 @@
                 scanStatusDiv.innerHTML = 'No QR code detected. Please try again.';
             }, scanTimeout);
     
+=======
+
+        function scanQRCode() {
+            if (!scanning) return;
+
+            clearTimeout(scanningTimeout);
+
+            scanningTimeout = setTimeout(() => {
+                scanStatusDiv.innerHTML = 'No QR code detected. Please try again.';
+            }, scanTimeout);
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
                 canvas.height = video.videoHeight;
                 canvas.width = video.videoWidth;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
+<<<<<<< HEAD
     
                 const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
     
+=======
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
                 if (code) {
                     clearTimeout(scanningTimeout);
                     scanning = false;
                     qrOverlay.style.display = 'block'; 
                     processingDiv.style.display = 'block'; 
                     resultDiv.style.display = 'none';    
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
                     sendDataToDjango(code.data);
                 }
             } 
@@ -113,6 +146,7 @@
                 setTimeout(scanQRCode, scanInterval); 
             }
         }
+<<<<<<< HEAD
     
         function sendDataToDjango(qrData) {
             fetch('/update_time/', {
@@ -149,13 +183,20 @@
             });
         }
     
+=======
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
         okButton.addEventListener('click', () => {
             qrOverlay.style.display = 'none'; 
             scanning = true; 
             scanQRCode(); 
         });
+<<<<<<< HEAD
     
     
+=======
+
+>>>>>>> 5acd008709eaa7f8ef2d116c63a3e31ce33a44c3
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM content loaded.');
             initializeCamera(); 
