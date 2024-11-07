@@ -682,7 +682,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = 'apphome/';
+                        window.location.href = '{% url 'apphome' %}';
                     } else {
                         let errorId = (currentAction === 'login') ? 'login-verification-error' : 'signup-verification-error';
                         document.getElementById(errorId).textContent = data.error;
