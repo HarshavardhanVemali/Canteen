@@ -1,14 +1,16 @@
 import os
 import django
-from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
-from django.urls import path, re_path
-from django.urls import include
-import  canteenapp.routing
+from django.core.asgi import get_asgi_application
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'canteen.settings')
+
+# Set up Django
 django.setup()
+
+import canteenapp.routing  # Import after django.setup() to ensure apps are ready
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
@@ -20,4 +22,3 @@ application = ProtocolTypeRouter({
         )
     ),
 })
-from django.conf import settings
