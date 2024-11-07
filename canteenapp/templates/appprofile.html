@@ -14,6 +14,19 @@
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
 </head>
 <style>
+    a:focus,button:focus {
+        outline: none;  
+        box-shadow: none; 
+        -webkit-tap-highlight-color: transparent;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
     body{
         font-family: Lato-Regular, Arial, Helvetica, sans-serif;
     }
@@ -515,8 +528,17 @@
         function closeEditOverlay(){
             document.getElementById('edit-overlay').style.display='none';
         }
-        
-        const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+        function getWebSocketUrl() {
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const host = window.location.host;
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?$/; 
+            if (ipRegex.test(host)) {
+                return `${protocol}${host}/ws/`; 
+            } else {
+                return `${protocol}${host}/ws/`; 
+            }
+        }
+        const cartitemscountSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
         cartitemscountSocket.onopen = function(event) {
             console.log('Connected to Cart WebSocket server!');
         };

@@ -16,6 +16,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <style>
+    a:focus,button:focus {
+        outline: none;  
+        box-shadow: none; 
+        -webkit-tap-highlight-color: transparent;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
     body {
         font-family: Lato-Regular, Arial, Helvetica, sans-serif;
         margin: 0;
@@ -491,7 +504,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        bottom: 54px;
+        bottom: 50px;
         left: 0;
         right: 0;
         z-index: 1000;
@@ -722,6 +735,16 @@
             }
         });
     });
+    function getWebSocketUrl() {
+        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        const host = window.location.host;
+        const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?$/; 
+        if (ipRegex.test(host)) {
+            return `${protocol}${host}/ws/`; 
+        } else {
+            return `${protocol}${host}/ws/`; 
+        }
+    }
     function initMap() {
         const defaultLocation = [20.0000, 80.0000]; 
         map = L.map('map').setView(defaultLocation, 15);
@@ -742,7 +765,7 @@
 
         marker = L.marker(defaultLocation, { icon: myIcon }).addTo(map);
     }
-    const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+    const cartitemscountSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
 
       cartitemscountSocket.onopen = function(event) {
           console.log('Connected to Cart WebSocket server!');
@@ -904,7 +927,7 @@
         return cookieValue;
     }
 
-    const cartitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+    const cartitemsSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
     const allitemsDiv = document.querySelector('.order-items'); 
 
     cartitemsSocket.onopen = function(event) {
@@ -1009,7 +1032,7 @@
         .catch(error => console.error('Error:', error));
     }
 
-    const additionalpricesSocket = new WebSocket('ws://127.0.0.1:8000/ws/additionalprices/');
+    const additionalpricesSocket = new WebSocket(`${getWebSocketUrl()}additionalprices/`);
 
     additionalpricesSocket.onopen = function(event) {
         console.log('Connected to AdditionalPrices WebSocket server!');

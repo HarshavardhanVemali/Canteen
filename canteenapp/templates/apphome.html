@@ -22,10 +22,23 @@
     background-color: rgb(255, 255, 255);
   }
   main {
-    margin-top: 110px;
+    margin-top: 0px;
     width: 100%;
     padding-bottom: 30px; 
   }
+  a:focus,button:focus {
+        outline: none;  
+        box-shadow: none; 
+        -webkit-tap-highlight-color: transparent;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
   header{
     position: fixed;
     top: 0;
@@ -182,7 +195,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    margin: 0 10px;
+    margin: 0 5px;
     background-color: #ffffff;
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
@@ -500,12 +513,12 @@
   gap: 5px !important;
 }
 .nav-sub-item:last-of-type {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 .sub-navbar {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: auto;
     border-radius: 8px;
     position: relative;
     z-index: 1000;
@@ -514,11 +527,12 @@
     gap: 10px;
     margin: 0 auto;
     justify-content: start;
-    padding: 10px;
+    padding: 5px;
     transition: transform 0.3s ease-in-out;
+    overflow: auto;
 }
 header {
-    position: fixed;
+    position:sticky;
     top: 0; 
     left: 0;
     right: 0;
@@ -593,7 +607,7 @@ header {
   margin-bottom: 15px;
   font-size: 14px;
   font-weight: 400;
-  color: #737478;
+  color: #9a9ba0;
 
   cursor: pointer;
 }
@@ -607,7 +621,7 @@ filter-content h4 {
     gap: 40px;
     padding: 10px 20px;
     border-top: 1px solid rgba(77, 92, 113, 0.2);
-    box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+    box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 8px;
     background: rgb(255, 255, 255);
 }
 
@@ -620,6 +634,14 @@ filter-content h4 {
 .filter-footer .clear-btn, .filter-footer .apply-btn {
     border-radius: 8px;   
 }
+.no-cursor:focus {
+  caret-color: transparent; 
+}
+.no-focus:focus {
+  outline: none;
+  border: none; 
+}
+
 
 </style>
 <body>
@@ -644,7 +666,7 @@ filter-content h4 {
         </div>
         <div class="search-bar">
           <a href="{% url 'appsearch' %}">
-              <input type="text" placeholder="Search for food" autocomplete="off">
+            <input type="text" placeholder="Search for food" autocomplete="off" class="no-cursor">
               <svg class="search-icon" viewBox="5 -1 12 25" height="18" width="18" fill="rgb(255, 126, 139)">
                   <path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path>
               </svg>
@@ -749,12 +771,7 @@ filter-content h4 {
                             <h3>Biryani</h3>
                         </div>
                     </div>
-                    <div class="dish-card">
-                        <img src="https://b.zmtcdn.com/data/o2_assets/d0bd7c9405ac87f6aa65e31fe55800941632716575.png" alt="Chicken Dish">
-                        <div class="dish-info">
-                            <h3>Pizza</h3>
-                        </div>
-                    </div>
+                 
                     
                 </div>
             </div>
@@ -999,7 +1016,17 @@ filter-content h4 {
             behavior: 'smooth'
         });
     });
-    const socket = new WebSocket('ws://127.0.0.1:8000/ws/menu/');
+    function getWebSocketUrl() {
+        const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+        const host = window.location.host;
+        const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?$/; 
+        if (ipRegex.test(host)) {
+            return `${protocol}${host}/ws/`; 
+        } else {
+            return `${protocol}${host}/ws/`; 
+        }
+    }
+    const socket = new WebSocket(`${getWebSocketUrl()}menu/`);
     const menuDiv = document.querySelector('.meal-items');
     socket.onopen = function(event) {
         console.log('Connected to WebSocket server!');
@@ -1030,7 +1057,7 @@ filter-content h4 {
         window.location.href = `{% url 'appsearch' %}?menu_name=${encodedMenuName}`; 
     }
 
-    const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+    const allitemsSocket = new WebSocket(`${getWebSocketUrl()}allitems/`);
     const allitemsDiv = document.querySelector('.allitems'); 
     allitemsSocket.onopen = function(event) {
       console.log('Connected to All Items WebSocket server!');
@@ -1170,7 +1197,7 @@ filter-content h4 {
               });
           }
       });
-      const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+      const cartitemscountSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
 
       cartitemscountSocket.onopen = function(event) {
           console.log('Connected to Cart WebSocket server!');
@@ -1423,7 +1450,7 @@ filter-content h4 {
       const priceRange = document.getElementById('priceRange');
       priceRange.value = 5000;
       document.getElementById('priceOutput').innerText = '₹5000';
-          const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+          const allitemsSocket = new WebSocket(`${getWebSocketUrl()}allitems/`);
           const allitemsDiv = document.querySelector('.allitems'); 
           allitemsSocket.onopen = function(event) {
             console.log('Connected to All Items WebSocket server!');
