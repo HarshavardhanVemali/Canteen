@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from canteenapp.signals import create_unique_username
 import os
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -135,7 +136,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+DATABASES["default"]=dj_database_url.parse("postgresql://qrmanagement_xam2_user:SyXWHTHrAi1PQPsBxmA61ssTMkaWp2Pd@dpg-csh09qogph6c73btorp0-a.oregon-postgres.render.com/qrmanagement_xam2")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
