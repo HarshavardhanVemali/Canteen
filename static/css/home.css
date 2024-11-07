@@ -549,9 +549,6 @@ footer {
     margin-bottom: 10px;
   }
 
-  .search-bar {
-    width: 100%;
-  }
 
   .search-bar input {
     width: calc(100% - 40px);
@@ -771,32 +768,7 @@ footer {
   margin-right: 10px;
   cursor: pointer;
 }
-@media (max-width: 768px) {
-  .filter-overlay-content {
-    width: 90%; 
-    height: 60%; 
-  }
 
-  .filter-body {
-    flex-direction: column;
-  }
-
-  .filter-categories {
-    width: 100%;
-    display: flex;
-    overflow-x: auto;
-  }
-
-  .filter-categories ul {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .filter-content {
-    width: 100%;
-    padding: 15px;
-  }
-}
 .filter-footer {
   display: flex;
   justify-content: flex-end; 

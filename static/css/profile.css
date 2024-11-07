@@ -387,7 +387,9 @@ a{
     display: flex;
     align-items: center;
 }
-
+.order-status.shipped{
+    color: #549368;
+}
 .order-status.pending {
     color: #ffc107;
 }
@@ -397,7 +399,7 @@ a{
 }
 
 .order-status.delivered {
-    color: #28a745;
+    color: #0f902d;
 }
 .order-status.cancelled {
     color: #dc3545;

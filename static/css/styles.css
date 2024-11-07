@@ -331,16 +331,19 @@ a {
 .verification-button.loading { 
   cursor: wait; 
   pointer-events: none; 
+  opacity: 0.5; 
+  pointer-events: none; 
+  cursor: not-allowed; 
 }
 .verification-button.loading::after {
-  content: '';
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  background-color: #ccc;
-  margin-left: 10px;
-  animation: dot-animation 1s infinite;
+  content: "  \f110"; 
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes dot-animation {

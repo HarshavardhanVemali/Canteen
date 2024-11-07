@@ -1,3 +1,7 @@
+body{
+  font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+}
+
 .dashboard-widgets{
     margin: 20px;
 }

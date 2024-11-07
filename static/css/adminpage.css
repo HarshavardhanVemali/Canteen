@@ -10,7 +10,7 @@
     display: none;
   }
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: Lato-Regular, Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -47,7 +47,7 @@ header {
     color: #555; 
 }
 body{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Lato-Regular, Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -319,7 +319,7 @@ body.dark-mode header{
     -webkit-transition: width .2s ease;
     -o-transition: width .2s ease;
     transition: width .2s ease;
-    background-color: #313a46;
+    background-color: #161e2a;
 }
 
 .nav-list {

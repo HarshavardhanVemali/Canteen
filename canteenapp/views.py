@@ -1624,8 +1624,7 @@ def admin_get_delivery_personnel_performance_chart_data(request):
         try:
             personnel = DeliveryPerson.objects.get(email=email)
             today = timezone.now().date()
-
-            # Last 7 Days (Daily Breakdown)
+            
             last_7_days_data = []
             for i in range(7):
                 date = today - timedelta(days=i)
@@ -1635,8 +1634,7 @@ def admin_get_delivery_personnel_performance_chart_data(request):
                     status='delivered'
                 ).count()
                 last_7_days_data.append({'date': date.strftime('%Y-%m-%d'), 'count': delivered_orders})
-
-            # Last 5 Weeks (Weekly Breakdown)
+            
             last_5_weeks_data = []
             for i in range(5):
                 start_date = today - timedelta(weeks=i+1)
@@ -1649,7 +1647,6 @@ def admin_get_delivery_personnel_performance_chart_data(request):
                 ).count()
                 last_5_weeks_data.append({'week': start_date.strftime('%Y-%m-%d'), 'count': delivered_orders})
 
-            # Last 12 Months (Monthly Breakdown)
             last_12_months_data = []
             for i in range(12):
                 year = today.year - i
@@ -2809,3 +2806,36 @@ def deliverydeliveredorders(request):
         return JsonResponse({'orders': order_data})
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def applogin(request):
+    return render(request,'applogin.html')
+
+def apphome(request):
+    return render(request,'apphome.html')
+
+def appsearch(request):
+    return render(request,'appsearch.html')
+
+def appcheckout(request):
+    return render(request,'appcheckout.html')
+
+def appprofile(request):
+    return render(request,'appprofile.html')
+
+def apporderhistory(request):
+    return render(request,'apporderhistory.html')
+
+def apporderinfo(request):
+    return render(request,'apporderinfo.html')
+
+def applogout(request):
+    logout(request)
+    return redirect('applogin')
+
+def google_auth_redirect(request):
+    next_url = request.GET.get('next') 
+    if next_url:
+        return redirect(next_url)
+    else:
+        return redirect('/') 

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Hub - Profile</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+</head>
+<style>
+    body{
+        font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+    }
+    .header-container {
+        background-color: white;
+        padding: 5px 20px;
+        box-shadow: none;
+        border-bottom: 0.5px solid rgb(207, 214, 246);
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        position: fixed
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .header-title{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 530;
+        color: #202127;
+    }
+    .navbarbottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0; 
+        z-index: 9999;
+        width: 100%; 
+    }
+
+    .nav-items-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        margin: 0;
+        padding: 8px 0; 
+        background: #fff;
+        border-top: 1px solid rgba(72, 87, 109, 0.1);
+    }
+
+    .nav-item svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 5px;
+        fill: #686b78;
+    }
+
+    .cart-count {
+        font-weight: bold;
+        font-size: 0.7rem;
+        padding: 2px 5px;
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        min-width: 15px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 10px;
+        font-weight: 500;
+        align-items: center;
+    }
+
+    .nav-item a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .nav-item {
+            margin-bottom: 0px;
+        }
+    }
+
+    .nav-item {
+        margin-left: 0px;
+    }
+    .sidebar-profile-info p{
+        margin-top: 0px;
+        font-size: 11px;
+        color: #535665;
+    }
+    .sidebar-profile-info h3{
+        margin: 0px;
+        font-size: 14px;
+        margin-bottom: 3px;
+        color: #202127;
+    }
+    .nav-profile-header{
+        margin-top: 70px;
+        margin-left:15px ;
+        margin-right: 15px;
+    }
+    .nav-profile-header{
+        display: flex;
+        justify-content: space-between;
+    }
+    .profile-info{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+    }
+    .profile-info img{
+        margin: 0;
+    }
+    #first-name{
+        color: #ffffff;
+        font-weight: 500;
+        background: #000;
+        padding: 15px 30px;
+        border-radius: 50%;
+        margin: 0;
+    }
+    .container {
+        margin: 0 auto;
+        padding:15px 0px;
+    }
+    .profile-container {
+        display: flex;
+        
+        overflow: auto;
+        height: auto;
+    }
+    .profile-sidebar {
+        width: 100%;
+        background-color: #fff;
+        padding: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .sidebar-nav li svg {
+        width: 14px;
+        height: 14px;
+    }
+    .sidebar-nav a:hover {
+        background-color: transparent;
+        color: #333;
+    }
+    .sidebar-nav li a{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0px;
+    }
+    .sidebar-nav span{
+        margin-bottom: 1px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+    }
+    #phonenumber {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid rgba(84, 85, 88, 0.2);;
+        box-sizing: border-box;
+        font-size: 12px;
+        height: 45px;
+        border-radius: 10px; 
+        transition: border-color 0.3s ease;
+        outline: none; 
+    }
+    #phonenumber:focus{
+        outline: none;
+        border-color: #4285f4;
+    }
+    .updatedetails {
+        background-color: rgb(255, 82, 0);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.8; 
+    }
+    
+    .updatedetails:hover {
+        opacity: 1; 
+    }
+    
+    .updatedetails:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    #edit-overlay {
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        justify-content: end;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        transition: opacity 0.3s ease; 
+    }
+    #edit-overlay svg{
+        fill: #ffffff;
+    }
+    .edit-overlay.show {
+        opacity: 1;
+        display: block; 
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #686b78; 
+    }
+
+    .close-button:hover {
+        color: #dc3545; 
+    }
+    .overlay-content h2{
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .overlay-content {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        width: -webkit-fill-available;
+        border-radius: 20px 20px 0 0; 
+        border-top: 1px solid rgba(77, 92, 113, 0.2);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01); 
+        bottom: 0; 
+        padding-bottom: 30px;
+        transition: transform 0.3s ease-in-out;
+    }
+    #message-overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        position: fixed;
+        left: 50%;
+        bottom: 80px; 
+        transform: translate(-50%, 20px); 
+        width: fit-content; 
+        max-width: 90%; 
+        background: linear-gradient(135deg, #2f3442, #1c1f26);
+        color: white;
+        text-align: center;
+        padding: 10px 25px;
+        border-radius: 5px; 
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        z-index: 1000; 
+        gap: 7px;
+        font-size: 12px;
+    }
+    #message-overlay p{
+        display: flex;
+        align-items: center;
+        margin: 0;
+        gap: 5px;
+    }
+
+    #message-overlay.show {
+        opacity: 1;
+        transform: translate(-50%, 0); 
+    }
+    #error-message{
+        font-size: 12px;
+        margin: 0;
+    }
+</style>
+<body>
+    <header class="header-container">
+        <div class="header-content">
+            <div class="header-title"> 
+                <p>My Account</p>
+            </div>
+        </div>
+    </header>
+    <div class="navbarbottom">
+        <ul class="nav-items-container">
+            <li class="nav-item">
+                <a href="/apphome"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                  </svg>
+                    Home
+                </a>
+              </li>   
+            <li class="nav-item search-item">
+              <a href="/appsearch"> 
+                  <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                  Search
+              </a>
+            </li>
+            <li class="nav-item cart-item">
+                <a href="/appcheckout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a href="/appprofile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                    
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="nav-profile-header">
+        <div class="profile-info">
+            <h1 id="first-name"></h1>
+            <div class="sidebar-profile-info">
+            
+                <h3>{{ user.first_name }}</h3>
+                <p>{{ user.email }}</p>
+                <p id="phone_number">{{ user.phone_number }}</p>
+            </div>
+        </div>
+        <button class="edit-button" onclick="openEditOverlay()">Edit</button> 
+    </div>
+    <div class="container">
+        <div class="profile-container">
+            <aside class="profile-sidebar">
+                
+                <ul class="sidebar-nav">
+                    <li><a href="{% url 'apporderhistory' %}"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                        <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/>
+                        <path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/>
+                        <path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
+                      </svg>Order History</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                      </svg></a></li>
+                    <li><a href="#payments"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
+                        <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z"/>
+                      </svg>Saved Payments</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/>
+                      </svg></a></li>
+                    <li>
+                        <a href="{% url 'applogout' %}" id="logout-link"> 
+                           <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">
+                                <path d="M7.5 1v7h1V1z"/>
+                                <path d="M3 8.812a5 5 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812"/>
+                              </svg>Logout
+                           </span>
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+            
+                <div class="profile-section" id="orders" style="display: none;">
+                    <h2>Order History</h2>
+                    <div class="noorders">
+                        <div>
+                            <img src="{% static '/images/noorders.webp' %}" alt="Noorders">
+                        </div>
+                        <div style="text-align: center;">
+                            <h2 style="color: #535665;">No Orders</h2>
+                            <p style="color: #7e808c;">You haven't placed any order yet.</p>
+                        </div>
+                    </div>
+                    <div class="order-list" id="order-list-container">
+                    </div>
+                </div>
+        
+                <div class="profile-section" id="payments" style="display: none;">
+                    <h2>Saved Payment Methods</h2>
+                    <div class="payment-method">  
+                        <div style="display: flex;align-items: center;gap: 10px;">
+                            <i class="bi bi-credit-card"></i>
+                            <span>Visa ending in 1234</span>
+                           
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" style="cursor: pointer;">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay-container" id="edit-overlay">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16" onclick="closeEditOverlay()" style="cursor: pointer;">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" stroke-width="10"/>
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" stroke-width="10"/>
+          </svg>
+        <div class="overlay-content">
+          
+            <h2>Update Mobile Number</h2>
+        <section>
+          <div class="form-group">
+            <label for="error-message" id="error-message" style="color: #ea4335;"></label>
+          </div>
+          <div class="form-group">
+            <div style="display: flex; align-items: center;" id="phonenumberlabel">
+                <input type="phonenumber" id="phonenumber" name="phonenumber" placeholder="Phone Number" required autocomplete="off">
+            </div>
+          </div>
+          <button type="button" class="updatedetails" id="updatedetails">Update</button>
+        </section>
+        </div>
+      </div>
+    
+      <div id="message-overlay">
+        </div>
+    <script>
+       document.addEventListener('DOMContentLoaded', () => {
+            const firstNameElement = document.getElementById('first-name');
+            const fullName = "{{ user.first_name }}"; 
+            const firstWord = fullName.split(' ')[0];
+            const firstLetter = firstWord.charAt(0);
+
+            firstNameElement.textContent = firstLetter; 
+            document.getElementById('updatedetails').addEventListener('click', function (event) {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = '';
+                const mobileNumber = document.getElementById('phonenumber').value.trim();
+                if (/^[6-9]\d{9}$/.test(mobileNumber)) {
+                const formData = new FormData();
+                formData.append('mobileNumber', mobileNumber);
+
+                fetch('/updatemobilenumber/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                    if (data.success) {
+                        showMessage('Updated Successfully','success');
+                        closeEditOverlay();
+                        document.getElementById('phone_number').textContent='';
+                        document.getElementById('phone_number').textContent=mobileNumber;
+                        document.getElementById('phonenumber').value='';
+                    } else {
+                        showMessage(data.error,'error');
+                        mobileNumber.textContent='';
+                    }
+                    })
+                    .catch((error) => {
+                        errorMessage.textContent = 'An error occured';
+                        showMessage('An error occured','warning');
+                        mobileNumber.textContent='';
+                    });
+                } else {
+                    errorMessage.textContent = 'Invalid mobile number';
+                    showMessage('Invalid mobile number','warning');
+                }
+            });
+        });
+        function openEditOverlay(){
+            document.getElementById('edit-overlay').style.display='flex';
+        }
+        function closeEditOverlay(){
+            document.getElementById('edit-overlay').style.display='none';
+        }
+        
+        const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const cartIcon = document.querySelector('.cart-icon');
+            const cartCount = document.querySelector('.cart-count');
+
+            if (data.data && data.data.length > 0) {
+                cartIcon.style.fill = '#60b246';
+                cartCount.style.color = '#60b246';
+                cartCount.textContent = data.data.length;
+            
+            }
+            else {
+                cartIcon.style.fill = 'currentColor';
+                cartCount.style.color = 'inherit';
+                cartCount.textContent = '0';
+            }
+        };
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+        function populateOrders() {
+            fetch('/getorders/',{
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const orderListContainer = document.getElementById('order-list-container');
+                orderListContainer.innerHTML = '';
+
+                if (data.orders.length === 0) {
+                    const noOrdersDiv = document.querySelector('.noorders');
+                    if (noOrdersDiv) {
+                        noOrdersDiv.style.display = 'block'; 
+                    }
+                } else {
+                    const noOrdersDiv = document.querySelector('.noorders');
+                    if (noOrdersDiv) {
+                        noOrdersDiv.style.display = 'none';
+                    }
+                    data.orders.forEach(order => {
+                        const orderCard = document.createElement('div');
+                        orderCard.classList.add('order-card');
+
+                        let orderStatusClass = '';
+                        switch (order.status.toLowerCase()) {
+                            case 'pending':
+                                orderStatusClass = 'pending';
+                                break;
+                            case 'confirmed':
+                                orderStatusClass = 'confirmed';
+                                break;
+                            case 'prepared':
+                                orderStatusClass = 'prepared';
+                                break;
+                            case 'shipped':
+                                orderStatusClass = 'shipped';
+                                break;
+                            case 'delivered':
+                                orderStatusClass = 'delivered';
+                                break;
+                            case 'cancelled':
+                                orderStatusClass = 'cancelled';
+                                break;
+                            default:
+                                orderStatusClass = 'pending';
+                        }
+
+                        let orderItemsHTML = '';
+                        order.items.forEach(item => {
+                            orderItemsHTML += `
+                                <div class="order-item">
+                                    <div style="display:flex;gap:20px;">
+                                        <div class="item-image-container">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                            <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                        </svg>
+                                        <img src="${item.item_image}" class="item-image" alt="${item.item_name}">    
+                                        </div>
+                                        <div class="item-content">
+                                            <span class="item-name">${item.item_name}</span>
+                                            <span class="item-quantity">Quantity: ${item.quantity}</span>
+                                        </div>    
+                                    </div>
+                                    <span class="item-order-price">₹ ${item.price_at_order_time}</span>
+                                </div>
+                            `;
+                        });
+
+                        orderCard.innerHTML = `
+                            <div class="order-header">
+                                <span class="order-id">Order ID: ${order.order_id}</span>
+                                <span class="order-date">${order.created_at}</span>
+                            </div>
+                            <div class="order-items">
+                                ${orderItemsHTML}
+                            </div>
+                            <div class="order-total">
+                                <span>Total: Rs. ${order.total_price}</span>
+                                <span class="order-status ${orderStatusClass}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-dot" viewBox="0 0 16 16">
+                                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                                    </svg>${order.status}</span>
+                            </div>
+                        `;
+                        orderCard.addEventListener('click', (event) => {
+                            event.preventDefault(); 
+                            window.location.href = `/orderhistory/?order_id=${order.order_id}`; 
+                        });
+
+                        orderListContainer.appendChild(orderCard);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching orders:', error);
+            });
+        }
+        function showMessage(messageText, option) {
+            const overlay = document.getElementById('message-overlay');
+            let icon = "";
+
+            switch (option) {
+                case 'success':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                            </svg>`;
+                    break;
+                case 'error':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f93a37" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>`;
+                    break;
+                case 'delete':
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f93a37" class="bi bi-trash3" viewBox="0 0 16 16">
+                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                            </svg>`;
+                    break;
+                case 'warning': 
+                    icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#f93a37" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                            <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                            <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                            </svg>`
+                    break;
+                default: 
+                break;
+            }
+
+            const message = `<p>${icon}${messageText}</p>`;  
+            overlay.innerHTML = message; 
+
+
+            overlay.classList.add('show');
+
+            setTimeout(() => {
+                overlay.classList.remove('show'); 
+                setTimeout(() => { 
+                    overlay.innerHTML = "";
+                }, 1); 
+            }, 3000); 
+        }
+    </script>
+</body>
+</html>

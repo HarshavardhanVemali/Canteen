@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Hub - Order</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<style>
+  body {
+    font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+    margin: 0;
+    line-height: 1.6;
+    color: #333;
+    background-color: rgb(255, 255, 255);
+  }
+  main {
+    margin-top: 110px;
+    width: 100%;
+    padding-bottom: 30px; 
+  }
+  header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    padding-bottom: 8px;
+  }
+  .header-image{
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    height: 30px;
+    border-radius: 0px 0px 20px 20px;
+    background: linear-gradient(to bottom, #ffffff 1%, #f9f4e7);
+    border-bottom: 1px solid #ffffff;
+  }
+  .header-container {
+   
+    padding: 0px 5px;
+    box-shadow: none;
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+
+.header-container a {
+    text-decoration: none;
+}
+
+.header-container a svg {
+    fill: #686b78;
+}
+
+.header-content {
+    flex-grow: 1;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 20px;
+    color: #d7372b;
+}
+
+.header-title h3 {
+    font-weight: 500;
+}
+
+.logo-link {
+    display: block;
+}
+
+.logo-link img {
+    height: 50px;
+}
+
+.header-title h3 {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.navbarbottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0; 
+  z-index: 9999;
+  width: 100%; 
+}
+
+.nav-items-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0;
+  padding: 8px 0; 
+  background: #fff;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); 
+  border-top: 1px solid rgba(2, 6, 12, 0.1);
+}
+
+#scrollToTopBtn {
+  display: none;
+  position: fixed;
+  bottom: 70px; 
+  right: 15px; 
+  z-index: 10000;
+  border: none;
+  outline: none;
+  background-color: #d7372b;
+  color: white;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 50%;
+}
+#scrollToTopBtn i{
+  font-size: 10px;
+}
+.nav-item svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+    fill: #686b78;
+}
+
+.cart-count {
+    font-weight: bold;
+    font-size: 0.7rem;
+    padding: 2px 5px;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 15px;
+    text-align: center;
+    display: inline-block;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+    font-weight: 500;
+    align-items: center;
+}
+
+.nav-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .nav-item {
+        margin-bottom: 0px;
+    }
+}
+
+.nav-item {
+    margin-left: 0px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 0 10px;
+    background-color: #ffffff;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    border:0.9px solid #dbe1f8;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+}
+.options-wrapper {
+    width: 100%;
+    max-width: 100%;
+    display: contents;
+    justify-content: center;
+}
+.frequently-ordered > div {
+    margin: 5px auto;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.dish-carousel {
+    width: 100%;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    margin: 0px 15px;
+   
+    width: 100%; 
+}
+
+.dish-card {
+    min-width: 80px;
+    flex-grow: 1;
+    margin-right: 25px;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+.dish-card img {
+    width: 100%;
+    height: auto;
+    background-color: transparent;
+    transform: none;
+    opacity: 1;
+    will-change: transform, opacity;
+    border-radius: inherit;
+    filter: unset;
+    transition: opacity 0.25s, transform 0.25s;
+    mix-blend-mode: multiply;
+}
+
+.dish-info {
+    padding: 1px;
+}
+
+.dish-info h3 {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300;
+    margin-bottom: 0px;
+}
+
+.carousel-prev,
+.carousel-next {
+    display: none;
+}
+
+.search-button svg {
+    fill: rgb(255, 126, 139);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    color: #6d6b83;
+}
+
+.divider .line {
+    flex-grow: 1;
+    border-bottom: 0.8px solid #e7ebfb;
+    margin: 0 10px;
+}
+
+.divider span {
+    letter-spacing: 0.1em;
+    font-family: Okra, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.meal-items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+#meals {
+    display: flex;
+    justify-content: center;
+}
+
+.meal-item {
+    border: 1px solid transparent;
+    border-radius: 15px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    text-align: center;
+    padding: 0px;
+    box-shadow: 0 4px 8px rgba(183, 200, 242, 0.2);
+    border: 1px solid rgb(228, 230, 244);
+    background: #ffffff;
+}
+
+.meal-item img {
+    flex-grow: 1;
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    border-radius: 15px 15px 0px 0px !important;
+}
+
+.meal-item h4 {
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 0px;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.section {
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.item-card {
+  padding: 0;
+  margin: 10px;
+  position: relative;
+  display: flex;
+  border-bottom: .5px solid #e1e3fe;
+  padding-bottom: 30px;
+  width: 100%;
+}
+
+.item-info {
+  flex: 1;
+  margin-right: 20px;
+  max-width: 800px;
+
+}
+
+.item-info h4 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.3px;
+  color: rgba(2, 6, 12, 0.78);
+}
+
+.item-info p {
+  margin-bottom: 10px;
+  color: #666;
+  margin-top: 0px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.3px;
+  color: rgba(2, 6, 12, 0.6);
+  letter-spacing: 0.5px;
+}
+.delivery_time{
+  font-weight: 530 !important;
+}
+.price {
+  font-size:12px;
+  font-weight: bold;
+  color: rgba(2, 6, 12, 0.65) !important;
+}
+
+.item-card img {
+  cursor: pointer;
+  width: 150px;
+  height: 140px;
+  flex-grow: 1;
+  border-radius: 12px;
+}
+
+.image-container {
+  position: relative; 
+}
+
+.add-button {
+  width: 100px;
+  position: absolute;
+  bottom: 16px; 
+  left: 50%;
+  transform: translateX(-50%); 
+  text-align: center;
+  background-color: transparent;
+  color: rgb(27, 166, 114);
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid rgba(2, 6, 12, 0.15);
+  box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+  margin-top: auto;
+  position: relative;
+}
+.item-info svg{
+  width: 14px;
+  height: 14px;
+}
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100px;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+    padding: 0px;
+    height: 32px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 800;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgba(2, 6, 12, 0.15);
+    box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+    justify-content: center;
+}
+.quantity {
+    font-size: 14px;
+    width: 30px;
+    text-align: center;
+    color: #60b246 !important;
+}
+.image-container {
+  display: flex;
+  flex-direction: column; 
+  position: relative; 
+}
+
+.quantity-control {
+  margin-top: auto;
+  position: relative;
+  
+}
+.allitems > .item-card:last-of-type {
+  border-bottom: none;
+}
+.filter-btn, .dropdown-chip {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: -0.3px;
+  color: rgba(2, 6, 12, 0.75);
+}
+.sub-navbar.sticky {
+  justify-content: start;
+  padding: 10px;
+  overflow: auto;
+  box-shadow: 0 4px 12px rgba(33, 38, 66, 0.2);
+  z-index: 999;
+}
+.nav-sub-item svg{
+  width: 14px;
+  height: 14px;
+}
+.nav-sub-item{
+  padding: 5px 12px;
+  width: max-content;
+}
+.sub-navbar>div{
+  gap: 5px !important;
+}
+.nav-sub-item:last-of-type {
+  margin-right: 10px;
+}
+.sub-navbar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 8px;
+    position: relative;
+    z-index: 1000;
+    top: 0;
+    transition: top 0.3s;
+    gap: 10px;
+    margin: 0 auto;
+    justify-content: start;
+    padding: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+header {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #ffffff;
+    padding-bottom: 8px;
+    width: 100%;
+}
+.filter-overlay {
+    justify-content: end;
+    z-index: 99999;
+}
+.filter-overlay-content {
+    width: 100%;
+    height: 85%;
+    background-color: #fff;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(77, 92, 113, 0.2);
+
+}
+.filter-header h3 {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 28px;
+  letter-spacing: 0.4px; 
+}
+.close-btn{
+  background: #e3e3e5;
+  border-radius: 50%;
+  padding: 3px 3px 1px 3px;
+}
+.close-btn svg{
+  width: 16px;
+  height: 16px;
+  fill: #949496;
+}
+
+.filter-categories {
+    width: 40%;
+    background-color: #fefefe;
+    border-right: 1px solid #e0e0e0;
+    padding: 5px;
+    padding-left: 0px;
+    
+}
+
+.filter-categories li.active {
+    color: #ff5722;
+    border-left: 4px solid rgb(255, 126, 139);
+    background-color: transparent;
+    border-radius: 4px;
+    padding-left: 5px;
+}
+.filter-categories li {
+    padding: 10px 20px;
+    padding-left: 4px;
+    font-weight: 540;
+    font-size: 15px;
+    cursor: pointer;
+    color:#333;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease-in;
+}
+.filter-options label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #737478;
+
+  cursor: pointer;
+}
+filter-content h4 {
+    font-size: 15px;
+    
+}
+.filter-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+    padding: 10px 20px;
+    border-top: 1px solid rgba(77, 92, 113, 0.2);
+    box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+    background: rgb(255, 255, 255);
+}
+
+.filter-categories li:hover {
+  background-color: transparent; 
+}
+.filter-footer .clear-btn,.apply-btn  {
+    font-size: 15px !important;
+}
+.filter-footer .clear-btn, .filter-footer .apply-btn {
+    border-radius: 8px;   
+}
+
+</style>
+<body>
+    <header >
+        <div class="header-container">
+          <div class="header-content">
+            <div class="header-title">
+              <a href="{% url 'apphome' %}" class="logo-link" title="Food Delivery">
+                  <img src="{% static 'images/3.png' %}" alt="">
+                </a>
+                <h3>Food Hub</h3>
+            </div>
+          </div>
+          <div>
+              <a href="/appprofile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                </a>
+          </div>
+        </div>
+        <div class="search-bar">
+          <a href="{% url 'appsearch' %}">
+              <input type="text" placeholder="Search for food" autocomplete="off">
+              <svg class="search-icon" viewBox="5 -1 12 25" height="18" width="18" fill="rgb(255, 126, 139)">
+                  <path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path>
+              </svg>
+          </a>
+        </div>
+    </header>
+      
+  <main>
+     <div class="header-image">
+
+     </div>  
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item active">
+              <a href="/apphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                  Home
+              </a>
+            </li> 
+            <li class="nav-item search-item">
+              <a href="/appsearch"> 
+                  <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                  Search
+              </a>
+            </li>
+            <li class="nav-item cart-item">
+                <a href="/appcheckout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/appprofile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                </a>
+            </li>
+        </ul>
+    </div>
+    <section class="frequently-ordered">
+        <div>
+          <div class="divider">
+              <div class="line"></div>
+              <span>EAT AND REPEAT</span>
+              <div class="line"></div>
+          </div>
+            <div class="dish-carousel"> 
+                <div class="carousel-track">
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Chicken</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/d9766dd91cd75416f4f65cf286ca84331634805483.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Idli</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/c2f22c42f7ba90d81440a88449f4e5891634806087.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Rolls</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/e44c42ff4b60b025225c8691ef9735b11635781903.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Paneer</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/dish_images/d5ab931c8c239271de45e1c159af94311634805744.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Cakes</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/o2_assets/bf2d0e73add1c206aeeb9fec762438111727708719.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Biryani</h3>
+                        </div>
+                    </div>
+                    <div class="dish-card">
+                        <img src="https://b.zmtcdn.com/data/o2_assets/d0bd7c9405ac87f6aa65e31fe55800941632716575.png" alt="Chicken Dish">
+                        <div class="dish-info">
+                            <h3>Pizza</h3>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="divider">
+      <div class="line"></div>
+      <span>EXPLORE MEALS</span>
+      <div class="line"></div>
+    </div>
+    <section class="meal-options section"> 
+        <div class="container" style="width: 100%;">
+          <div class="options-wrapper">
+            <div class="option" id="meals">
+              
+              <div class="meal-items">
+                
+                </div> 
+            </div>
+          </div>
+        </div>
+    </section>
+    <div class="divider">
+      <div class="line"></div>
+      <span>ORDER FOOD ONLINE</span>
+      <div class="line"></div>
+    </div>
+   
+    <div class="sub-navbar" id="sub-navbar">
+      <div style="display: flex;align-items: center;gap: 10px;">
+        <div class="nav-sub-item filter" onclick="openFilterOverlay()">
+          <span class="filter-btn">Filter</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="" width="16" height="16" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" class="sc-rbbb40-0 iwHbVQ"><title>filter</title><path d="M2.14 6.42h7.26c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h2.96c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001h-2.94c-0.341-1.226-1.447-2.11-2.76-2.11s-2.419 0.885-2.755 2.090l-0.005 0.020h-7.26c-0.343 0.059-0.6 0.355-0.6 0.71s0.257 0.651 0.596 0.709l0.004 0.001zM12.16 4.28c0.776 0.011 1.4 0.643 1.4 1.42 0 0.784-0.636 1.42-1.42 1.42-0.777 0-1.409-0.624-1.42-1.399l-0-0.001c-0-0.006-0-0.013-0-0.020 0-0.784 0.636-1.42 1.42-1.42 0.007 0 0.014 0 0.021 0l-0.001-0zM17.86 13.58h-7.24c-0.328-1.245-1.443-2.148-2.77-2.148s-2.442 0.903-2.766 2.128l-0.004 0.020h-2.94c-0.036-0.006-0.077-0.010-0.12-0.010-0.398 0-0.72 0.322-0.72 0.72s0.322 0.72 0.72 0.72c0.042 0 0.084-0.004 0.124-0.011l-0.004 0.001h2.96c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h7.26c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001zM7.84 15.72c-0.776-0.011-1.4-0.643-1.4-1.42 0-0.784 0.636-1.42 1.42-1.42 0.777 0 1.409 0.624 1.42 1.399l0 0.001c0 0.006 0 0.013 0 0.020 0 0.784-0.636 1.42-1.42 1.42-0.007 0-0.014-0-0.021-0l0.001 0z"></path></svg>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Pure Veg</span>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Ratings 4.0+</span>
+        </div>
+        <div class="nav-sub-item">
+          <span class="filter-btn">Less than Rs. 300</span>
+        </div>
+      </div>
+    </div>
+    <section class="homeitems section">
+      <div class="allitems">
+        
+      </div>
+    </section>
+    <div class="filter-overlay">
+      <div class="filter-overlay-content">
+        <div class="filter-header">
+          <h3>Filter</h3>
+          <button class="close-btn" aria-label="Close filter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="filter-body">
+          <div class="filter-categories">
+            <ul>
+              <li class="active" onclick="showContent('sort')">Sort</li>
+              <li onclick="showContent('ratings')">Ratings</li>
+              <li onclick="showContent('vegNonVeg')">Veg/Non-Veg</li>
+              <li onclick="showContent('price')">Price</li>
+            </ul>
+          </div>
+          <div class="filter-content">
+            
+            <div id="sort" class="filter-options-content">
+              <h4>Sort By</h4>
+              <div class="filter-options">
+                <label><input type="radio" name="sort" value="relevance" checked> Relevance (Default)</label>
+                <label><input type="radio" name="sort" value="deliveryTime"> Delivery Time</label>
+                <label><input type="radio" name="sort" value="rating"> Rating</label>
+                <label><input type="radio" name="sort" value="lowToHigh"> Cost: Low to High</label>
+                <label><input type="radio" name="sort" value="highToLow"> Cost: High to Low</label>
+              </div>
+            </div>
+    
+            <div id="ratings" class="filter-options-content" style="display: none;">
+              <h4>Ratings</h4>
+              <div class="filter-options">
+                <label><input type="checkbox" name="ratings" value="4.5"> Ratings 4.5+</label>
+                <label><input type="checkbox" name="ratings" value="4.0"> Ratings 4.0+</label>
+                <label><input type="checkbox" name="ratings" value="3.5"> Ratings 3.5+</label>
+              </div>
+            </div>
+    
+            <div id="vegNonVeg" class="filter-options-content" style="display: none;">
+              <h4>Veg / Non-Veg</h4>
+              <div class="filter-options">
+                <label><input type="radio" name="vegNonVeg" value="veg"> Pure Veg</label>
+                <label><input type="radio" name="vegNonVeg" value="nonVeg"> Non-Veg</label>
+              </div>
+            </div>
+    
+            <div id="price" class="filter-options-content" style="display: none;">
+              <h4>Price Range</h4>
+              <div class="filter-options">
+                <input type="range" min="0" max="10000" value="5000" class="price-range" id="priceRange">
+                <span id="priceOutput">₹5000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="filter-footer">
+          <button class="clear-btn" onclick="clearFilters()">Clear All</button>
+          <button class="apply-btn" onclick="applyFilters()">Apply</button>
+        </div>
+      </div>
+    </div>   
+    <div id="itemOverlay">
+        <div class="overlay-content" id="item-overlay-content">
+            <button class="overlay-close-btn">&times;</button>
+            <div class="overlay-body">
+                <img src="#" alt="Item">
+                <h3></h3>
+                <p class="price"></p>
+                <p></p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <div class="overlay-container" id="phonenumberoverlay">
+      <div class="overlay-content">
+        <section style="display: flex; align-items: center; justify-content: space-between;">
+          <h3>Phone Number Required</h3>
+        </section>
+      <section>
+        <div class="form-group">
+          <label for="error-message" id="error-message" style="color: #ea4335;"></label>
+        </div>
+        <div class="form-group">
+          <div style="display: flex; align-items: center;" id="updatephonenumberlabel">
+            <input type="tel" id="updatephonenumber" name="updatephonenumber" placeholder="Phone Number" required autocomplete="off">
+          </div>
+        </div>
+        <button class="verification-button" id="verificationButton">Continue</button>
+      </section>
+      </div>
+    </div>
+    
+    
+  
+    <button id="scrollToTopBtn" title="Back to top">
+        <i class="bi bi-chevron-up" style="font-weight: 600;"></i>
+    </button>
+  </main>
+</body>
+<script>
+    
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('header').classList.add('show-header');
+    });
+    document.querySelector('.search-bar').addEventListener('click', function() {
+        window.location.href = "{% url 'appsearch' %}";
+    }); 
+
+    let prevScrollTop = 0;
+    let headerTop = 0;
+    let isNavbarSticky = false;
+    const navbarOffset = 150; 
+    const navbar = document.getElementById("sub-navbar");
+    const allitems = document.querySelector('.homeitems'); 
+
+    window.addEventListener('scroll', () => {
+        const header = document.querySelector('header');
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const headerHeight = header.offsetHeight;
+        const delta = scrollTop - prevScrollTop;
+        const allitemsTop = allitems.getBoundingClientRect().top;
+        const isAllitemsBelowOffset = allitemsTop <= navbarOffset;
+
+        if (delta > 0) { 
+            headerTop = Math.max(headerTop - delta, -headerHeight);
+        } else if (delta < 0) { 
+            headerTop = Math.min(headerTop - delta, 0);
+        }
+
+        header.style.top = `${headerTop}px`;
+        prevScrollTop = scrollTop;
+
+
+
+        if (navbar.getBoundingClientRect().top <= navbarOffset && isAllitemsBelowOffset) {
+            if (!isNavbarSticky) {
+                navbar.style.top = headerTop + header.offsetHeight + 'px';
+                navbar.classList.add("sticky");
+                isNavbarSticky = true;
+            } else {
+                navbar.style.top = headerTop + header.offsetHeight + 'px';
+            }
+        } else if (isNavbarSticky) {
+            navbar.classList.remove("sticky");
+            navbar.style.top = 0 + 'px';
+            isNavbarSticky = false;
+        }
+
+    });
+
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId); 
+        const startPosition = window.pageYOffset; 
+        const distanceToScroll = targetElement.getBoundingClientRect().top; 
+        let startTime = null;
+        function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const run = easeInOut(timeElapsed, startPosition, distanceToScroll, 1000);
+        window.scrollTo(0, run);
+        if (timeElapsed < 1000) requestAnimationFrame(animation);
+        }
+        requestAnimationFrame(animation);
+    });
+    });
+    function easeInOut(t, b, c, d) {
+    t /= d/2;
+    if (t < 1) return c/2*t*t + b;
+    t--;
+    return -c/2 * (t*(t-2) - 1) + b;
+    }
+    const scrollToTopButton = document.getElementById('scrollToTopBtn');
+    window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 300) { 
+        scrollToTopButton.style.display = 'block';
+    } else {
+        scrollToTopButton.style.display = 'none';
+    }
+    });
+    document.getElementById('scrollToTopBtn').addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/menu/');
+    const menuDiv = document.querySelector('.meal-items');
+    socket.onopen = function(event) {
+        console.log('Connected to WebSocket server!');
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data); 
+        if (data.data) {
+            menuDiv.innerHTML = ''; 
+            data.data.forEach(menu => {
+                const mealItemHtml = `
+                  <a href="#" class="meal-item" id="${menu.menu_id}" onclick="redirectToSearch('${menu.menu_name}')">
+                    <img src="${menu.menu_picture}" alt="${menu.menu_name}"> 
+                    <h4>${menu.menu_name}</h4>
+                  </a>
+                `;
+                menuDiv.innerHTML += mealItemHtml;
+            });
+        } else {
+            console.log("No data received in the message.");
+        }
+    };
+    socket.onerror = function(event) {
+        console.error('WebSocket error observed:', event);
+    };
+    function redirectToSearch(menuName) {
+        const encodedMenuName = encodeURIComponent(menuName);
+        window.location.href = `{% url 'appsearch' %}?menu_name=${encodedMenuName}`; 
+    }
+
+    const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+    const allitemsDiv = document.querySelector('.allitems'); 
+    allitemsSocket.onopen = function(event) {
+      console.log('Connected to All Items WebSocket server!');
+    };
+
+    allitemsSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        if (data.data) {
+            allitemsDiv.innerHTML = '';
+            data.data.forEach(item => {
+              const itemHtml = `
+                <div class="item-card" data-item-id="${item.item_id}">
+                    <div class="item-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                        </svg>
+                        <h4>${item.item_name}</h4>
+                        <span class="price" id="item-name">₹${item.price}</span>
+                        <p>${item.description}</p>
+                        <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                    </div>
+                    <div class="image-container">
+                        <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                        ${item.is_available ? (item.in_cart ? `
+                            <div class="quantity-control">
+                                <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                    </svg>
+                                </button>
+                                <p class="quantity">${item.quantity}</p>
+                                <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                            </div>
+                        ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                    </div>
+                    <hr class="styles_divider__2JelH">
+                </div>
+              `;
+              allitemsDiv.innerHTML += itemHtml;
+            });
+        } else {
+            console.log("No item data received in the message.");
+        }
+    };
+    document.querySelector('.close-btn').addEventListener('click', function() {
+      document.querySelector('.filter-overlay').style.display = 'none';
+    });
+    function openFilterOverlay(){
+      document.querySelector('.filter-overlay').style.display = 'flex';
+    }
+    function showContent(contentId) {
+        const sections = document.querySelectorAll('.filter-options-content');
+        sections.forEach(section => section.style.display = 'none');
+
+        const categoryItems = document.querySelectorAll('.filter-categories li');
+        categoryItems.forEach(item => item.classList.remove('active'));
+        document.getElementById(contentId).style.display = 'block';
+
+        const activeItem = document.querySelector(`[onclick="showContent('${contentId}')"]`);
+        activeItem.classList.add('active');
+    }
+
+      const priceRange = document.getElementById('priceRange');
+      const priceOutput = document.getElementById('priceOutput');
+
+      priceRange.oninput = function () {
+        priceOutput.textContent = '₹' + this.value;
+      }
+      function applyFilters() {
+        const sortOption = document.querySelector('input[name="sort"]:checked').value;
+
+        const ratingOptions = [];
+        document.querySelectorAll('input[name="ratings"]:checked').forEach(function(el) {
+          ratingOptions.push(el.value);
+        });
+        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') ? 
+            document.querySelector('input[name="vegNonVeg"]:checked').value : null;
+
+        const priceRange = document.getElementById('priceRange').value;
+
+      }
+
+      function clearFilters() {
+        document.querySelector('input[name="sort"][value="relevance"]').checked = true;
+
+        document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
+          el.checked = false;
+        });
+
+        document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
+          el.checked = false;
+        });
+        const priceRange = document.getElementById('priceRange');
+        priceRange.value = 5000;
+        document.getElementById('priceOutput').innerText = '₹5000';
+
+        console.log('Filters cleared to default.');
+      }
+
+      document.getElementById('priceRange').addEventListener('input', function() {
+        document.getElementById('priceOutput').innerText = '₹' + this.value;
+      });
+
+      const itemOverlay = document.getElementById('itemOverlay');
+      const overlayCloseButton = document.querySelector('.overlay-close-btn');
+
+      document.addEventListener('DOMContentLoaded', () => {
+          if (itemOverlay && overlayCloseButton && allitemsDiv) {
+              allitemsDiv.addEventListener('click', (event) => {
+                  if (event.target.tagName === 'IMG') {
+                      const itemId = event.target.dataset.itemId;
+                      const itemCard = document.querySelector(`.item-card[data-item-id="${itemId}"]`);
+
+                      if (itemCard) {
+                          const itemInfo = itemCard.querySelector('.item-info');
+                          const itemName = itemInfo.querySelector('h4').textContent;
+                          const itemPrice = itemInfo.querySelector('.price').textContent;
+                          const itemDescription = itemInfo.querySelector('p').textContent;
+                          const itemDeliveryTime = itemInfo.querySelector('p:last-of-type').textContent;
+
+                          itemOverlay.querySelector('h3').textContent = itemName;
+                          itemOverlay.querySelector('.overlay-body img').src = event.target.src;
+                          itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
+                          itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
+                          itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
+
+                          itemOverlay.classList.add('show'); 
+                          document.body.classList.add('overlay-active');
+                      }
+                  }
+              });
+
+              overlayCloseButton.addEventListener('click', () => {
+                  itemOverlay.classList.remove('show'); 
+                  document.body.classList.remove('overlay-active'); 
+              });
+          }
+      });
+      const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+
+      cartitemscountSocket.onopen = function(event) {
+          console.log('Connected to Cart WebSocket server!');
+      };
+
+      cartitemscountSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const cartIcon = document.querySelector('.cart-icon');
+        const cartCount = document.querySelector('.cart-count');
+
+        if (data.data && data.data.length > 0) {
+            cartIcon.style.fill = '#60b246';
+            cartCount.style.color = '#60b246';
+            cartCount.textContent = data.data.length;
+        }
+        else {
+            cartIcon.style.fill = 'currentColor';
+            cartCount.style.color = 'inherit';
+            
+            cartCount.textContent = '0';
+            
+        }
+    };
+    function addtocart(itemId, operation) {
+        const formData = new FormData();
+        formData.append('operation', operation);
+        formData.append('item_id',itemId);
+        fetch(/addtocart/, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') 
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Cart updated successfully.');
+            } else {
+                console.error(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    
+
+    document.addEventListener('DOMContentLoaded', () => {
+      {% if not user.phone_number %}
+        openPhoneNumberOverlay();
+      {% endif %}
+    });
+    function openPhoneNumberOverlay() {
+      const overlay = document.getElementById('phonenumberoverlay');
+      overlay.style.display = 'flex';
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closePhoneNumberOverlay(); 
+        }
+      });
+      document.body.style.overflow = 'hidden';
+      const allLinks = document.querySelectorAll('a');
+      allLinks.forEach(link => {
+        link.style.pointerEvents = 'none';
+      });
+      const allButtons = document.querySelectorAll('button:not(#verificationButton)');
+      allButtons.forEach(button => {
+        button.disabled = true;
+      });
+      function closePhoneNumberOverlay() {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        allLinks.forEach(link => {
+          link.style.pointerEvents = 'auto';
+        });
+        allButtons.forEach(button => {
+          button.disabled = false;
+        });
+      }
+
+      const verificationButton = document.getElementById('verificationButton');
+      verificationButton.removeEventListener('click', verifyPhoneNumber);
+      verificationButton.addEventListener('click', verifyPhoneNumber);
+
+      function verifyPhoneNumber() {
+        const phoneNumberInput = document.getElementById('updatephonenumber');
+        const phoneNumber = phoneNumberInput.value;
+        const errorMessageLabel = document.getElementById('error-message');
+        if (/^[6-9]\d{9}$/.test(phoneNumber)) {
+            errorMessageLabel.textContent = ''; 
+            const formData = new FormData();
+            formData.append('phone_number', phoneNumber);
+            fetch('/addphonenumber/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorMessageLabel.textContent = data.error;  
+                } else {
+                    errorMessageLabel.textContent = 'Phone number updated successfully!';
+                    setTimeout(() => {
+                        closePhoneNumberOverlay(); 
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating phone number:', error);
+                errorMessageLabel.textContent = 'An error occurred while updating the phone number.';
+            });
+          }
+      }
+    }
+    function applyFilters(filterType) {
+      switch (filterType) {
+        case 'vegNonVeg':
+          document.querySelector(`input[name="vegNonVeg"][value="${filterValue}"]`).checked = true;
+          break;
+      }
+        const sortOption = document.querySelector('input[name="sort"]:checked').value;
+        const ratingOptions = Array.from(document.querySelectorAll('input[name="ratings"]:checked'))
+            .map(checkbox => checkbox.value);
+        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') 
+            ? document.querySelector('input[name="vegNonVeg"]:checked').value 
+            : null;
+        const priceRange = document.getElementById('priceRange').value;
+
+        const queryParams = new URLSearchParams({
+            sort: sortOption,
+            ratings: ratingOptions.join(','),
+            vegNonVeg: vegNonVegOption,
+            price: priceRange
+        });
+
+        fetch(`/filteritems/?${queryParams.toString()}`,{
+          method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+          })
+          .then(response => response.json())
+          .then(data => {
+              populateItems(data.items);
+          })
+          .catch(error => {
+            console.error('Error fetching filtered items:', error);
+          });
+    }
+    function applyButtonFilter(filterType, filterValue) {
+      switch (filterType) {
+        case 'vegNonVeg':
+          document.querySelector(`input[name="vegNonVeg"][value="${filterValue}"]`).checked = true;
+          break;
+        case 'ratings':
+          
+          document.querySelector(`input[name="ratings"][value="${filterValue}"]`).checked = true;
+          break;
+        case 'price':
+          const priceRange = document.getElementById('priceRange');
+          if (filterValue === '300') { 
+            priceRange.value = 300;
+            document.getElementById('priceOutput').textContent = '₹300'; 
+          } else if (filterValue === '600') { 
+            priceRange.value = 600; 
+            document.getElementById('priceOutput').textContent = '₹600+'; 
+          } 
+          break;
+      }
+
+     
+      const queryParams = new URLSearchParams({
+        [filterType]: filterValue,
+      });
+
+      fetch(`/filteritems/?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        populateItems(data.items);
+      })
+      .catch(error => {
+        console.error('Error fetching filtered items:', error);
+      });
+    }
+
+    function populateItems(items){
+      allitemsDiv.innerHTML = ''; 
+      if (items.length === 0) {
+          allitemsDiv.innerHTML = `
+          <div class="noitemsfoundcontainer">
+            <img src="{% static '/images/noitemsfound.avif' %}" alt="No Items found">
+            <h4>Uh Oh! No items with applied filters are available at the moment</h4>  
+            <p>Remove filters to see items.</p>
+            <button class="clearfiltersbutton" onclick="clearFilters()">Clear Filters</button>
+          </div>
+          `;
+      } else {
+          items.forEach(item => {
+              const itemHtml = `
+                  <div class="item-card" data-item-id="${item.item_id}">
+                      <div class="item-info">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                              <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                              <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                          </svg>
+                          <h4>${item.item_name}</h4>
+                          <span class="price" id="item-name">₹${item.price}</span>
+                          <p>${item.description}</p>
+                          <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                      </div>
+                      <div class="image-container">
+                          <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                          ${item.is_available ? (item.in_cart ? `
+                              <div class="quantity-control">
+                                  <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                          <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                      </svg>
+                                  </button>
+                                  <p class="quantity">${item.quantity}</p>
+                                  <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                              </div>
+                          ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                      </div>
+                      <hr class="styles_divider__2JelH">
+                  </div>
+              `;
+              allitemsDiv.innerHTML += itemHtml;
+          });
+      }
+    }
+    function clearFilters(){
+      document.querySelector('input[name="sort"][value="relevance"]').checked = true;
+
+      document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
+        el.checked = false;
+      });
+
+      document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
+        el.checked = false;
+      });
+
+      const priceRange = document.getElementById('priceRange');
+      priceRange.value = 5000;
+      document.getElementById('priceOutput').innerText = '₹5000';
+          const allitemsSocket = new WebSocket('ws://127.0.0.1:8000/ws/allitems/');
+          const allitemsDiv = document.querySelector('.allitems'); 
+          allitemsSocket.onopen = function(event) {
+            console.log('Connected to All Items WebSocket server!');
+          };
+
+          allitemsSocket.onmessage = function(event) {
+              const data = JSON.parse(event.data);
+              if (data.data) {
+                  allitemsDiv.innerHTML = '';
+                  data.data.forEach(item => {
+                    const itemHtml = `
+                      <div class="item-card" data-item-id="${item.item_id}">
+                          <div class="item-info">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                  <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                  <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                              </svg>
+                              <h4>${item.item_name}</h4>
+                              <span class="price" id="item-name">₹${item.price}</span>
+                              <p>${item.description}</p>
+                              <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                              
+                          </div>
+                          <div class="image-container">
+                              <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                              ${item.is_available ? (item.in_cart ? `
+                                  <div class="quantity-control">
+                                      <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                              <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                          </svg>
+                                      </button>
+                                      <p class="quantity">${item.quantity}</p>
+                                      <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                                  </div>
+                              ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                          </div>
+                          <hr class="styles_divider__2JelH">
+                      </div>
+                    `;
+                    allitemsDiv.innerHTML += itemHtml;
+                  });
+          } else {
+              console.log("No item data received in the message.");
+          }
+      };
+    }
+    
+
+    let activeFilters = {
+      vegNonVeg: null,
+      ratings: [],
+      price: null
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+      const pureVegButton = document.querySelector('.nav-sub-item:nth-child(2)'); 
+      pureVegButton.addEventListener('click', () => {
+        applyButtonFilter('vegNonVeg', 'veg');
+      });
+      const ratingsButton = document.querySelector('.nav-sub-item:nth-child(3)'); 
+      ratingsButton.addEventListener('click', () => {
+        applyButtonFilter('ratings', '4.0'); 
+      });
+      const lessThan300Button = document.querySelector('.nav-sub-item:nth-child(4)');
+      lessThan300Button.addEventListener('click', () => {
+        applyButtonFilter('price', '300');
+      });
+    });
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+            }
+        }
+        }
+        return cookieValue;
+    }
+
+</script>
+</html>

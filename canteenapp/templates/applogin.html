@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            height: 100%;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        header {
+            position: relative; 
+            text-align: center;
+            height: 50%;
+        }
+
+        header img { 
+            width: 100%;
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        header h1 { 
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            margin: 0;
+            font-size: 24px; 
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50%;
+        }
+
+        .login-form {
+            border-radius: 10px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        h2 {
+            color: #000;
+            margin-bottom: 20px;
+            font-size: 24px;
+            margin-top: 10px !important;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            
+            box-shadow: 1px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            background-color: #f05454;
+            color: #fff;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .google-signup button{
+            background-color: #fff;
+            border-radius: 50%;
+            width:fit-content;
+            border: 1px solid #ccc;
+            padding: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #777;
+        }
+
+        .divider .line {
+            flex-grow: 1;
+            border-bottom: 1px solid #ddd;
+            margin: 0 10px;
+        }
+
+
+        .google-signup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .google-signup img {
+            width: 25px;
+            height: 25px;
+        }
+
+        .terms-checkbox {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .terms-checkbox a {
+            color: #f05454;
+            text-decoration: none;
+        }
+
+        .otp-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .verification-message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .timer {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .resend-message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .resend-link {
+            color: #f05454;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .login-verification-overlay,
+        .signup-verification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000; 
+        }
+
+        .overlay-content {
+            background-color: #fff;
+            padding: 10px;
+            margin: 0px 5px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 5px 1px rgba(0, 0, 0, 0.2);
+        }
+        .otp-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+
+        .otp-input,.signup-otp-input {
+            width: 50px !important;
+            height: 50px;
+            padding: 0px !important;
+            text-align: center;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-weight: 300 !important ;
+        }
+        .otp-input:focus,.signup-otp-input:focus{
+            outline: none;
+            border-color: #4285f4; 
+            box-shadow: 0px 0px 8px rgba(66, 133, 244, 0.5);
+        }
+        .close-overlay {
+            position: relative;
+            top: 10px;
+            left: 92%;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        
+
+        .loading:after {
+            content: "  \f110"; 
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden{
+            display: none;
+        }
+        .terms-and-conditions {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+        #error-message{
+            text-align: center;
+        }
+        .terms-and-conditions a {
+            color: #f05454;
+            text-decoration: none;
+        }
+        @media (hover: none) { 
+            button:active,
+            .google-signup button:active, 
+            .terms-and-conditions a:active {
+                background-color: #e04040; 
+                opacity: 0.8; 
+            }
+        }
+        button[disabled] {
+            opacity: 0.6;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{% static '/images/banner.jpg' %}" alt="Food Hub Header"> <h1>Food Hub</h1> 
+    </header>
+    <div class="container">
+        <div class="login-form" id="login-section">
+            <h2>Welcome Back</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="error-message" id="error-message" style="color: #ea4335;"></label>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Email" required autocomplete="off">
+                </div>
+                <button type="button" id="loginButton" onclick="handleLogin()">Login</button>
+                <p style="text-align: center; margin-top: 10px;">Don't have an account? <a href="javascript:void(0);" onclick="showSignup()" style="color: #f05454; text-decoration: none;">Signup</a></p>
+
+                <div class="divider">
+                    <div class="line"></div>
+                    <span>or</span>
+                    <div class="line"></div>
+                </div>
+
+                
+            </form>
+            <div class="google-signup">
+                <button class="google-button" id="google-login-button">
+                    <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
+                </button>
+            </div>
+        </div>
+
+        <div class="login-form hidden" id="signup-section">
+            <h2>Create Account</h2>
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="error-message" id="signup-error-message" style="color: #ea4335;"></label>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="username" name="username" placeholder="Full Name" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input type="email" id="signup-email" name="email" placeholder="Email" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="phone" name="phone" placeholder="Phone Number" required autocomplete="off">
+                </div>
+
+                <button type="button" id="signupButton" onclick="handleSignup()">Create Account</button>
+                <p style="text-align: center; margin-top: 10px;">Already have an account? <a href="javascript:void(0);" onclick="showLogin()" style="color: #f05454; text-decoration: none;">Login</a></p>
+
+                <div class="divider">
+                    <div class="line"></div>
+                    <span>or</span>
+                    <div class="line"></div>
+                </div>
+
+                
+            </form>
+            <div class="google-signup">
+                <button class="google-button" id="google-signup-button">
+                    <img src="{% static 'images/google.png' %}" alt="Google Logo"> 
+                </button>
+            </div>
+        </div>
+
+        <div class="login-verification-overlay hidden" id="login-verification-overlay">
+            <div class="overlay-content">
+                <section >
+                    <h3>Verification Code</h3>
+                    
+                </section>
+                <section>
+                    <p id="login-verification-error" style="color: #ea4335;"></p>
+                    <p class="verification-message">One Time Password has been sent to your email <strong id="verification-email"></strong>. Please enter it below. Valid for 10 minutes.</p>
+                    <div class="otp-inputs">
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="login-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+
+                    </div>
+                    <p class="timer" id="login-timer">00:00</p>
+                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendLoginOTP()" id="login-resend-link">Resend Now</span></p>
+                </section>
+            </div>
+        </div>  
+    
+        <div class="signup-verification-overlay hidden" id="signup-verification-overlay">
+            <div class="overlay-content">
+                <section >
+                    <h3>Verification Code</h3>
+                    
+                </section>
+                <section>
+                    <p id="signup-verification-error" style="color: #ea4335;"></p>
+                    <p class="verification-message">One Time Password has been sent to your email <strong id="signup-verification-email"></strong>. Please enter it below. Valid for 10 minutes.</p>
+                    <div class="otp-inputs">
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                        <input maxlength="1" pattern="[0-9]*" type="text" class="otp-input" id="signup-otp-input" oninput="moveToNext(this)" onkeydown="moveBack(this, event)" autocomplete="off" />
+                    </div>
+                    <p class="timer" id="signup-timer">00:00</p>
+                    <p class="resend-message">Not received OTP? <span class="resend-link" onclick="resendSignupOTP()" id="signup-resend-link">Resend Now</span></p>
+                </section>
+            </div>
+        </div> 
+        <div class="terms-and-conditions">
+            By continuing, you agree to our<br>
+            <a href="#" target="_blank">Terms of Service</a> and 
+            <a href="#" target="_blank">Privacy Policy</a>
+        </div>        
+    </div>
+    <script>
+        let currentAction = '';
+        let timerId = null;
+
+        function showSignup() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('signup-section').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('signup-section').classList.add('hidden');
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+
+        function handleSignup() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('signup-email').value;
+            const phone = document.getElementById('phone').value;
+            if (!validateEmail(email)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Email';
+                return;
+            }
+            if (!validatePhoneNumber(phone)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Phone Number';
+                return;
+            }
+            if (!validateName(username)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Name';
+                return;
+            }
+            document.getElementById('signupButton').classList.add('loading');
+            document.getElementById('signupButton').disabled = true;
+            sendSignupVerificationCode(email, phone, username);
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            if (!validateEmail(email)) {
+                document.getElementById('error-message').textContent = 'Invalid Email';
+                return;
+            }
+            document.getElementById('loginButton').classList.add('loading');
+            document.getElementById('loginButton').disabled = true;
+            sendLoginVerificationCode(email);
+        }
+
+        function resendLoginOTP() {
+            const email = document.getElementById('email').value;
+            sendLoginVerificationCode(email);
+            clearOTPFields();
+            resetLoginTimer();
+            document.getElementById("verificationButton").classList.add('loading');
+        }
+
+        function resendSignupOTP() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('signup-email').value;
+            const phone = document.getElementById('phone').value;
+            sendSignupVerificationCode(email,phone,username);
+            clearOTPFields();
+            resetSignupTimer();
+        }
+
+        function moveToNext(input) {
+            if (input.value.length >= 1) {
+                const inputs = document.querySelectorAll('.otp-input');
+                const currentIndex = Array.from(inputs).indexOf(input);
+
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                }
+            }
+        }
+
+        function moveBack(input, event) {
+            if (event.key === "Backspace" && input.value.length === 0) {
+                const inputs = document.querySelectorAll('.otp-input');
+                const currentIndex = Array.from(inputs).indexOf(input);
+
+                if (currentIndex > 0) {
+                    inputs[currentIndex - 1].focus();
+                }
+            }
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        function validatePhoneNumber(phone) {
+            const phoneRegex = /^[6-9]\d{9}$/; 
+            return phoneRegex.test(phone);
+        }
+
+        function validateName(name) {
+            const nameRegex = /^[A-Za-z.\s]+$/; 
+            return nameRegex.test(name);
+        }
+        function sendLoginVerificationCode(email) {
+            if (!validateEmail(email)) {
+                document.getElementById('error-message').textContent='Invalid Email';
+                return;
+            }
+            fetch('/sendverificationcode/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ email_login: email }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loginButton').disabled = false;
+                document.getElementById('signupButton').disabled = false;
+                document.getElementById('loginButton').classList.remove('loading');
+                document.getElementById('signupButton').classList.remove('loading'); 
+                document.getElementById('loginButton').classList.remove('loading'); 
+                if (data.success) {
+                    openLoginVerificationOverlay();
+                    document.getElementById('verification-email').textContent = email;
+                    startLoginTimer();
+                } else {
+                    document.getElementById('error-message').textContent=data.error;
+                }
+            })
+            .catch(error => {
+                document.getElementById('loginButton').classList.remove('loading'); 
+                console.error('Error sending verification code:', error);
+                alert('Error sending verification code. Please try again later.');
+                document.getElementById('loginButton').disabled = false;
+                document.getElementById('signupButton').disabled = false;
+                document.getElementById('loginButton').classList.remove('loading');
+                document.getElementById('signupButton').classList.remove('loading'); 
+                document.getElementById('loginButton').classList.remove('loading'); 
+            });
+        }
+        function sendSignupVerificationCode(email, phone, username) {
+            if (!validateEmail(email)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Email'; 
+                return;
+            }
+            if (!validatePhoneNumber(phone)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Phone Number';
+                return;
+            }
+
+            if (!validateName(username)) {
+                document.getElementById('signup-error-message').textContent = 'Invalid Name';
+                return;
+            }
+            fetch('/sendsignverificationcode/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ 
+                    email: email, 
+                    action: 'signup',
+                    phone: phone,
+                    username: username
+                }) 
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loginButton').disabled = false;
+                document.getElementById('signupButton').disabled = false;
+                document.getElementById('loginButton').classList.remove('loading');
+                document.getElementById('signupButton').classList.remove('loading'); 
+                document.getElementById('loginButton').classList.remove('loading');
+
+                if (data.success) {
+                    openSignupVerificationOverlay();
+                    document.getElementById('signup-verification-email').textContent = email;
+                    startSignupTimer();
+                } else {
+                    document.getElementById('signup-error-message').textContent = data.error; 
+                }
+            })
+            .catch(error => {
+                document.getElementById('loginButton').disabled = false;
+                document.getElementById('signupButton').disabled = false;
+                document.getElementById('loginButton').classList.remove('loading');
+                document.getElementById('signupButton').classList.remove('loading'); 
+                document.getElementById('loginButton').classList.remove('loading');  
+                console.error('Error sending verification code:', error);
+                alert('Error sending verification code. Please try again later.');
+            });
+        }
+        function startLoginTimer() {
+            let seconds = 59; 
+            const timerElement = document.querySelector('#login-timer');
+            const resendLink = document.querySelector('#login-resend-link');
+            resendLink.style.display = 'none';
+
+            timerId = setInterval(function() {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+                if (seconds <= 0) {
+                    clearInterval(timerId);
+                    timerElement.textContent = "00:00";
+                    resendLink.style.display = 'inline-block';
+                }
+                seconds--;
+            }, 1000);
+        }
+        function startSignupTimer() {
+            let seconds = 59; 
+            const timerElement = document.querySelector('#signup-timer');
+            const resendLink = document.querySelector('#signup-resend-link');
+            resendLink.style.display = 'none';
+
+            timerId = setInterval(function() {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
+                if (seconds <= 0) {
+                    clearInterval(timerId);
+                    timerElement.textContent = "00:00";
+                    resendLink.style.display = 'inline-block';
+                }
+                seconds--;
+            }, 1000);
+        }
+
+        function clearOTPFields() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            otpInputs.forEach(input => input.value = '');
+        }
+
+        function resetLoginTimer() {
+            clearInterval(timerId);
+            startLoginTimer();
+        }
+        function resetSignupTimer() {
+            clearInterval(timerId);
+            startSignupTimer();
+        }
+
+        function validateOTP() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+            let dataToSend = {}; 
+
+            if (currentAction === 'login'){
+                const email = document.getElementById('email').value;
+                dataToSend = { 
+                    email: email,
+                    code: otp,
+                };
+            }
+            if (currentAction === 'signup'){
+                const email = document.getElementById('signup-email').value;
+                dataToSend = { 
+                    email: email,
+                    code: otp,
+                    username: document.getElementById('username').value,
+                    phone_number: document.getElementById('phone').value,
+                };
+            }
+            const username = document.getElementById('username').value; 
+            const phone = document.getElementById('phone').value;
+            if (otp.length === 6) {
+                let verificationUrl = (currentAction === 'login') ? '/loginverifymail/' : '/signupverifymail/';
+
+                fetch(verificationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(dataToSend)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'apphome/';
+                    } else {
+                        let errorId = (currentAction === 'login') ? 'login-verification-error' : 'signup-verification-error';
+                        document.getElementById(errorId).textContent = data.error;
+                        otpInputs.forEach(input => input.value = '');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error verifying OTP:', error);
+                    alert('Error verifying OTP. Please try again later.');
+                });
+            }
+        }
+
+        const lastOTPInput = document.querySelectorAll('#login-otp-input')[5];
+        if (lastOTPInput) {
+            lastOTPInput.addEventListener('keyup', validateOTP);
+        }
+        const signupLastOTPInput = document.querySelectorAll('#signup-otp-input')[5];
+        if (signupLastOTPInput) {
+            signupLastOTPInput.addEventListener('keyup', validateOTP);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        function openLoginVerificationOverlay() {
+            currentAction='login'
+            document.getElementById('login-verification-overlay').classList.remove('hidden');
+        }
+        function openSignupVerificationOverlay() {
+            currentAction='signup'
+            document.getElementById('signup-verification-overlay').classList.remove('hidden');
+        }
+        function closeLoginVerificationOverlay() {
+            document.getElementById('login-verification-overlay').classList.add('hidden');
+        }
+
+        function closeSignupVerificationOverlay() {
+            document.getElementById('signup-verification-overlay').classList.add('hidden');
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('google-login-button').onclick = function() {
+                fetch('/applogout/', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                })
+                .then(() => {
+                    window.location.href = "{% url 'social:begin' 'google-oauth2' %}?next=/apphome";
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                }); 
+            };
+            document.getElementById('google-signup-button').onclick = function() {
+                fetch('/applogout/', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                })
+                .then(() => {
+                    window.location.href = "{% url 'social:begin' 'google-oauth2' %}?next=/apphome";
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                }); 
+            };
+        })
+    </script>
+</body>
+</html>

@@ -403,3 +403,6 @@ hr{
     cursor: pointer;
     margin-right: 10px;
 }
+.order-details-header span{
+    margin-bottom: 10px;
+}

@@ -112,4 +112,15 @@ urlpatterns = [
     path('deliverydeliveredorders/',views.deliverydeliveredorders,name='deliverydeliveredorders'),
     path('get_delivery_performance_chart_data/',views.get_delivery_performance_chart_data,name='get_delivery_performance_chart_data'),
     path('deliverytemplate/',views.deliverytemplate,name='deliverytemplate'),
+
+
+
+    path('applogin/',views.applogin,name='applogin'),
+    path('apphome/',views.apphome,name='apphome'),
+    path('appsearch/',views.appsearch,name='appsearch'),
+    path('appcheckout/',views.appcheckout,name='appcheckout'),
+    path('appprofile/',views.appprofile,name='appprofile'),
+    path('apporderhistory/',views.apporderhistory,name='apporderhistory'),
+    path('apporderinfo/',views.apporderinfo,name='apporderinfo'),
+    path('applogout/',views.applogout,name='applogout'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
