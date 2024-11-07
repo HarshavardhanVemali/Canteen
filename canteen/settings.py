@@ -15,8 +15,6 @@ from canteenapp.signals import create_unique_username
 import os
 import dj_database_url
 from django.core.asgi import get_asgi_application
-
-application = get_asgi_application()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
