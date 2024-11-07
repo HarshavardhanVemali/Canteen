@@ -20,3 +20,4 @@ application = ProtocolTypeRouter({
         )
     ),
 })
+from django.conf import settings
