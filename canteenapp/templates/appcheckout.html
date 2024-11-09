@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache">
     <title>Order Food</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +17,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button, a, img {
+        outline: none;
+    } 
     a:focus,button:focus {
         outline: none;  
         box-shadow: none; 
@@ -30,11 +37,11 @@
         }
     }
     body {
-        font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+        font-family: 'Poppins', sans-serif;
         margin: 0;
         line-height: 1.6;
         color: #333;
-        background-color: #e9ecee;
+        background-color: #f1f3f6;
         overflow-x: hidden;
     }
     .back-button{
@@ -214,7 +221,7 @@
         margin-top: 5px;
         font-size: 14px;
         margin-bottom: 0px;
-        color: #4b4b4c !important;
+        color: #323234 ;
         font-weight: 500;
         margin: 0
     }
@@ -223,9 +230,10 @@
     .price {
         font-size: 1.5em;
         margin-left: 20px;
+        font-family: Lato-Regular, Helvetica, sans-serif;
     }
     #increase{
-        color: #60b246;
+        color: rgb(27, 166, 114);
     }
     .order-total {
         font-weight: bold;
@@ -306,17 +314,21 @@
         box-shadow: rgba(28, 28, 28, 0.1) 0px 4px 6px;
         border: 0.8px solid rgb(215, 221, 249);
         margin-bottom: 150px;
+        
+    }
+    .checkout-nav-bar a{
+        font-family: Lato-Regular, Helvetica, sans-serif;
     }
     .bill-item{
         display: flex;
         justify-content: space-between;
         padding: 10px 0px;
         font-size: 13px;
-        color: #4b4c51 !important;
+        color: #1f1f20 !important;
     }
     .bill-price{
-        font-weight: 600;
-        
+        font-weight: 800;
+        font-family: Lato-Regular, Helvetica, sans-serif;
     }
 
     .proceed-button {
@@ -408,8 +420,8 @@
     }
 
     .selected-location {
-        margin-top: 20px;
-        font-size: 1.2em;
+        margin-top: 5px;
+        font-size: 12px;
         color: #282c3f;
         font-weight: 500; 
     }
@@ -504,7 +516,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        bottom: 50px;
+        bottom: 45px;
         left: 0;
         right: 0;
         z-index: 1000;
@@ -519,6 +531,11 @@
         text-decoration: none;
         color: #020202;
         font-weight: 600;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+    .checkout-nav-bar a:active {
+        
+        transform: scale(0.97);
     }
     .item-header svg{
         width: 12px;
@@ -548,10 +565,11 @@
         transform: translateX(0%);
     }
     .quantity {
-        font-size: 14px;
+        font-size: 16px !important;
         width: 30px;
         text-align: center;
-        color: #60b246 !important;
+        color: rgb(27, 166, 114) !important;
+        font-weight: 800 !important;
     }
     .total-delivery-time p{
         font-weight: 600;
@@ -637,7 +655,7 @@
             
             <div class="delivery-location">
                     
-                    <h2 style="color:#616264;font-weight: 500;">Select delivery location</h2>
+                    <h2 style="color:#616264;font-weight: 500;">Delivery location</h2>
                     <div class="location-details" id="location-details">
                     <div id="locations" class="location-options">
                         
@@ -1073,7 +1091,7 @@
         const checkOutNav=document.querySelector('.checkout-nav-bar');
         checkOutNav.innerHTML='';
         checkOutNav.innerHTML=`
-            <a href="#bill-details">₹ ${finalAmount.toFixed(2)}<br><p style="color:rgb(27, 166, 114);font-size:12px;font-weight:600;margin:0;">View Bill</p></a>
+            <a href="#bill-details">₹ ${finalAmount.toFixed(2)}<br><p style="color:rgb(27, 166, 114);font-size:13px;font-weight:600;margin:0;">View Bill</p></a>
             <button class="proceed-button" id="proceed-button">Proceed to Pay</button>
         `
     };

@@ -7,6 +7,7 @@
     <title>Food Hub - Order</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta http-equiv="cache-control" content="no-cache">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
     <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
@@ -14,8 +15,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <style>
+  
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, img {
+    outline: none;
+  } 
   body {
-    font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     line-height: 1.6;
     color: #333;
@@ -27,18 +35,18 @@
     padding-bottom: 30px; 
   }
   a:focus,button:focus {
-        outline: none;  
-        box-shadow: none; 
-        -webkit-tap-highlight-color: transparent;
+    outline: none;  
+    box-shadow: none; 
+    -webkit-tap-highlight-color: transparent;
+  }
+  a:focus,button:focus {
+    outline: none;
+  }
+   @media (hover: none) and (pointer: coarse) {
+    a:focus,button:focus {
+      outline: none;
     }
-    a:focus {
-        outline: none;
-    }
-    @media (hover: none) and (pointer: coarse) {
-        a:focus {
-            outline: none;
-        }
-    }
+  }
   header{
     position: fixed;
     top: 0;
@@ -60,7 +68,7 @@
     border-bottom: 1px solid #ffffff;
   }
   .header-container {
-   
+
     padding: 0px 5px;
     box-shadow: none;
     
@@ -70,12 +78,32 @@
     
   }
 
-.header-container a {
+.header-container a{
     text-decoration: none;
 }
 
-.header-container a svg {
+.header-container a h3 {
     fill: #686b78;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    margin: 0;
+    line-height: 10px;
+    color: #ffffff;
+    background-color: #000;
+    font-weight: 500;
+    font-size: 16px;
+    margin-right:5px ;
+}
+
+.header-container a h3:hover {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.header-container a h3:active {
+    background: rgba(0, 0, 0, 0.98);
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
 }
 
 .header-content {
@@ -103,12 +131,12 @@
 }
 
 .logo-link img {
-    height: 50px;
+    height: 70px;
 }
 
 .header-title h3 {
     font-weight: 500;
-    font-size: 16px;
+    font-size: 22px;
 }
 
 .navbarbottom {
@@ -118,6 +146,7 @@
   right: 0; 
   z-index: 9999;
   width: 100%; 
+  
 }
 
 .nav-items-container {
@@ -129,24 +158,25 @@
   background: #fff;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); 
   border-top: 1px solid rgba(2, 6, 12, 0.1);
+  
 }
 
 #scrollToTopBtn {
   display: none;
   position: fixed;
   bottom: 70px; 
-  right: 15px; 
+  right: 10px; 
   z-index: 10000;
   border: none;
   outline: none;
   background-color: #d7372b;
   color: white;
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 7px 8px;
   border-radius: 50%;
 }
 #scrollToTopBtn i{
-  font-size: 10px;
+  font-size: 14px;
 }
 .nav-item svg {
     width: 18px;
@@ -198,14 +228,15 @@
     margin: 0 5px;
     background-color: #ffffff;
     box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    border:0.9px solid #dbe1f8;
+    border-radius: 10px;
+    border:0.9px solid #e8ecfb;
 }
 
 .search-bar input {
     border: none;
     outline: none;
     font-size: 14px;
+    padding: 15px 20px ;
 }
 
 .search-icon {
@@ -272,7 +303,7 @@
 .dish-info h3 {
     text-align: center;
     font-size: 12px;
-    font-weight: 300;
+    font-weight: 400;
     margin-bottom: 0px;
 }
 
@@ -288,13 +319,13 @@
 .divider {
     display: flex;
     align-items: center;
-    margin: 15px 0;
-    color: #6d6b83;
+    margin: 20px 0;
+    color: #6c6b75;
 }
 
 .divider .line {
     flex-grow: 1;
-    border-bottom: 0.8px solid #e7ebfb;
+    border-bottom: 0.7px solid #dee2f1;
     margin: 0 10px;
 }
 
@@ -361,14 +392,18 @@
     justify-content: center;
     align-items: center;
 }
+.homeitems{
+  margin-top: 20px;
+}
 .item-card {
   padding: 0;
   margin: 10px;
   position: relative;
   display: flex;
-  border-bottom: .5px solid #e1e3fe;
-  padding-bottom: 30px;
+  border-bottom: .8px solid #e1e3fe;
+  padding-bottom: 15px;
   width: 100%;
+  padding-top: 5px;
 }
 
 .item-info {
@@ -380,32 +415,36 @@
 
 .item-info h4 {
   margin-top: 0px;
-  margin-bottom: 0px;
-  font-weight: 600;
-  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 800;
+  font-size: 20px;
   line-height: 20px;
   letter-spacing: -0.3px;
   color: rgba(2, 6, 12, 0.78);
 }
 
 .item-info p {
+    
+  line-height: 19px;
   margin-bottom: 10px;
-  color: #666;
+  color: #4d4c4c;
   margin-top: 0px;
   font-weight: 500;
   font-size: 12px;
-  line-height: 18px;
+  line-height: 15px;
   letter-spacing: -0.3px;
-  color: rgba(2, 6, 12, 0.6);
+  color: rgba(2, 6, 12, 0.5);
   letter-spacing: 0.5px;
 }
 .delivery_time{
   font-weight: 530 !important;
 }
 .price {
-  font-size:12px;
+  font-size:18px;
+  margin-top: 10px;
   font-weight: bold;
-  color: rgba(2, 6, 12, 0.65) !important;
+  color: rgba(17, 24, 34, 0.98) !important;
+  font-family: Lato-Regular, Helvetica, sans-serif;
 }
 
 .item-card img {
@@ -414,6 +453,7 @@
   height: 140px;
   flex-grow: 1;
   border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .image-container {
@@ -468,10 +508,13 @@
     justify-content: center;
 }
 .quantity {
-    font-size: 14px;
+    font-size: 16px;
     width: 30px;
     text-align: center;
-    color: #60b246 !important;
+    color: rgb(27, 166, 114) !important;
+}
+#increase{
+  color: rgb(27, 166, 114);
 }
 .image-container {
   display: flex;
@@ -489,7 +532,7 @@
 }
 .filter-btn, .dropdown-chip {
   font-weight: 500;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 18px;
   letter-spacing: -0.3px;
   color: rgba(2, 6, 12, 0.75);
@@ -506,8 +549,21 @@
   height: 14px;
 }
 .nav-sub-item{
-  padding: 5px 12px;
+  padding: 10px 16px;
   width: max-content;
+}
+.filter-close-btn{
+   width: 18px !important;
+   height: 18px !important;
+   display: none;
+}
+.nav-sub-item.active .filter-close-btn {
+   display: block;
+}
+.nav-sub-item.active{
+  border:0.8px solid #444a50;
+  background-color: #f3f6f9;
+  gap: 3px;
 }
 .sub-navbar>div{
   gap: 5px !important;
@@ -568,6 +624,12 @@ header {
   background: #e3e3e5;
   border-radius: 50%;
   padding: 3px 3px 1px 3px;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.close-btn:active {     
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%);
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
 }
 .close-btn svg{
   width: 16px;
@@ -576,7 +638,7 @@ header {
 }
 
 .filter-categories {
-    width: 40%;
+    width: 50%;
     background-color: #fefefe;
     border-right: 1px solid #e0e0e0;
     padding: 5px;
@@ -595,7 +657,7 @@ header {
     padding: 10px 20px;
     padding-left: 4px;
     font-weight: 540;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     color:#333;
     border-left: 4px solid transparent;
@@ -641,8 +703,303 @@ filter-content h4 {
   outline: none;
   border: none; 
 }
+#phonenumberoverlay {
+  position: fixed; 
+  top: 0; 
+  left: 0;
+  height: 100%;
+  display: none; 
+  justify-content: center;
+  align-items: center;
+  justify-content: end;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  transition: opacity 0.3s ease; 
+}
+.overlay-content {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  width: -webkit-fill-available;
+  border-radius: 20px 20px 0 0; 
+  border-top: 1px solid rgba(77, 92, 113, 0.2);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01); 
+  bottom: 0; 
+  padding-bottom: 30px;
+  transition: transform 0.3s ease-in-out;
+}
+.overlay-content h3{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+#updatephonenumber {
+    width: 100%;
+    padding: 6px;
+   
+    box-sizing: border-box;
+    font-size: 12px;
+    height: 45px;
+    border-radius: 10px;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+#updatephonenumberlabel {
+  border: 1px solid rgba(84, 85, 88, 0.2);
+    padding: 0px;
+    border-radius: 0px;
+    border-radius: 10px;
+}
+.verification-button {
+    width: 100%;
+    padding: 12px;
+    background-color: rgb(239, 79, 95);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 0px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+  .refresh-indicator {
+    position: fixed;
+    top: 150px;
+    left: 45%;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    opacity: 0;
+  }
+  .refresh-indicator .loader-icon { 
+      transition: transform 0.3s ease; 
+  }
 
 
+
+  @keyframes rotate {
+      from {
+          transform: rotate(0deg);
+      }
+      to {
+          transform: rotate(360deg);
+      }
+  }
+  #itemOverlay{
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    justify-content: end;
+    flex-direction: column;
+    gap: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 11111;
+    transition: opacity 0.3s ease; 
+  }
+  .overlay-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    width: -webkit-fill-available;
+    border-radius: 20px 20px 0 0 !important;
+    border-top: 1px solid rgba(77, 92, 113, 0.2);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01);
+    bottom: 0;
+    padding-bottom: 30px;
+    transition: transform 0.3s ease-in-out;
+    
+}
+.overlay-close-btn {
+    position: static;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    align-items: center;
+    height: 28px;
+    width: 28px;
+    cursor: pointer;
+    background: rgb(255, 255, 255);
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 6px;
+    border: none;
+    outline: none;
+    font: initial;
+}
+.overlay-body p {
+    margin: 5px 0;
+    color: #666;
+    padding: 0px 10px;
+    font-size: 18px;
+}
+.overlay-body p:first-of-type{
+  font-size: 20px;
+  font-weight: bolder;
+  margin-bottom: 0px;
+}
+.overlay-body p:nth-of-type(2){
+  margin-top: 0px;
+  font-size: 16px;
+  font-weight: 530 !important;
+}
+.overlay-body p:last-of-type{
+  padding-bottom: 20px;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: -0.3px;
+  font-weight: 400;
+}
+.overlay-body h3 {
+    padding: 0px 10px;
+
+}
+.delivery_time{
+  font-size: 15px !important;
+}
+.allitems {
+    margin-bottom: 30px;
+}
+.cartSuccessOverlay {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 93%;
+    height: 35px;
+    background: rgb(18, 158, 107);
+    background-color: #ffffff;
+    color: #000;
+    z-index: 2;
+    border-top: 1px solid rgba(77, 92, 113, 0.2);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01); 
+    padding: 13px;
+    border-radius: 20px 20px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    transition: bottom 0.5s ease-in-out;
+}
+.cartContent{
+  align-items: center;
+}
+.cartTitle, .cartSubTitle {
+    font-size: 14px;
+    color: #4d4c4c;
+    font-weight: 800;
+}
+.cartSuccessOverlay.show {
+    bottom: 50px;
+
+}
+.viewCart{
+  background: rgb(16, 159, 106);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+  padding: 10px 15px;
+  border-radius: 6px;
+  text-transform: none;
+  font-size: 16px;
+}
+.viewCart h2{
+  margin:0 ;
+  font-size: 16px;
+}
+.noitemsfoundcontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px 20px;
+}
+.noitemsfoundcontainer img{
+  width: 100%;
+  height: auto;
+}
+.noitemsfoundcontainer h4 {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    font-size: 14px;
+    text-align: center;
+}
+.noitemsfoundcontainer p{
+  margin: 3px;
+  font-size: 12px;
+}
+.clearfiltersbutton {
+    margin-top:5px ;
+    background: rgb(2, 6, 12);
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+.viewCart svg {
+    margin-left: 8px;
+    fill: white;
+    width: 18px;
+    height: 18px;
+}
+.sub-navbar.sticky .nav-sub-item:last-of-type{
+  margin-right: 15px;
+}
+.orderfoodonline-loading-page {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    gap: 10px;
+    width: 100%;
+}
+.loading-container {
+  margin-bottom: 0;
+  gap: 5px;
+  width: auto;
+  margin: 10px;
+}
+.image-placeholder {
+  width: 150px;
+  height: 140px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  margin-right: 0px;
+  position: relative;
+  overflow: hidden;
+}
+.placeholder-card {
+    width: 100%;
+    height: 150px;
+    background-color: transparent;
+    border-radius: 0px !important;
+    display: flex;
+    align-items: center;
+    border:none;
+    box-shadow: none;
+    border-radius: 10px;
+    border-bottom: .8px solid #e1e3fe;
+    padding: 10px 0px;
+
+}
+.text-placeholder {
+    flex-grow: 1;
+    margin-left: 0px;
+    margin-right: 20px;
+}
 </style>
 <body>
     <header >
@@ -657,10 +1014,7 @@ filter-content h4 {
           </div>
           <div>
               <a href="/appprofile"> 
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                  </svg>
+                <h3 class="profile-letter"></h3>
                 </a>
           </div>
         </div>
@@ -674,7 +1028,7 @@ filter-content h4 {
         </div>
     </header>
       
-  <main>
+  <main class="main">
      <div class="header-image">
 
      </div>  
@@ -804,20 +1158,80 @@ filter-content h4 {
       <div style="display: flex;align-items: center;gap: 10px;">
         <div class="nav-sub-item filter" onclick="openFilterOverlay()">
           <span class="filter-btn">Filter</span>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="" width="16" height="16" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" class="sc-rbbb40-0 iwHbVQ"><title>filter</title><path d="M2.14 6.42h7.26c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h2.96c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001h-2.94c-0.341-1.226-1.447-2.11-2.76-2.11s-2.419 0.885-2.755 2.090l-0.005 0.020h-7.26c-0.343 0.059-0.6 0.355-0.6 0.71s0.257 0.651 0.596 0.709l0.004 0.001zM12.16 4.28c0.776 0.011 1.4 0.643 1.4 1.42 0 0.784-0.636 1.42-1.42 1.42-0.777 0-1.409-0.624-1.42-1.399l-0-0.001c-0-0.006-0-0.013-0-0.020 0-0.784 0.636-1.42 1.42-1.42 0.007 0 0.014 0 0.021 0l-0.001-0zM17.86 13.58h-7.24c-0.328-1.245-1.443-2.148-2.77-2.148s-2.442 0.903-2.766 2.128l-0.004 0.020h-2.94c-0.036-0.006-0.077-0.010-0.12-0.010-0.398 0-0.72 0.322-0.72 0.72s0.322 0.72 0.72 0.72c0.042 0 0.084-0.004 0.124-0.011l-0.004 0.001h2.96c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h7.26c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001zM7.84 15.72c-0.776-0.011-1.4-0.643-1.4-1.42 0-0.784 0.636-1.42 1.42-1.42 0.777 0 1.409 0.624 1.42 1.399l0 0.001c0 0.006 0 0.013 0 0.020 0 0.784-0.636 1.42-1.42 1.42-0.007 0-0.014-0-0.021-0l0.001 0z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="" width="18" height="18" viewBox="0 0 20 20" aria-labelledby="icon-svg-title- icon-svg-desc-" role="img" class="sc-rbbb40-0 iwHbVQ"><title>filter</title><path d="M2.14 6.42h7.26c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h2.96c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001h-2.94c-0.341-1.226-1.447-2.11-2.76-2.11s-2.419 0.885-2.755 2.090l-0.005 0.020h-7.26c-0.343 0.059-0.6 0.355-0.6 0.71s0.257 0.651 0.596 0.709l0.004 0.001zM12.16 4.28c0.776 0.011 1.4 0.643 1.4 1.42 0 0.784-0.636 1.42-1.42 1.42-0.777 0-1.409-0.624-1.42-1.399l-0-0.001c-0-0.006-0-0.013-0-0.020 0-0.784 0.636-1.42 1.42-1.42 0.007 0 0.014 0 0.021 0l-0.001-0zM17.86 13.58h-7.24c-0.328-1.245-1.443-2.148-2.77-2.148s-2.442 0.903-2.766 2.128l-0.004 0.020h-2.94c-0.036-0.006-0.077-0.010-0.12-0.010-0.398 0-0.72 0.322-0.72 0.72s0.322 0.72 0.72 0.72c0.042 0 0.084-0.004 0.124-0.011l-0.004 0.001h2.96c0.353 1.207 1.45 2.074 2.75 2.074s2.397-0.867 2.745-2.054l0.005-0.020h7.26c0.343-0.059 0.6-0.355 0.6-0.71s-0.258-0.651-0.596-0.709l-0.004-0.001zM7.84 15.72c-0.776-0.011-1.4-0.643-1.4-1.42 0-0.784 0.636-1.42 1.42-1.42 0.777 0 1.409 0.624 1.42 1.399l0 0.001c0 0.006 0 0.013 0 0.020 0 0.784-0.636 1.42-1.42 1.42-0.007 0-0.014-0-0.021-0l0.001 0z"></path></svg>
         </div>
         <div class="nav-sub-item">
           <span class="filter-btn">Pure Veg</span>
+          <svg class="filter-close-btn" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
         </div>
         <div class="nav-sub-item">
           <span class="filter-btn">Ratings 4.0+</span>
+          <svg class="filter-close-btn" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
         </div>
         <div class="nav-sub-item">
           <span class="filter-btn">Less than Rs. 300</span>
+          <svg class="filter-close-btn" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+          </svg>
         </div>
       </div>
     </div>
     <section class="homeitems section">
+      <div class="orderfoodonline-loading-page">
+        <div class="loading-container" id="orderfoodonline-loading-page">
+          
+          <div class="placeholder-card">
+              
+              <div class="text-placeholder">
+                  <div class="title-placeholder"></div>
+                  <div class="description-placeholder"></div>
+                  <div class="delivery-placeholder"></div>
+              </div>
+              <div class="image-placeholder"></div>
+          </div>
+          <div class="placeholder-card">
+              
+              <div class="text-placeholder">
+                  <div class="title-placeholder"></div>
+                  <div class="description-placeholder"></div>
+                  <div class="delivery-placeholder"></div>
+              </div>
+              <div class="image-placeholder"></div>
+          </div>
+          <div class="placeholder-card">
+              
+              <div class="text-placeholder">
+                  <div class="title-placeholder"></div>
+                  <div class="description-placeholder"></div>
+                  <div class="delivery-placeholder"></div>
+              </div>
+              <div class="image-placeholder"></div>
+          </div>
+          <div class="placeholder-card">
+              
+              <div class="text-placeholder">
+                  <div class="title-placeholder"></div>
+                  <div class="description-placeholder"></div>
+                  <div class="delivery-placeholder"></div>
+              </div>
+              <div class="image-placeholder"></div>
+          </div>
+          <div class="placeholder-card">
+              
+              <div class="text-placeholder">
+                  <div class="title-placeholder"></div>
+                  <div class="description-placeholder"></div>
+                  <div class="delivery-placeholder"></div>
+              </div>
+              <div class="image-placeholder"></div>
+          </div>
+          
+        </div>
+      </div>
       <div class="allitems">
         
       </div>
@@ -889,8 +1303,8 @@ filter-content h4 {
       </div>
     </div>   
     <div id="itemOverlay">
-        <div class="overlay-content" id="item-overlay-content">
-            <button class="overlay-close-btn">&times;</button>
+      <button class="overlay-close-btn">&times;</button>
+        <div class="overlay-content" id="item-overlay-content">   
             <div class="overlay-body">
                 <img src="#" alt="Item">
                 <h3></h3>
@@ -903,7 +1317,7 @@ filter-content h4 {
     <div class="overlay-container" id="phonenumberoverlay">
       <div class="overlay-content">
         <section style="display: flex; align-items: center; justify-content: space-between;">
-          <h3>Phone Number Required</h3>
+          <h3>Mobile Number Required</h3>
         </section>
       <section>
         <div class="form-group">
@@ -911,25 +1325,49 @@ filter-content h4 {
         </div>
         <div class="form-group">
           <div style="display: flex; align-items: center;" id="updatephonenumberlabel">
-            <input type="tel" id="updatephonenumber" name="updatephonenumber" placeholder="Phone Number" required autocomplete="off">
+            <input type="tel" id="updatephonenumber" name="updatephonenumber" placeholder="Mobile Number" required autocomplete="off" pattern="[0-9]*" inputmode="numeric" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
           </div>
         </div>
         <button class="verification-button" id="verificationButton">Continue</button>
       </section>
       </div>
     </div>
-    
-    
-  
+    <div class="cartSuccessOverlay">
+      <button class="cartSuccessButton" id="view-cart-btn">
+          <span class="cartContent" aria-hidden="true">
+              <span class="cartMain">
+                  <span class="cartTitle"></span>
+                  <span class="cartSubTitle"></span>
+              </span>
+              <span class="viewCart">
+                  <h2>Checkout</h2>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-cart3" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                  </svg>
+              </span>
+          </span>
+      </button>
+  </div>
     <button id="scrollToTopBtn" title="Back to top">
         <i class="bi bi-chevron-up" style="font-weight: 600;"></i>
     </button>
+    <div class="refresh-indicator" id="refreshIndicator">
+      <svg class="loader-icon"  xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#007bff" class="bi bi-arrow-clockwise" viewBox="0 0 16 16" stroke-width="3">
+        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+      </svg>
+    </div>
   </main>
 </body>
 <script>
     
     window.addEventListener('DOMContentLoaded', () => {
         document.querySelector('header').classList.add('show-header');
+        const profileLetter = document.querySelector('.profile-letter');
+        const fullName = "{{ user.first_name }}"; 
+        const firstWord = fullName.split(' ')[0];
+        const firstLetter = firstWord.charAt(0);
+        profileLetter.textContent = firstLetter; 
     });
     document.querySelector('.search-bar').addEventListener('click', function() {
         window.location.href = "{% url 'appsearch' %}";
@@ -1004,11 +1442,15 @@ filter-content h4 {
     }
     const scrollToTopButton = document.getElementById('scrollToTopBtn');
     window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 300) { 
-        scrollToTopButton.style.display = 'block';
-    } else {
-        scrollToTopButton.style.display = 'none';
-    }
+      if (window.pageYOffset > 300) { 
+          if(document.querySelector('.cartSuccessOverlay').style.display==='flex'){
+            scrollToTopButton.style.bottom=120+'px';
+            document.querySelector('.main').style.paddingBottom=80+'px';
+          }
+          scrollToTopButton.style.display = 'block';
+      } else {
+          scrollToTopButton.style.display = 'none';
+      }
     });
     document.getElementById('scrollToTopBtn').addEventListener('click', () => {
         window.scrollTo({
@@ -1060,11 +1502,13 @@ filter-content h4 {
     const allitemsSocket = new WebSocket(`${getWebSocketUrl()}allitems/`);
     const allitemsDiv = document.querySelector('.allitems'); 
     allitemsSocket.onopen = function(event) {
+      document.getElementById('orderfoodonline-loading-page').style.display='flex';
       console.log('Connected to All Items WebSocket server!');
     };
 
     allitemsSocket.onmessage = function(event) {
         const data = JSON.parse(event.data);
+        document.getElementById('orderfoodonline-loading-page').style.display='none';
         if (data.data) {
             allitemsDiv.innerHTML = '';
             data.data.forEach(item => {
@@ -1078,7 +1522,7 @@ filter-content h4 {
                         <h4>${item.item_name}</h4>
                         <span class="price" id="item-name">₹${item.price}</span>
                         <p>${item.description}</p>
-                        <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                        <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
                     </div>
                     <div class="image-container">
                         <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
@@ -1105,9 +1549,11 @@ filter-content h4 {
     };
     document.querySelector('.close-btn').addEventListener('click', function() {
       document.querySelector('.filter-overlay').style.display = 'none';
+      unlockScroll();
     });
     function openFilterOverlay(){
       document.querySelector('.filter-overlay').style.display = 'flex';
+      lockScroll();
     }
     function showContent(contentId) {
         const sections = document.querySelectorAll('.filter-options-content');
@@ -1126,36 +1572,6 @@ filter-content h4 {
 
       priceRange.oninput = function () {
         priceOutput.textContent = '₹' + this.value;
-      }
-      function applyFilters() {
-        const sortOption = document.querySelector('input[name="sort"]:checked').value;
-
-        const ratingOptions = [];
-        document.querySelectorAll('input[name="ratings"]:checked').forEach(function(el) {
-          ratingOptions.push(el.value);
-        });
-        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') ? 
-            document.querySelector('input[name="vegNonVeg"]:checked').value : null;
-
-        const priceRange = document.getElementById('priceRange').value;
-
-      }
-
-      function clearFilters() {
-        document.querySelector('input[name="sort"][value="relevance"]').checked = true;
-
-        document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
-          el.checked = false;
-        });
-
-        document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
-          el.checked = false;
-        });
-        const priceRange = document.getElementById('priceRange');
-        priceRange.value = 5000;
-        document.getElementById('priceOutput').innerText = '₹5000';
-
-        console.log('Filters cleared to default.');
       }
 
       document.getElementById('priceRange').addEventListener('input', function() {
@@ -1184,7 +1600,12 @@ filter-content h4 {
                           itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
                           itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
                           itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
-
+                          if(itemDeliveryTime[0]=='D'){
+                            itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(27, 166, 114)';
+                          }
+                          else{
+                            itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(239, 79, 95)';
+                          }
                           itemOverlay.classList.add('show'); 
                           document.body.classList.add('overlay-active');
                       }
@@ -1212,15 +1633,31 @@ filter-content h4 {
             cartIcon.style.fill = '#60b246';
             cartCount.style.color = '#60b246';
             cartCount.textContent = data.data.length;
+            document.querySelector('.cartSuccessOverlay').style.display='flex';
+            showCartSuccessOverlay();
+            if (data.data.length==1){
+              document.querySelector('.cartSubTitle').textContent='Item added';
+            }
+            else{
+              document.querySelector('.cartSubTitle').textContent='Items added';
+            }
+            document.querySelector('.cartTitle').textContent=data.data.length;
         }
         else {
             cartIcon.style.fill = 'currentColor';
             cartCount.style.color = 'inherit';
             
             cartCount.textContent = '0';
-            
+            document.querySelector('.cartSuccessOverlay').style.display='none';
         }
     };
+    function showCartSuccessOverlay() {
+        const overlay = document.querySelector('.cartSuccessOverlay');
+        overlay.classList.add('show');
+    }
+    document.getElementById('view-cart-btn').addEventListener('click', function() {
+        window.location.href = "{% url 'appcheckout' %}";
+    });
     function addtocart(itemId, operation) {
         const formData = new FormData();
         formData.append('operation', operation);
@@ -1315,6 +1752,8 @@ filter-content h4 {
       }
     }
     function applyFilters(filterType) {
+      document.querySelector('.filter-overlay').style.display = 'none';
+      unlockScroll();
       switch (filterType) {
         case 'vegNonVeg':
           document.querySelector(`input[name="vegNonVeg"][value="${filterValue}"]`).checked = true;
@@ -1334,7 +1773,7 @@ filter-content h4 {
             vegNonVeg: vegNonVegOption,
             price: priceRange
         });
-
+        document.getElementById('orderfoodonline-loading-page').style.display='flex';
         fetch(`/filteritems/?${queryParams.toString()}`,{
           method: 'GET',
                 headers: {
@@ -1343,9 +1782,11 @@ filter-content h4 {
           })
           .then(response => response.json())
           .then(data => {
+              document.getElementById('orderfoodonline-loading-page').style.display='none';
               populateItems(data.items);
           })
           .catch(error => {
+            document.getElementById('orderfoodonline-loading-page').style.display='none';
             console.error('Error fetching filtered items:', error);
           });
     }
@@ -1371,10 +1812,21 @@ filter-content h4 {
       }
 
      
-      const queryParams = new URLSearchParams({
-        [filterType]: filterValue,
-      });
+      const sortOption = document.querySelector('input[name="sort"]:checked').value;
+        const ratingOptions = Array.from(document.querySelectorAll('input[name="ratings"]:checked'))
+            .map(checkbox => checkbox.value);
+        const vegNonVegOption = document.querySelector('input[name="vegNonVeg"]:checked') 
+            ? document.querySelector('input[name="vegNonVeg"]:checked').value 
+            : null;
+        const priceRange = document.getElementById('priceRange').value;
 
+        const queryParams = new URLSearchParams({
+            sort: sortOption,
+            ratings: ratingOptions.join(','),
+            vegNonVeg: vegNonVegOption,
+            price: priceRange
+        });
+      document.getElementById('orderfoodonline-loading-page').style.display='flex';
       fetch(`/filteritems/?${queryParams.toString()}`, {
         method: 'GET',
         headers: {
@@ -1383,9 +1835,11 @@ filter-content h4 {
       })
       .then(response => response.json())
       .then(data => {
+        document.getElementById('orderfoodonline-loading-page').style.display='none';
         populateItems(data.items);
       })
       .catch(error => {
+        document.getElementById('orderfoodonline-loading-page').style.display='none';
         console.error('Error fetching filtered items:', error);
       });
     }
@@ -1413,7 +1867,7 @@ filter-content h4 {
                           <h4>${item.item_name}</h4>
                           <span class="price" id="item-name">₹${item.price}</span>
                           <p>${item.description}</p>
-                          <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                          <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
                       </div>
                       <div class="image-container">
                           <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
@@ -1437,6 +1891,8 @@ filter-content h4 {
       }
     }
     function clearFilters(){
+      document.querySelector('.filter-overlay').style.display = 'none';
+      unlockScroll();
       document.querySelector('input[name="sort"][value="relevance"]').checked = true;
 
       document.querySelectorAll('input[name="ratings"]').forEach(function(el) {
@@ -1453,11 +1909,13 @@ filter-content h4 {
           const allitemsSocket = new WebSocket(`${getWebSocketUrl()}allitems/`);
           const allitemsDiv = document.querySelector('.allitems'); 
           allitemsSocket.onopen = function(event) {
+            document.getElementById('orderfoodonline-loading-page').style.display='flex';
             console.log('Connected to All Items WebSocket server!');
           };
 
           allitemsSocket.onmessage = function(event) {
               const data = JSON.parse(event.data);
+              document.getElementById('orderfoodonline-loading-page').style.display='none';
               if (data.data) {
                   allitemsDiv.innerHTML = '';
                   data.data.forEach(item => {
@@ -1471,7 +1929,7 @@ filter-content h4 {
                               <h4>${item.item_name}</h4>
                               <span class="price" id="item-name">₹${item.price}</span>
                               <p>${item.description}</p>
-                              <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                              <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
                               
                           </div>
                           <div class="image-container">
@@ -1506,19 +1964,51 @@ filter-content h4 {
       price: null
     };
     document.addEventListener('DOMContentLoaded', () => {
-      const pureVegButton = document.querySelector('.nav-sub-item:nth-child(2)'); 
-      pureVegButton.addEventListener('click', () => {
-        applyButtonFilter('vegNonVeg', 'veg');
-      });
-      const ratingsButton = document.querySelector('.nav-sub-item:nth-child(3)'); 
-      ratingsButton.addEventListener('click', () => {
-        applyButtonFilter('ratings', '4.0'); 
-      });
+      const pureVegButton = document.querySelector('.nav-sub-item:nth-child(2)');
+      const ratingsButton = document.querySelector('.nav-sub-item:nth-child(3)');
       const lessThan300Button = document.querySelector('.nav-sub-item:nth-child(4)');
+
+      pureVegButton.addEventListener('click', () => {
+        if (pureVegButton.classList.contains('active')) {
+          pureVegButton.classList.remove('active');
+          document.querySelectorAll('input[name="vegNonVeg"]').forEach(el => el.checked = false);
+          applyFilters();
+        } else {
+          pureVegButton.classList.add('active');
+          applyButtonFilter('vegNonVeg', 'veg');
+        }
+      });
+
+      ratingsButton.addEventListener('click', () => {
+        if (ratingsButton.classList.contains('active')) {
+          ratingsButton.classList.remove('active');
+          document.querySelectorAll('input[name="ratings"]').forEach(el => el.checked = false); 
+          applyFilters();
+        } else {
+          ratingsButton.classList.add('active');
+          applyButtonFilter('ratings', '4.0');
+        }
+      });
+
       lessThan300Button.addEventListener('click', () => {
-        applyButtonFilter('price', '300');
+        if (lessThan300Button.classList.contains('active')) {
+          lessThan300Button.classList.remove('active');
+          document.getElementById('priceRange').value = ''; 
+          document.getElementById('priceOutput').textContent = ''; 
+          applyFilters();
+        } else {
+          lessThan300Button.classList.add('active');
+          applyButtonFilter('price', '300');
+        }
       });
     });
+    function lockScroll() {
+          document.body.style.overflow = 'hidden';
+      }
+
+      function unlockScroll() {
+          document.body.style.overflow = '';
+      }
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -1535,4 +2025,96 @@ filter-content h4 {
     }
 
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const refreshIndicator = document.getElementById('refreshIndicator');
+      const loaderIcon = refreshIndicator ? refreshIndicator.querySelector('.loader-icon') : null;
+      let startY = 0;
+      let pullDistance = 0;
+      let isPulling = false;
+      let isRefreshing = false;
+      const refreshThreshold = window.innerHeight * 0.15;
+
+      function startRefresh() {
+          if (isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          isRefreshing = true;
+          refreshIndicator.style.transform = 'translateY(0)';
+          refreshIndicator.style.opacity = 1;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+          loaderIcon.style.transform = 'rotate(360deg)';
+
+          setTimeout(() => {
+              location.reload();
+          }, 400);
+      }
+
+      function lockScroll() {
+          document.body.style.overflow = 'hidden';
+      }
+
+      function unlockScroll() {
+          document.body.style.overflow = '';
+      }
+
+      window.addEventListener('touchstart', (e) => {
+          if (isRefreshing || !refreshIndicator || window.scrollY > 0) return;
+
+          startY = e.touches[0].pageY;
+          isPulling = true;
+          loaderIcon.style.transition = 'none'; 
+      });
+
+      window.addEventListener('touchmove', (e) => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          pullDistance = e.touches[0].pageY - startY;
+
+          if (pullDistance > 0) {
+              lockScroll();
+              e.preventDefault(); 
+              const cappedPullDistance = Math.min(pullDistance, refreshThreshold); 
+
+              const rotationAngle = (cappedPullDistance / refreshThreshold) * 360;
+              loaderIcon.style.transform = `rotate(${rotationAngle}deg)`;
+              refreshIndicator.style.transform = `translateY(${cappedPullDistance / 2}px)`;
+              refreshIndicator.style.opacity = cappedPullDistance / refreshThreshold;
+
+
+              if (cappedPullDistance >= refreshThreshold * 0.5) { 
+                  refreshIndicator.classList.add('pulling');
+              } else {
+                  refreshIndicator.classList.remove('pulling');
+              }
+          } else if (pullDistance < 0) {
+              unlockScroll();
+
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+      });
+      window.addEventListener('touchend', () => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+
+          if (pullDistance > refreshThreshold) {
+              startRefresh();
+          } else {
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+
+          unlockScroll();
+          isPulling = false;
+          pullDistance = 0;
+      });
+
+  }); 
+</script>
+
 </html>

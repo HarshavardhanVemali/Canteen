@@ -53,6 +53,11 @@ def user_required(view_func):
         login_url='/userlogin/'
     )(view_func)
 
+def app_user_required(view_func):
+    return user_passes_test(
+        lambda u: u.is_active and (u.is_superuser or u.has_perm('canteenapp.is_user') or u.has_perm('canteenapp.is_deliveryperson')),
+        login_url='/applogin/'
+    )(view_func)
 
 def index(request):
     return render(request,'index.html')
@@ -2811,31 +2816,42 @@ def deliverydeliveredorders(request):
 def applogin(request):
     return render(request,'applogin.html')
 
+@app_user_required
 def apphome(request):
     return render(request,'apphome.html')
 
+@app_user_required
 def appsearch(request):
     return render(request,'appsearch.html')
 
+@app_user_required
 def appcheckout(request):
     return render(request,'appcheckout.html')
 
+@app_user_required
 def appprofile(request):
     return render(request,'appprofile.html')
 
+@app_user_required
 def apporderhistory(request):
     return render(request,'apporderhistory.html')
 
+@app_user_required
 def apporderinfo(request):
     return render(request,'apporderinfo.html')
 
+@app_user_required
 def applogout(request):
     logout(request)
     return redirect('applogin')
 
+@app_user_required
 def google_auth_redirect(request):
     next_url = request.GET.get('next') 
     if next_url:
         return redirect(next_url)
     else:
         return redirect('/') 
+    
+def pagenotfound(request):
+    return render(request,'pagenotfound.html')

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="no-cache">
     <title>Food Hub - Search</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +14,12 @@
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
 </head>
 <style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button, a, img {
+        outline: none;
+    }
     a:focus,button:focus {
         outline: none;  
         box-shadow: none; 
@@ -27,7 +34,7 @@
         }
     }
     body{
-        font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
     .navbarbottom {
         position: fixed;
@@ -110,10 +117,10 @@
         border: none;
         padding: 5px 8px;
         flex: 1;
-        font-size: 13px;
+        font-size: 14px;
         outline: none;
         width: 400px;
-        font-weight: 100 !important;
+        font-weight: 500 !important;
         color: rgba(2, 6, 12, 0.6);
     }
     .back-button{
@@ -121,6 +128,21 @@
         border: none;
         cursor: pointer;
         color: rgb(255, 126, 139);
+    }
+    .back-button{
+        padding: 8px 10px 7px 8px;
+        border-radius: 50%;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+
+    .back-button:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    .back-button:active {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%);
+        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        transform: scale(0.95);
     }
     .section {
         margin: 0;
@@ -150,32 +172,33 @@
 
     .item-info h4 {
         margin-top: 0px;
-        margin-bottom: 0px;
-        font-weight: 600;
-        font-size: 14px;
+        margin-bottom: 8px;
+        font-weight: 800;
+        font-size: 20px;
         line-height: 20px;
         letter-spacing: -0.3px;
         color: rgba(2, 6, 12, 0.78);
     }
 
     .item-info p {
+        line-height: 19px;
         margin-bottom: 10px;
-        color: #666;
+        color: #4d4c4c;
         margin-top: 0px;
         font-weight: 500;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 15px;
         letter-spacing: -0.3px;
-        color: rgba(2, 6, 12, 0.6);
+        color: rgba(2, 6, 12, 0.5);
         letter-spacing: 0.5px;
     }
-    .delivery_time{
-        font-weight: 530 !important;
-    }
+    
     .price {
-        font-size:12px;
+        font-size: 18px;
+        margin-top: 10px;
         font-weight: bold;
-        color: rgba(2, 6, 12, 0.65) !important;
+        color: rgba(17, 24, 34, 0.98) !important;
+        font-family: Lato-Regular, Helvetica, sans-serif;
     }
 
     .item-card img {
@@ -189,7 +212,10 @@
     .image-container {
         position: relative; 
     }
-
+    .delivery_time{
+        font-weight: 530 !important;
+        font-size: 15px !important;
+    }
     .add-button {
         width: 100px;
         position: absolute;
@@ -238,10 +264,13 @@
         justify-content: center;
     }
     .quantity {
-        font-size: 14px;
+        font-size: 16px;
         width: 30px;
         text-align: center;
-        color: #60b246 !important;
+        color: rgb(27, 166, 114) !important;
+    }
+    #increase{
+        color: rgb(27, 166, 114);
     }
     .image-container {
         display: flex;
@@ -255,7 +284,7 @@
     
     }
     .searchitems h3{
-        font-size: 16px;
+        font-size: 18px;
     }
     .searchitems {
         margin: 0 auto;
@@ -343,7 +372,21 @@
         padding: 5px;
         cursor: pointer;
     }
+    .voiceRec{
+        padding: 8px 10px;
+        border-radius: 50%;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
 
+    .voiceRec:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    .voiceRec:active {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%);
+        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        transform: scale(0.95);
+    }
     .listening-overlay { 
         font-family: 'Poppins', sans-serif;
         letter-spacing: 0.4px;
@@ -467,7 +510,86 @@
             opacity: 0;
         }
     }
+    #itemOverlay{
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        justify-content: end;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 11111;
+        transition: opacity 0.3s ease; 
+    }
+    .overlay-content {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        width: -webkit-fill-available;
+        border-radius: 20px 20px 0 0 !important;
+        border-top: 1px solid rgba(77, 92, 113, 0.2);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01);
+        bottom: 0;
+        padding-bottom: 30px;
+        transition: transform 0.3s ease-in-out;
+        
+    }
+    .overlay-close-btn {
+        position: static;
+        background: transparent;
+        border: none;
+        font-size: 1.3rem;
+        cursor: pointer;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        height: 28px;
+        width: 28px;
+        cursor: pointer;
+        background: rgb(255, 255, 255);
+        border-radius: 50%;
+        box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 6px;
+        border: none;
+        outline: none;
+        font: initial;
+    }
 
+    .overlay-content h3{
+        margin: 0;
+        font-size: 22px;
+        padding: 0px 10px;
+        font-weight: 700;
+    }
+    .overlay-body p {
+        margin: 5px 0;
+        color: #666;
+        padding: 0px 10px;
+        font-size: 18px;
+    }
+    .overlay-body p:first-of-type{
+        font-size: 20px;
+        font-weight: bolder;
+        margin-bottom: 0px;
+    }
+    .overlay-body p:nth-of-type(2){
+        margin-top: 0px;
+        font-size: 16px;
+        font-weight: 530 !important;
+    }
+    .overlay-body p:last-of-type{
+        padding-bottom: 20px;
+        font-size: 14px;
+        line-height: 19px;
+        letter-spacing: -0.3px;
+        font-weight: 400;
+    }
 </style>
 <body>
     
@@ -522,23 +644,68 @@
         <div class="searchbarcontianer">
             <form action="/search" method="GET" id="searchForm"> 
                 <div class="search-bar-container">
-                <button class="back-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
-                      </svg>
-                </button>
-                  <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off" id="searchInput">
-                  <button type="button" class="voiceRec" id="voiceRecBtn" onclick="startSpeechRecognition()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
-                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
-                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
-                      </svg>
-                  </button>
+                    <button class="back-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                        </svg>
+                    </button>
+                    <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off" id="searchInput">
+                    <button type="button" class="voiceRec" id="voiceRecBtn" onclick="startSpeechRecognition()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+                            <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+                            <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                    </button>
                 
                 </div>
             </form>
             <section class="searchitemscontainer section">
                 <div class="loading-container">
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
                     <div class="placeholder-card">
                         
                         <div class="text-placeholder">
@@ -581,32 +748,34 @@
                 </svg>
             </div>
             <div class="listening-content">
-                <p id="listeningText">Listening...</p> <div class="mic-icon-container">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ffffff" class="bi bi-mic-fill mic-icon" viewBox="0 0 16 16">
-                       <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
-                       <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
-                   </svg>
-                   <div class="radar">
+                <p id="listeningText">Listening...</p> 
+                <div class="mic-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ffffff" class="bi bi-mic-fill mic-icon" viewBox="0 0 16 16">
+                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <div class="radar">
                         <div class="circle circle1"></div>
                         <div class="circle circle2"></div>
                     </div>  
+                </div>    
             </div>
-                
-        </div>
+        </div> 
         <div id="itemOverlay">
+            <button class="overlay-close-btn">&times;</button>
             <div class="overlay-content" id="item-overlay-content">
-                <button class="overlay-close-btn">&times;</button>
+                
                 <div class="overlay-body">
                     <img src="#" alt="Item">
                     <h3></h3>
                     <p class="price"></p>
-                    <p></p>
+                    <p class="delivery_time"></p>
                     <p></p>
                 </div>
             </div>
         </div>
-        
     </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const backButton = document.querySelector('.back-button');
@@ -637,8 +806,8 @@
         const listeningOverlay = document.getElementById('listeningOverlay');
         const listeningText = document.getElementById('listeningText');
         
-        const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}"); // Replace with your start sound path
-        const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");  // Replace with your stop sound path
+        const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}"); 
+        const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");  
         let recognition;
         
         function startSpeechRecognition() {
@@ -820,12 +989,14 @@
         function showLoading() {
             document.querySelector('.searchitems').style.display='none';
             loadingContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
             document.querySelector('.searchitems').classList.remove('show');
             document.querySelector('.searchitems').style.animation = 'none'; 
             document.querySelector('.searchitems').style.opacity = 0; 
         }
         function hideLoading() {
             loadingContainer.style.display = 'none';
+            document.body.style.overflow = '';
             document.querySelector('.searchitems').style.display='block';
             document.querySelector('.searchitems').classList.add('show');
             document.querySelector('.searchitems').style.animation = 'slideUp 1s ease-in-out forwards'; 
@@ -859,7 +1030,7 @@
                                     <h4>${item.item_name}</h4>
                                     <span class="price" id="item-name">₹${item.price}</span>
                                     <p>${item.description}</p>
-                                    <p style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                                    <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
                                 </div>
                                 <div class="image-container">
                                     <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
@@ -916,7 +1087,12 @@
                             itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
                             itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
                             itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
-
+                            if(itemDeliveryTime[0]=='D'){
+                                itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(27, 166, 114)';
+                            }
+                            else{
+                                itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(239, 79, 95)';
+                            }
                             itemOverlay.classList.add('show'); 
                             document.body.classList.add('overlay-active');
                         }
@@ -1008,7 +1184,6 @@
 
         cartitemscountSocket.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            console.log(data);
             const cartIcon = document.querySelector('.cart-icon');
             const cartCount = document.querySelector('.cart-count');
 

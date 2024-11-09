@@ -123,4 +123,5 @@ urlpatterns = [
     path('apporderhistory/',views.apporderhistory,name='apporderhistory'),
     path('apporderinfo/',views.apporderinfo,name='apporderinfo'),
     path('applogout/',views.applogout,name='applogout'),
+    path('pagenotfound/',views.pagenotfound,name='pagenotfound'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Hub - Order Details</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <meta http-equiv="cache-control" content="no-cache">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
@@ -14,6 +15,12 @@
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
 </head>
 <style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button, a, img {
+        outline: none;
+    }
     a:focus,button:focus {
         outline: none;  
         box-shadow: none; 
@@ -29,9 +36,7 @@
     }
     body{
         background-color: #f1f3f6;
-    }
-    body{
-        font-family: Lato-Regular, Arial, Helvetica, sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
     .header-container {
         background-color: white;
@@ -164,7 +169,7 @@
     }
     h4{
         margin: 0;
-        font-size: 14px;
+        font-size: 12px;
     }
     .order-details-header {
         display: flex;
@@ -387,6 +392,16 @@
     .order-details-name,.order-details-number,.order-details-email{
         font-size: 13px;
         font-weight: 600;
+    }
+    .order-details-item-price{
+        font-family: Lato-Regular, Helvetica, sans-serif;
+        font-weight: 600;
+    }
+    .price-summary-value,.order-details-summary-value{
+        font-family: Lato-Regular, Helvetica, sans-serif;
+    }
+    .total-price{
+        font-weight: 900;
     }
 </style>
 <body>
