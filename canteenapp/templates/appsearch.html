@@ -815,83 +815,91 @@
                 alert("Speech recognition is not supported by your browser. Please upgrade.");
                 return;
             }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then((stream) => {
+                    recognition = new webkitSpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = true;
+                    recognition.lang = 'en-IN';
 
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true;
-            recognition.lang = 'en-IN'; 
-            recognition.onstart = () => {
-                startSound.play();
-                const radar = document.querySelector('.radar');
+                    recognition.onstart = () => {
+                        startSound.play();
+                        const radar = document.querySelector('.radar');
+                        radar.style.display = 'block';
+                        listeningOverlay.classList.add('show');
+                        listeningOverlay.style.display = 'flex';
+                        voiceRecBtn.classList.add('listening');
+                        listeningText.textContent = 'Listening...';
+                    };
 
-                radar.style.display = 'block'; 
-                listeningOverlay.classList.add('show');
-                listeningOverlay.style.display = 'flex'; 
-                voiceRecBtn.classList.add('listening');
-                listeningText.textContent = 'Listening...'; 
-            };
+                    recognition.onresult = (event) => {
+                        let interimTranscript = ''; 
+                        let finalTranscript = '';
 
-            recognition.onresult = (event) => {
-                let interimTranscript = ''; 
-                let finalTranscript = '';
+                        for (let i = event.resultIndex; i < event.results.length; ++i) {
+                            if (event.results[i].isFinal) {
+                                finalTranscript += event.results[i][0].transcript;
+                            } else {
+                                interimTranscript += event.results[i][0].transcript;
+                            }
+                        }
 
+                        searchInput.value = finalTranscript || interimTranscript;
+                        listeningText.textContent = finalTranscript || interimTranscript || 'Listening...';
 
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
+                        if (finalTranscript) {
+                            stopSpeechRecognition();
+                            setTimeout(() => {
+                                const searchTerm = searchInput.value;
+                                performSearch(searchTerm);
+                                speakSearchTerm(searchTerm);
+                            }, 300);
+                        }
+                    };
+
+                    recognition.onend = () => {
+                        if (listeningOverlay.classList.contains('show')) {
+                            stopSound.play();
+                            const radar = document.querySelector('.radar');
+                            radar.style.display = 'none';
+                            voiceRecBtn.classList.remove('listening');
+                            listeningOverlay.classList.remove('show');
+
+                            setTimeout(() => {
+                                listeningOverlay.style.display = 'none';
+                            }, 300);
+                        }
+                    };
+
+                    recognition.onerror = (event) => {
+                        stopSound.play();
+                        voiceRecBtn.classList.remove('listening');
+                        listeningOverlay.classList.remove('show');
+                        setTimeout(() => {
+                            listeningOverlay.style.display = 'none';
+                        }, 300);
+
+                        console.error('Speech recognition error:', event.error);
+                        if (event.error === 'no-speech') {
+                            console.log('No speech was detected. Please try again.');
+                        } else if (event.error === 'network') {
+                            alert('Please check your network connection.');
+                        } else { 
+                            alert('An error occurred during speech recognition: ' + event.error); 
+                        }
+                    };
+                    recognition.start();
+                })
+                .catch((error) => {
+                    console.error("Microphone access was denied or an error occurred:", error);
+                    if (error.name === 'NotAllowedError') {
+                        alert("Microphone access is required for this feature.");
+                    } else if (error.name === 'NotFoundError') {
+                        alert("No microphone was found on your device.");
                     } else {
-                        interimTranscript += event.results[i][0].transcript;
+                        alert("An unexpected error occurred: " + error.message);
                     }
-                }
-
-                searchInput.value = finalTranscript || interimTranscript;
-                listeningText.textContent = finalTranscript || interimTranscript || 'Listening...';
-
-                if (finalTranscript) {
-                    stopSpeechRecognition();
-                    setTimeout(() => {
-                        const searchTerm = searchInput.value;
-                        performSearch(searchTerm);
-                        speakSearchTerm(searchTerm); 
-                    }, 300);
-                }
-            };
-
-            recognition.onend = () => {
-                
-                if (listeningOverlay.classList.contains('show')) { 
-                    stopSound.play();
-                    const radar = document.querySelector('.radar');
-                    radar.style.display = 'none'; 
-                    voiceRecBtn.classList.remove('listening');
-                    listeningOverlay.classList.remove('show');
-
-                    setTimeout(() => {
-                        listeningOverlay.style.display = 'none';
-                    }, 300);
-
-                }
-            };
-
-
-            recognition.onerror = (event) => {
-                stopSound.play();
-                voiceRecBtn.classList.remove('listening');
-                listeningOverlay.classList.remove('show');
-                setTimeout(() => {
-                    listeningOverlay.style.display = 'none';
-                }, 300);
-
-                console.error('Speech recognition error:', event.error);
-                if (event.error === 'no-speech') {
-                    console.log('No speech was detected. Please try again.');
-                } else if (event.error === 'network') {
-                    alert('Please check your network connection.');
-                } else { 
-                    alert('An error occurred during speech recognition.' + event.error); 
-                }
-            };
-            recognition.start();
+                });
         }
 
 
