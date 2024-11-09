@@ -510,7 +510,7 @@
             opacity: 0;
         }
     }
-    #itemOverlay{
+    #itemOverlay,#microphonePermissionOverlay{
         position: fixed; 
         top: 0; 
         left: 0;
@@ -539,7 +539,7 @@
         transition: transform 0.3s ease-in-out;
         
     }
-    .overlay-close-btn {
+    .overlay-close-btn ,.permission-close-btn{
         position: static;
         background: transparent;
         border: none;
@@ -559,19 +559,57 @@
         border: none;
         outline: none;
         font: initial;
+        line-height: 1px;
+    }
+    .overlay-header{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+    .overlay-title{
+        margin: 0;
+        font-size: 20px;
+    }
+    .overlay-allow, .overlay-deny {
+        background-color: #307cf7;
+        color: white;
+        padding: 10px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        font-weight: 600;
     }
 
+    .overlay-deny {
+        background-color: #f4f2f2;
+        color: #4d4c4c;
+    }
+    .overlay-header svg{
+        width: 24px;
+        height: 24px;
+        fill: rgb(255, 126, 139);
+    }
     .overlay-content h3{
         margin: 0;
         font-size: 22px;
         padding: 0px 10px;
         font-weight: 700;
     }
+    .overlay-message{
+        padding: 5px 0px !important;
+    }
     .overlay-body p {
         margin: 5px 0;
         color: #666;
         padding: 0px 10px;
         font-size: 18px;
+    }
+    .permission-btn{
+        display: flex;
+        justify-content:center;
+        gap: 20px;
     }
     .overlay-body p:first-of-type{
         font-size: 20px;
@@ -775,6 +813,24 @@
             </div>
         </div>
     </div>
+    <div id="microphonePermissionOverlay" class="overlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h2 class="overlay-title">Need Your Microphone</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                    <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>
+                  </svg>
+            </div>
+            <div class="overlay-body">
+                <p class="overlay-message">To use voice search, we need access to your microphone. This will only be used to recognize what you say and won't be recorded or stored.</p>
+                <div class="permission-btn">
+                    <button class="overlay-deny" onclick="closeMicrophoneOverlay()">Deny</button>
+                    <button class="overlay-allow" onclick="openBrowserSettings()">Allow</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -809,37 +865,33 @@
         const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}"); 
         const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");  
         let recognition;
-        
+        function microphonePermissionOverlay(){
+            document.getElementById('microphonePermissionOverlay').style.display = 'none'; 
+        }
         function startSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window)) {
                 alert("Speech recognition is not supported by your browser. Please upgrade.");
                 return;
             }
-
-            // Check for microphone permission
             if (navigator.permissions && navigator.permissions.query) {
                 navigator.permissions.query({ name: 'microphone' }).then((permissionStatus) => {
                     if (permissionStatus.state === 'granted') {
-                        // Microphone access is granted
                         console.log('Microphone permission granted.');
-                        startRecording(); // Start recording
+                        startRecording(); 
                     } else if (permissionStatus.state === 'prompt') {
-                        // User needs to be prompted
                         console.log('Microphone permission prompt shown.');
-                        document.getElementById('microphonePermissionPrompt').style.display = 'block'; 
+                        document.getElementById('microphonePermissionOverlay').style.display = 'flex'; 
                     } else {
-                        // Microphone access is not granted
                         console.log('Microphone permission not granted. Show message.');
                         alert("Microphone access is required for this feature.");
                     }
                 });
             } else {
-                // Browser does not support navigator.permissions
                 console.warn('Browser does not support navigator.permissions');
-                startRecording(); // Try to start recording anyway, but it might fail 
+                startRecording(); 
             }
         }
-        function startRecording(){
+        function startRecording() {
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then((stream) => {
                     recognition = new webkitSpeechRecognition();
@@ -913,19 +965,21 @@
                             alert('An error occurred during speech recognition: ' + event.error); 
                         }
                     };
+
                     recognition.start();
                 })
                 .catch((error) => {
-                    console.error("Microphone access was denied or an error occurred:", error);
+                    console.error("Error accessing the microphone:", error);
                     if (error.name === 'NotAllowedError') {
                         alert("Microphone access is required for this feature.");
                     } else if (error.name === 'NotFoundError') {
                         alert("No microphone was found on your device.");
                     } else {
-                        alert("An unexpected error occurred: " + error.message);
+                        alert("Unexpected error occurred: " + error.message);
                     }
                 });
         }
+
 
 
         function stopSpeechRecognition() {
@@ -1007,7 +1061,7 @@
         }
 
         function openBrowserSettings() {
-            window.open('chrome://settings/content/microphone'); 
+            startRecording();
         }
         searchForm.addEventListener('submit', function(event) {
             event.preventDefault();
