@@ -446,7 +446,9 @@
   color: rgba(17, 24, 34, 0.98) !important;
   font-family: Lato-Regular, Helvetica, sans-serif;
 }
-
+#priceOutput{
+  font-family: Lato-Regular, Helvetica, sans-serif;
+}
 .item-card img {
   cursor: pointer;
   width: 150px;
@@ -551,6 +553,7 @@
 .nav-sub-item{
   padding: 10px 16px;
   width: max-content;
+  transition: transform 0.3s ease-in-out;
 }
 .filter-close-btn{
    width: 18px !important;
@@ -975,7 +978,7 @@ filter-content h4 {
 .image-placeholder {
   width: 150px;
   height: 140px;
-  background-color: #e0e0e0;
+  background-color: #e2e2e2;
   border-radius: 4px;
   margin-right: 0px;
   position: relative;
@@ -999,6 +1002,17 @@ filter-content h4 {
     flex-grow: 1;
     margin-left: 0px;
     margin-right: 20px;
+}
+#meal-loading-page{
+  width: 95%;
+}
+#meal-loading-page>div{
+  width: 100% !important;
+  height: 260px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(183, 200, 242, 0.2);
+  border: 1px solid rgb(228, 230, 244);
+  margin-bottom: 10px;
 }
 </style>
 <body>
@@ -1137,6 +1151,9 @@ filter-content h4 {
       <div class="line"></div>
     </div>
     <section class="meal-options section"> 
+        <div class="loading-container" id="meal-loading-page">
+          <div class="image-placeholder"></div>
+        </div>
         <div class="container" style="width: 100%;">
           <div class="options-wrapper">
             <div class="option" id="meals">
@@ -1368,6 +1385,8 @@ filter-content h4 {
         const firstWord = fullName.split(' ')[0];
         const firstLetter = firstWord.charAt(0);
         profileLetter.textContent = firstLetter; 
+        document.getElementById('meal-loading-page').style.display='flex';
+        document.getElementById('orderfoodonline-loading-page').style.display='flex';
     });
     document.querySelector('.search-bar').addEventListener('click', function() {
         window.location.href = "{% url 'appsearch' %}";
@@ -1471,11 +1490,13 @@ filter-content h4 {
     const socket = new WebSocket(`${getWebSocketUrl()}menu/`);
     const menuDiv = document.querySelector('.meal-items');
     socket.onopen = function(event) {
+        document.getElementById('meal-loading-page').style.display='flex';
         console.log('Connected to WebSocket server!');
     };
 
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data); 
+        document.getElementById('meal-loading-page').style.display='none';
         if (data.data) {
             menuDiv.innerHTML = ''; 
             data.data.forEach(menu => {
@@ -1902,14 +1923,13 @@ filter-content h4 {
       document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
         el.checked = false;
       });
-
+      document.getElementById('orderfoodonline-loading-page').style.display='flex';
       const priceRange = document.getElementById('priceRange');
       priceRange.value = 5000;
       document.getElementById('priceOutput').innerText = '₹5000';
           const allitemsSocket = new WebSocket(`${getWebSocketUrl()}allitems/`);
           const allitemsDiv = document.querySelector('.allitems'); 
-          allitemsSocket.onopen = function(event) {
-            document.getElementById('orderfoodonline-loading-page').style.display='flex';
+          allitemsSocket.onopen = function(event) {  
             console.log('Connected to All Items WebSocket server!');
           };
 
