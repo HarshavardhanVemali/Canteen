@@ -856,119 +856,34 @@
         
         const searchForm = document.querySelector('.search-input');
         const searchInput = document.getElementById('searchInput');
-        const searchitemsDiv = document.querySelector('.searchitems'); 
+        const searchitemsDiv = document.querySelector('.searchitems');
 
         const voiceRecBtn = document.getElementById('voiceRecBtn');
         const listeningOverlay = document.getElementById('listeningOverlay');
         const listeningText = document.getElementById('listeningText');
-        
-        const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}"); 
-        const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");  
+
+        const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}");
+        const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");
         let recognition;
-        function microphonePermissionOverlay(){
-            document.getElementById('microphonePermissionOverlay').style.display = 'none'; 
+
+        function closeMicrophoneOverlay() {
+            document.getElementById('microphonePermissionOverlay').style.display = 'none';
         }
+
         function startSpeechRecognition() {
             if (!('webkitSpeechRecognition' in window)) {
                 alert("Speech recognition is not supported by your browser. Please upgrade.");
                 return;
             }
-            if (navigator.permissions && navigator.permissions.query) {
-                navigator.permissions.query({ name: 'microphone' }).then((permissionStatus) => {
-                    if (permissionStatus.state === 'granted') {
-                        console.log('Microphone permission granted.');
-                        startRecording(); 
-                    } else if (permissionStatus.state === 'prompt') {
-                        console.log('Microphone permission prompt shown.');
-                        document.getElementById('microphonePermissionOverlay').style.display = 'flex'; 
-                    } else {
-                        console.log('Microphone permission not granted. Show message.');
-                        alert("Microphone access is required for this feature.");
-                    }
-                });
-            } else {
-                console.warn('Browser does not support navigator.permissions');
-                startRecording(); 
-            }
-        }
-        function startRecording() {
+
+            // Request microphone permission (if needed)
             navigator.mediaDevices.getUserMedia({ audio: true })
-                .then((stream) => {
-                    recognition = new webkitSpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = true;
-                    recognition.lang = 'en-IN';
-
-                    recognition.onstart = () => {
-                        startSound.play();
-                        const radar = document.querySelector('.radar');
-                        radar.style.display = 'block';
-                        listeningOverlay.classList.add('show');
-                        listeningOverlay.style.display = 'flex';
-                        voiceRecBtn.classList.add('listening');
-                        listeningText.textContent = 'Listening...';
-                    };
-
-                    recognition.onresult = (event) => {
-                        let interimTranscript = ''; 
-                        let finalTranscript = '';
-
-                        for (let i = event.resultIndex; i < event.results.length; ++i) {
-                            if (event.results[i].isFinal) {
-                                finalTranscript += event.results[i][0].transcript;
-                            } else {
-                                interimTranscript += event.results[i][0].transcript;
-                            }
-                        }
-
-                        searchInput.value = finalTranscript || interimTranscript;
-                        listeningText.textContent = finalTranscript || interimTranscript || 'Listening...';
-
-                        if (finalTranscript) {
-                            stopSpeechRecognition();
-                            setTimeout(() => {
-                                const searchTerm = searchInput.value;
-                                performSearch(searchTerm);
-                                speakSearchTerm(searchTerm);
-                            }, 300);
-                        }
-                    };
-
-                    recognition.onend = () => {
-                        if (listeningOverlay.classList.contains('show')) {
-                            stopSound.play();
-                            const radar = document.querySelector('.radar');
-                            radar.style.display = 'none';
-                            voiceRecBtn.classList.remove('listening');
-                            listeningOverlay.classList.remove('show');
-
-                            setTimeout(() => {
-                                listeningOverlay.style.display = 'none';
-                            }, 300);
-                        }
-                    };
-
-                    recognition.onerror = (event) => {
-                        stopSound.play();
-                        voiceRecBtn.classList.remove('listening');
-                        listeningOverlay.classList.remove('show');
-                        setTimeout(() => {
-                            listeningOverlay.style.display = 'none';
-                        }, 300);
-
-                        console.error('Speech recognition error:', event.error);
-                        if (event.error === 'no-speech') {
-                            console.log('No speech was detected. Please try again.');
-                        } else if (event.error === 'network') {
-                            alert('Please check your network connection.');
-                        } else { 
-                            alert('An error occurred during speech recognition: ' + event.error); 
-                        }
-                    };
-
-                    recognition.start();
+                .then(stream => {
+                    // Microphone access granted
+                    startRecording(stream);
                 })
-                .catch((error) => {
+                .catch(error => {
+                    // Handle error, e.g., display a message to the user
                     console.error("Error accessing the microphone:", error);
                     if (error.name === 'NotAllowedError') {
                         alert("Microphone access is required for this feature.");
@@ -980,21 +895,98 @@
                 });
         }
 
+        function startRecording(stream) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false; // Capture one utterance at a time
+            recognition.interimResults = true; // Get partial results
+            recognition.lang = 'en-IN'; // Set language
 
+            recognition.onstart = () => {
+                startSound.play();
+                const radar = document.querySelector('.radar');
+                radar.style.display = 'block';
+                listeningOverlay.classList.add('show');
+                listeningOverlay.style.display = 'flex';
+                voiceRecBtn.classList.add('listening');
+                listeningText.textContent = 'Listening...';
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                searchInput.value = finalTranscript || interimTranscript;
+                listeningText.textContent = finalTranscript || interimTranscript || 'Listening...';
+
+                if (finalTranscript) {
+                    stopSpeechRecognition();
+                    setTimeout(() => {
+                        const searchTerm = searchInput.value;
+                        performSearch(searchTerm); // Replace with your search function
+                        speakSearchTerm(searchTerm);
+                    }, 300);
+                }
+            };
+
+            recognition.onend = () => {
+                if (listeningOverlay.classList.contains('show')) {
+                    stopSound.play();
+                    const radar = document.querySelector('.radar');
+                    radar.style.display = 'none';
+                    voiceRecBtn.classList.remove('listening');
+                    listeningOverlay.classList.remove('show');
+
+                    setTimeout(() => {
+                        listeningOverlay.style.display = 'none';
+                    }, 300);
+                }
+                // Stop the audio stream
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recognition.onerror = (event) => {
+                stopSound.play();
+                voiceRecBtn.classList.remove('listening');
+                listeningOverlay.classList.remove('show');
+                setTimeout(() => {
+                    listeningOverlay.style.display = 'none';
+                }, 300);
+
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    console.log('No speech was detected. Please try again.');
+                } else if (event.error === 'network') {
+                    alert('Please check your network connection.');
+                } else {
+                    alert('An error occurred during speech recognition: ' + event.error);
+                }
+                // Stop the audio stream
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recognition.start();
+        }
 
         function stopSpeechRecognition() {
-            
             if (recognition) {
                 recognition.stop();
                 stopSound.play();
                 const radar = document.querySelector('.radar');
-                radar.style.display = 'none'; 
+                radar.style.display = 'none';
                 voiceRecBtn.classList.remove('listening');
                 listeningOverlay.classList.remove('show');
-                listeningOverlay.style.display = 'none'; 
-
+                listeningOverlay.style.display = 'none';
             }
         }
+
         function speakSearchTerm(searchTerm) {
             if ('speechSynthesis' in window) {
                 const synth = window.speechSynthesis;
@@ -1028,18 +1020,18 @@
 
                 function adjustPitchAndRate(utterance) {
                     const text = utterance.text;
-                    let pitch = 1.1; 
-                    let rate = 1.0; 
+                    let pitch = 1.1;
+                    let rate = 1.0;
                     if (text.endsWith('?')) {
-                        pitch = 1.2; 
+                        pitch = 1.2;
                     } else if (text.endsWith('!')) {
-                        pitch = 1.3; 
+                        pitch = 1.3;
                     }
                     const words = text.split(' ');
                     if (words.length > 8) {
                         rate = 1.05;
                     } else if (words.length < 4) {
-                        rate = 0.95; 
+                        rate = 0.95;
                     }
                     utterance.pitch = pitch;
                     utterance.rate = rate;
@@ -1061,7 +1053,7 @@
         }
 
         function openBrowserSettings() {
-            startRecording();
+            startSpeechRecognition();
         }
         searchForm.addEventListener('submit', function(event) {
             event.preventDefault();
