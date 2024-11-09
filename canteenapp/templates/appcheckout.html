@@ -352,7 +352,7 @@
         color: #282c3f;
     }
     .delivery-type{
-        display: flex;
+        display: none;
         align-items: baseline;
         font-size: 12px;
         justify-content: space-between;
@@ -513,7 +513,7 @@
         opacity: 0.5; 
     }
     .checkout-nav-bar{
-        display: flex;
+        display: none;
         justify-content: space-between;
         align-items: center;
         bottom: 45px;
@@ -959,6 +959,7 @@
                 document.querySelector('.checkout-page').style.display='flex';
                 document.getElementById('emptycart').style.display='none';
                 document.querySelector('.checkout-nav-bar').style.display='flex';
+                document.querySelector('.delivery-type').style.display='flex';
                 allitemsDiv.innerHTML = '';
                 totalAmount=0;
                 let totalCount = 0;
@@ -1023,6 +1024,7 @@
                 document.getElementById('emptycart').style.display='flex';
                 document.querySelector('.checkout-page').style.display='none';
                 document.querySelector('.checkout-nav-bar').style.display='none';
+                document.querySelector('.delivery-type').style.display='none';
             }
         } else {
             console.log("No item data received in the message.");
