@@ -815,6 +815,31 @@
                 alert("Speech recognition is not supported by your browser. Please upgrade.");
                 return;
             }
+
+            // Check for microphone permission
+            if (navigator.permissions && navigator.permissions.query) {
+                navigator.permissions.query({ name: 'microphone' }).then((permissionStatus) => {
+                    if (permissionStatus.state === 'granted') {
+                        // Microphone access is granted
+                        console.log('Microphone permission granted.');
+                        startRecording(); // Start recording
+                    } else if (permissionStatus.state === 'prompt') {
+                        // User needs to be prompted
+                        console.log('Microphone permission prompt shown.');
+                        document.getElementById('microphonePermissionPrompt').style.display = 'block'; 
+                    } else {
+                        // Microphone access is not granted
+                        console.log('Microphone permission not granted. Show message.');
+                        alert("Microphone access is required for this feature.");
+                    }
+                });
+            } else {
+                // Browser does not support navigator.permissions
+                console.warn('Browser does not support navigator.permissions');
+                startRecording(); // Try to start recording anyway, but it might fail 
+            }
+        }
+        function startRecording(){
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then((stream) => {
                     recognition = new webkitSpeechRecognition();
@@ -903,7 +928,6 @@
         }
 
 
-
         function stopSpeechRecognition() {
             
             if (recognition) {
@@ -982,7 +1006,9 @@
             }
         }
 
-        
+        function openBrowserSettings() {
+            window.open('chrome://settings/content/microphone'); 
+        }
         searchForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const searchTerm = searchInput.value;
