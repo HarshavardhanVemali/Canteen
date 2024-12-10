@@ -15,6 +15,7 @@ from canteenapp.signals import create_unique_username
 import os
 import dj_database_url
 from django.core.asgi import get_asgi_application
+from phonepe.sdk.pg.env import Env
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -82,9 +83,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sites.middleware.CurrentSiteMiddleware'
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 
 ]
+CACHE_MIDDLEWARE_SECONDS = 0  
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
@@ -186,3 +191,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'vemalivardhan@gmail.com'
 EMAIL_HOST_PASSWORD = 'ixxo dpsx htnf pyxz'
+PHONEPE_MERCHANT_ID = "PGTESTPAYUAT139"
+PHONEPE_MERCHANT_KEY = "695d0547-3728-4b1c-825d-996479133615"
+PHONEPE_BASE_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/"
+PHONEPE_SALT_INDEX="1"

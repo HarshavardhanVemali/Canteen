@@ -3,11 +3,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
     <title>Food Hub - Order</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
     <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
@@ -269,7 +271,7 @@
 .carousel-track {
     display: flex;
     transition: transform 0.5s ease-in-out;
-    margin: 0px 15px;
+    margin: 0px 10px;
    
     width: 100%; 
 }
@@ -1923,6 +1925,18 @@ filter-content h4 {
       document.querySelectorAll('input[name="vegNonVeg"]').forEach(function(el) {
         el.checked = false;
       });
+      const pureVegButton = document.querySelector('.nav-sub-item:nth-child(2)');
+      const ratingsButton = document.querySelector('.nav-sub-item:nth-child(3)');
+      const lessThan300Button = document.querySelector('.nav-sub-item:nth-child(4)');
+      if (pureVegButton.classList.contains('active')) {
+        pureVegButton.classList.remove('active');
+      }
+      if (ratingsButton.classList.contains('active')) {
+        ratingsButton.classList.remove('active');
+      }
+      if (lessThan300Button.classList.contains('active')) {
+        lessThan300Button.classList.remove('active');
+      }
       document.getElementById('orderfoodonline-loading-page').style.display='flex';
       const priceRange = document.getElementById('priceRange');
       priceRange.value = 5000;
@@ -2136,5 +2150,29 @@ filter-content h4 {
 
   }); 
 </script>
+<!--
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyA8qkhDDdL5rip21UTg9iObtgrPkE25j7o",
+    authDomain: "foodhub-de353.firebaseapp.com",
+    projectId: "foodhub-de353",
+    storageBucket: "foodhub-de353.firebasestorage.app",
+    messagingSenderId: "332108019705",
+    appId: "1:332108019705:web:73b0edae4d4ec7e982af28",
+    measurementId: "G-2LVHYFXHE8"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>-->
 
 </html>

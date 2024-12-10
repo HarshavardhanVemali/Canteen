@@ -211,14 +211,14 @@
                         LocationsContainer.appendChild(locationDiv);
                     });
                 } else {
-                    console.error('Error fetching menu:', data.error);
-                    document.getElementById('displaymessage').textContent = 'Error fetching menu: ' + data.error;
+                    console.error('Error fetching locations:', data.error);
+                    document.getElementById('displaymessage').textContent = 'Error fetching locations: ' + data.error;
                     document.getElementById('success-overlay').style.display = 'flex';
                 }
             })
             .catch(error => {
-                console.error('Error fetching menu:', error);
-                document.getElementById('displaymessage').textContent = 'Error fetching menu. Please try again later.';
+                console.error('Error fetching locations:', error);
+                document.getElementById('displaymessage').textContent = 'Error fetching locations. Please try again later.';
                 document.getElementById('success-overlay').style.display = 'flex';
             });
         }

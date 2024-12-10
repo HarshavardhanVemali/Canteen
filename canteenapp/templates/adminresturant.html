@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  {% endblock %}
+  
+</head>
+<body>
+    {% block addresturant %}
+        <li><a class="nav-link active" href="{% url 'adminresturants' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-cup-hot" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5M2.64 13.825 1.123 7h11.754l-1.517 6.825A1.5 1.5 0 0 1 9.896 15H4.104a1.5 1.5 0 0 1-1.464-1.175"/>
+            <path d="m4.4.8-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 3.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 3.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 3 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 4.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.253.382l-.018.025-.005.008-.002.002A.5.5 0 0 1 6.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 6.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 6 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 7.4.8m3 0-.003.004-.014.019a4 4 0 0 0-.204.31 2 2 0 0 0-.141.267c-.026.06-.034.092-.037.103v.004a.6.6 0 0 0 .091.248c.075.133.178.272.308.445l.01.012c.118.158.26.347.37.543.112.2.22.455.22.745 0 .188-.065.368-.119.494a3 3 0 0 1-.202.388 5 5 0 0 1-.252.382l-.019.025-.005.008-.002.002A.5.5 0 0 1 9.6 4.2l.003-.004.014-.019a4 4 0 0 0 .204-.31 2 2 0 0 0 .141-.267c.026-.06.034-.092.037-.103a.6.6 0 0 0-.09-.252A4 4 0 0 0 9.6 2.8l-.01-.012a5 5 0 0 1-.37-.543A1.53 1.53 0 0 1 9 1.5c0-.188.065-.368.119-.494.059-.138.134-.274.202-.388a6 6 0 0 1 .253-.382l.025-.035A.5.5 0 0 1 10.4.8"/>
+        </svg>Food Courts</a></li>
+    {% endblock %}
+    {% block main_content %}
+    <style>
+        .resturants{
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            width: 96%;
+            margin-left: 15px;
+            justify-items: center;
+            padding: 0 10px 10px;
+        }
+        .resturant-items{
+            border: 1px solid transparent;
+            border-radius: 15px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            text-align: center;
+            padding: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding-bottom: 20px;
+        }
+        .resturant-item h4,h5{
+            margin: 10px;
+        }
+        .photo-icon {
+            cursor: pointer;
+        }
+        
+        .photo-icon img {
+            width: 30px;
+            height: 30px;
+        }
+        .update-inputs{
+            padding: 5px;
+        }
+        .resturant-actions{
+            display: flex;
+            justify-content: center;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 250px; 
+            
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+        .photo-icon {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            border-radius: 50%;
+            padding: 8px;
+            cursor: pointer;
+        }
+        .photo-icon img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+    
+    </style>
+        <div class="subnav-container">
+            <div class="subnav">
+                <h3>Food Courts</h3>
+                <div class="addbutton">
+                <button id="addpersonnelbtn" onclick="showAddFoodCourtForm()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg> <span>Add Food Court</span>
+                </button>
+            </div>
+            </div>
+        </div>
+        <div class="overlay-container" id="addfoodcourtoverlay">
+        <div class="overlay-content">
+            <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+            <h3>Add Food Court</h3>
+            <button class="close-overlay" id="closeSignup" onclick="closeAddFoodCourtForm()" style="display: flex; align-items: center; justify-content: space-between;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </button>
+            </section>
+            <section>
+            <form method="post" enctype="multipart/form-data" id="addfoodcourt" action="{% url 'adminaddresturant' %}">
+                {% csrf_token %} 
+                <div class="form-group">
+                    <label for="foodcourtname">Name</label>
+                    <input type="text" name="foodcourtname" id="foodcourtname" placeholder="Name" required>
+                    <span class="error-message" id="nameError"></span> 
+                </div>
+                <div class="form-group">
+                    <label for="foodcourtemail">Email</label>
+                    <input type="email" name="foodcourtemail" id="foodcourtemail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="resturantimage">Photo</label>
+                    <input type="file" name="resturantimage" id="resturantimage" accept="image/*" required> 
+                </div>
+                <div class="displayimage">
+                    <img id="imagePreviewItem" src="#" alt="Image Preview" style="max-width: 200px; max-height: 200px; display: none;"> 
+                </div>
+                <div class="addbutton addformbtn">
+                <button type="submit" id="addpersonnel">Add Food Court</button>
+                </div>
+            </form>
+            </section>
+        </div>
+        </div>
+        <div class="resturants">
+        </div>
+        <script>
+            const imageInput = document.getElementById('resturantimage');
+            const imagePreview = document.getElementById('imagePreviewItem');
+            function showAddFoodCourtForm() {
+                document.getElementById('addfoodcourtoverlay').style.display = 'flex';
+                
+
+                imageInput.addEventListener('change', function(event) {
+                    if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                    } else {
+                    imagePreview.src = '#';
+                    imagePreview.style.display = 'none';
+                }
+            });
+            }
+            function closeAddFoodCourtForm() {
+                document.getElementById('addfoodcourtoverlay').style.display = 'none';
+                imagePreview.src = '#';
+                imagePreview.style.display = 'none';
+            }
+            function handleImageChange(event, itemId) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById(`itemImage-${itemId}`).src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+                
+            }
+            document.addEventListener('DOMContentLoaded', (event) => {
+                document.getElementById('addfoodcourt').addEventListener('submit', function(event) {
+                    event.preventDefault(); 
+                    document.getElementById('nameError').textContent = '';
+                    const name = document.getElementById('foodcourtname').value;
+                    let isValid = true;
+                
+                    if (!/^[a-zA-Z\s.]+$/.test(name)) {
+                        document.getElementById('nameError').textContent = 'Invalid Name.';
+                        isValid = false;
+                    }
+                
+                    if (isValid) {
+                        const form = event.target;
+                        const formData = new FormData(form);
+                
+                        fetch('/adminaddresturant/', { 
+                            method: form.method,
+                            headers: {
+                            'X-CSRFToken': getCookie('csrftoken') 
+                            },
+                            body: formData 
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                            document.getElementById('displaymessage').textContent = 'Food Court added successfully!';
+                            document.getElementById('success-overlay').style.display = 'flex';
+                            closeAddFoodCourtForm();
+                            getResturants();
+                            form.reset(); 
+                            } else {
+                            document.getElementById('displaymessage').textContent = 'Failed to add foodcourt: ' + data.error;
+                            document.getElementById('success-overlay').style.display = 'flex';
+                            getResturants();
+                            const imagePreview = document.getElementById('imagePreview');
+                            imagePreview.src = '#';
+                            imagePreview.style.display = 'none';
+                            closeAddFoodCourtForm();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error adding foodcourt:', error);
+                            document.getElementById('displaymessage').textContent = 'Error in adding food court. Please try again later.';
+                            document.getElementById('success-overlay').style.display = 'flex';
+                            closeAddFoodCourtForm();
+                        });
+                    }
+                });
+                document.getElementById('confirmMessage').addEventListener('click', () => {
+                    document.getElementById('success-overlay').style.display = 'none';
+                });
+            });
+            function getResturants() {
+                fetch('/admingetresturant/', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const resturantContainer = document.querySelector('.resturants');
+                        resturantContainer.innerHTML = '';
+
+                        if(data.data.length > 0){
+                            data.data.forEach(resturant => {
+                                const resturantDiv = document.createElement('div');
+                                resturantDiv.classList.add('resturant-items');
+
+                                resturantDiv.innerHTML = `
+                                <div class="resturant-item">
+                                    <div class="image-container">
+                                        ${resturant.resturant_image ? 
+                                        `<img src="${resturant.resturant_image}" alt="Resturant Image">` :
+                                        `<img src="{% static 'images/failed_image_2.jpg' %}" alt="Default Image">`
+                                        }
+                                        <input type="file" id="changephoto-${resturant.resturant_id}" style="display: none;" accept="image/*">
+                                        <label for="changephoto-${resturant.resturant_id}" class="photo-icon">
+                                        <img src="{% static 'images/photoicon.jpg' %}" alt="Change Photo">  </label>
+                                    </div>
+                                    <h4>${resturant.resturant_name}</h4>
+                                    <h5>${resturant.resturant_id}</h5>
+                                    <div class="resturant-actions">
+                                        <button onclick="deleteResturant('${resturant.resturant_id}')" class="deletebtn">
+                                            <svg style="margin-right: 3px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0">
+                                                <path fill="currentColor" fill-rule="evenodd" d="M10.556 4a1 1 0 0 0-.97.751l-.292 1.14h5.421l-.293-1.14A1 1 0 0 0 13.453 4zm6.224 1.892-.421-1.639A3 3 0 0 0 13.453 2h-2.897A3 3 0 0 0 7.65 4.253l-.421 1.639H4a1 1 0 1 0 0 2h.1l1.215 11.425A3 3 0 0 0 8.3 22H15.7a3 3 0 0 0 2.984-2.683l1.214-11.425H20a1 1 0 1 0 0-2zm1.108 2H6.112l1.192 11.214A1 1 0 0 0 8.3 20H15.7a1 1 0 0 0 .995-.894zM10 10a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1" clip-rule="evenodd"></path>
+                                            </svg> Delete
+                                        </button>
+                                    </div>
+                                </div>
+                                `;
+                                resturantContainer.appendChild(resturantDiv);
+                                const changePhotoInput = document.getElementById(`changephoto-${resturant.resturant_id}`); 
+                                changePhotoInput.addEventListener('change', function(event) {
+
+                                    if (this.files && this.files[0]) {
+                                        const formData = new FormData();
+                                        formData.append('resturant_image', this.files[0]);
+                                        formData.append('resturant_id', resturant.resturant_id);
+                                        formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+                                        fetch(/adminupdateresturantimage/, {
+                                            method: 'POST',
+                                            body: formData
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                document.getElementById('displaymessage').textContent = 'Updated successfully!';
+                                                document.getElementById('success-overlay').style.display = 'flex';
+                                                getResturants();
+                                            } else {
+                                                document.getElementById('displaymessage').textContent = 'Failed to update : ' + data.error;
+                                                document.getElementById('success-overlay').style.display = 'flex';
+                                                getResturants();
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error updating image:', error);
+                                            document.getElementById('displaymessage').textContent = 'Error in updating image. Please try again later.';
+                                            document.getElementById('success-overlay').style.display = 'flex';
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                        else {
+                            resturantContainer.innerHTML = '<p style="margin-left:20px;">No restaurants found.</p>';
+                        }
+                    } else {
+                        console.error('Error fetching resturants:', data.error);
+                        document.getElementById('displaymessage').textContent = 'Error fetching resturants: ' + data.error;
+                        document.getElementById('success-overlay').style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating image:', error);
+                    document.getElementById('displaymessage').textContent = 'Error updating image. Please try again later.';
+                    document.getElementById('success-overlay').style.display = 'flex';
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                getResturants();
+            });
+            function deleteResturant(resturantId){
+                document.getElementById('delete-overlay').style.display = 'flex'; 
+                const confirmDeleteButton = document.getElementById('confirmDelete');
+                confirmDeleteButton.onclick = function() { 
+                    fetch('/admindeleteresturant/',{
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body:JSON.stringify({resturant_id:resturantId})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('displaymessage').textContent = 'Food Court deleted successfully!';
+                            document.getElementById('success-overlay').style.display = 'flex';
+                            getResturants();
+                            document.getElementById('delete-overlay').style.display = 'none';
+                        } else {
+                            console.error('Error deleting personnel:', data.error);
+                            document.getElementById('displaymessage').textContent = 'Failed to delete foodcourt: ' + data.error;
+                            document.getElementById('success-overlay').style.display = 'flex';
+                            document.getElementById('delete-overlay').style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting personnel:', error);
+                        document.getElementById('displaymessage').textContent = 'Error deleting foodcourt. Please try again later.';
+                        document.getElementById('success-overlay').style.display = 'flex'; 
+                    });
+                };
+                document.getElementById('cancelDelete').onclick = function() { 
+                    document.getElementById('delete-overlay').style.display = 'none';
+                }; 
+                document.getElementById('confirmMessage').addEventListener('click', () => {
+                    document.getElementById('success-overlay').style.display = 'none';
+                });   
+            }
+        </script>
+    {% endblock %} 
+</body>
+</html>

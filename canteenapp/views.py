@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import FailedLoginAttempts,RegularUser,DeliveryPerson,Menu,SubMenu,Item,Cart,Prices,Order,OrderItem,Payment,DeliveryLocation,CustomUser
+from .models import FailedLoginAttempts,RegularUser,DeliveryPerson,Menu,SubMenu,Item,Cart,Prices,Order,OrderItem,Payment,DeliveryLocation,CustomUser,Restaurant
 import uuid
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Permission, ContentType
@@ -34,6 +34,27 @@ from django.utils import timezone
 from django.utils.timezone import timedelta
 from django.db.models import F, Case, When
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
+import requests
+import json
+import hashlib
+import base64
+import requests
+import uuid
+import logging
+import datetime
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+from django.http import HttpResponseBadRequest
+from decimal import Decimal
+from cryptography.hazmat.primitives import hashes
+from django.views.decorators.csrf import csrf_exempt
+from cryptography.hazmat.backends import default_backend
+import jsons
+import time
+from .utils import generate_checksum
 
 def admin_required(view_func):
     return user_passes_test(
@@ -59,9 +80,17 @@ def app_user_required(view_func):
         login_url='/applogin/'
     )(view_func)
 
+def restaurant_required(view_func):
+    return user_passes_test(
+        lambda u: u.has_perm('canteenapp.is_restaurant') and not u.is_superuser,
+        login_url='/resturantlogin/'
+    )(view_func)
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def index(request):
     return render(request,'index.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @user_required
 def home(request):
     return render(request,'home.html')
@@ -788,6 +817,7 @@ def adminadditem(request):
             is_available = request.POST.get('is_available')
             item_image = request.FILES.get('itemimage')
             preparation_time=request.POST.get('preparation_time')
+            foodcourt=request.POST.get('foodcourt')
             if is_available == 'on': 
                 is_available = True
             elif is_available is None:
@@ -799,6 +829,7 @@ def adminadditem(request):
 
             menu = Menu.objects.get(pk=menu_id) if menu_id else None
             submenu = SubMenu.objects.get(pk=submenu_id) if submenu_id else None
+            restaurant=Restaurant.objects.get(email=foodcourt) if foodcourt else None
 
             item = Item.objects.create(
                 menu=menu,
@@ -809,7 +840,8 @@ def adminadditem(request):
                 price=price,
                 is_available=is_available,
                 item_image=item_image,
-                preparation_time=preparation_time
+                preparation_time=preparation_time,
+                resturant=restaurant
             )
             if item:
                 channel_layer = get_channel_layer()
@@ -842,6 +874,7 @@ def admingetallitems(request):
                     'menu': item.menu.menu_name if item.menu else None, 
                     'submenu': item.submenu.sub_menu_name if item.submenu else None,
                     'description':item.description,
+                    'restaurant':item.resturant.restaurant_name if item.resturant else None,
                     'type':item.type,
                     'price':item.price,
                     'is_avialable':item.is_available,
@@ -1121,7 +1154,7 @@ def adminneworders(request):
 @csrf_protect
 def getneworder(request):
     if request.method == 'GET':
-        orders = Order.objects.filter(status='pending', customer_status='confirmed').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        orders = Order.objects.filter(status='confirmed', customer_status='confirmed').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
         order_data = []
 
         for order in orders:
@@ -1164,13 +1197,14 @@ def getneworder(request):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items, 
-                'additional_charges': additional_charges_data  
+                'additional_charges': additional_charges_data,
+                'restaurant_name':order.restaurant.restaurant_name  
             })
         
         return JsonResponse({'orders': order_data})
@@ -1282,13 +1316,14 @@ def admingetallorder(request):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
-                'additional_charges': additional_charges_data  
+                'additional_charges': additional_charges_data,
+                'restaurant_name':order.restaurant.restaurant_name
             })
         
         return JsonResponse({'orders': order_data})
@@ -1348,13 +1383,14 @@ def admingetdeliveredorders(request):
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'delivered_at':timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
-                'additional_charges': additional_charges_data  
+                'additional_charges': additional_charges_data,
+                'restaurant_name':order.restaurant.restaurant_name  
             })
         
         return JsonResponse({'orders': order_data})
@@ -1414,13 +1450,14 @@ def admingetcancelledorders(request):
                 'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'cancel_reason':order.cancel_reason,
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
-                'additional_charges': additional_charges_data  
+                'additional_charges': additional_charges_data,
+                'restaurant_name':order.restaurant.restaurant_name  
             })
         
         return JsonResponse({'orders': order_data})
@@ -1500,7 +1537,7 @@ def adminallusers(request):
 @csrf_protect
 def admingetallusers(request):
     if request.method == 'GET':
-        users = CustomUser.objects.filter(role='user').values('email', 'phone_number', 'role', 'first_name', 'last_name')
+        users = CustomUser.objects.filter().values('email', 'phone_number', 'role', 'first_name', 'last_name')
         users_list = list(users)
         
         return JsonResponse({'users': users_list}, safe=False)
@@ -1577,11 +1614,11 @@ def admingettobeassignedorders(request):
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
                 'additional_charges': additional_charges_data  
             })
@@ -1801,11 +1838,11 @@ def admingetorderdetails(request,order_id):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
                 'additional_charges': additional_charges_data  
             })
@@ -1850,7 +1887,125 @@ def top_ordered_customers(request):
 
     return JsonResponse({'success': True, 'data': customer_data})
 
+@admin_required
+def adminresturants(request):
+    return render(request,'adminresturant.html')
 
+@admin_required
+@require_POST
+@csrf_protect
+def adminaddresturant(request):
+    if request.method=='POST':
+        restaurant_name = request.POST.get('foodcourtname')
+        foodcourtemail=request.POST.get('foodcourtemail')
+        restaurant_image = request.FILES.get('resturantimage')
+        if not all([restaurant_name, restaurant_image,foodcourtemail]):
+            return JsonResponse({'success': False, 'error': 'Required Missing fields.'})
+        try:
+            if Restaurant.objects.filter(email=foodcourtemail).exists():
+                return JsonResponse({'success': False, 'error': f'{foodcourtemail} already exists.'})
+            hashed_password=make_password(f'{restaurant_name}#@0987612345')
+            restaurant = Restaurant.objects.create(
+                username=foodcourtemail,
+                email=foodcourtemail,
+                first_name=restaurant_name,
+                restaurant_name=restaurant_name,
+                restaurant_image=restaurant_image,
+                password=hashed_password,
+                role='restaurant',
+            )    
+            restaurant_permission, created = Permission.objects.get_or_create(
+                codename='is_restaurant',
+                name='Can access restaurant-specific features',
+                content_type=ContentType.objects.get_for_model(Restaurant)
+            )
+            restaurant.user_permissions.add(restaurant_permission)
+            if restaurant:
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'Failed to add restaurant.'}, status=500)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+@require_http_methods(['GET'])
+@admin_required
+@csrf_protect
+def admingetresturant(request):
+    if request.method=='GET':
+        try:
+            restaurants = Restaurant.objects.all() 
+            restaurant_data = [
+                {
+                    'resturant_id': restaurant.email,
+                    'resturant_name': restaurant.restaurant_name,
+                    'resturant_image': restaurant.restaurant_image.url if restaurant.restaurant_image else None, 
+                }
+                for restaurant in restaurants
+            ]
+            return JsonResponse({'success': True, 'data': restaurant_data})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+
+@admin_required
+@require_POST
+@csrf_protect
+def adminupdateresturantimage(request):
+    if request.method == 'POST':
+        try:
+            restaurant_id = request.POST.get('resturant_id')
+            image = request.FILES.get('resturant_image')
+            restaurant = Restaurant.objects.get(email=restaurant_id)
+            if image:
+                if restaurant.restaurant_image: 
+                    try:
+                        old_image_path = os.path.join(settings.MEDIA_ROOT, str(restaurant.restaurant_image))
+                        if os.path.isfile(old_image_path):
+                            os.remove(old_image_path)
+                    except Exception as e:
+                        print(f"Error deleting old image: {e}")
+
+                restaurant.restaurant_image = image
+                restaurant.save()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No image provided.'})
+
+        except Restaurant.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Restaurant not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    
+@require_http_methods(["DELETE"])
+@admin_required
+@csrf_protect
+def admindeleteresturant(request):
+    try:
+        data = json.loads(request.body)
+        resturant_id = data.get('resturant_id')
+        if not resturant_id:
+            return JsonResponse({'success': False, 'error': 'Resturant Id is required.'}, status=400)
+        resturant = Restaurant.objects.get(email=resturant_id)
+        if resturant.restaurant_image:
+            try:
+                image_path = resturant.restaurant_image.path 
+                if os.path.isfile(image_path):
+                    os.remove(image_path)
+            except Exception as e:
+                print(f"Error deleting image: {e}")
+        resturant.delete()
+        return JsonResponse({'success': True})
+    except Menu.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Sub Menu not found.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
 #users
 
 def verify_email_smtp(email):
@@ -1944,7 +2099,7 @@ def sendverificationcode(request):
                 return JsonResponse({'success': False, 'error': f'Error while generating verification code: {str(e)}'})
             html_content = render_to_string("loginverification.html", context={
                 'verification_code': verification_code,
-                'user_name': user.username,
+                'user_name': user.first_name,
                 'time': timezone.localtime(expiration_time)
             })
             text_content = strip_tags(html_content)
@@ -1988,8 +2143,7 @@ def signupverifymail(request):
                     verification.is_verified = True
                     verification.save()
                     user=RegularUser.objects.create(
-                        username=username,
-                        first_name=username,
+                        username=email,
                         email=email,
                         phone_number=phone_number,
                         role='user'
@@ -2485,11 +2639,11 @@ def getorderdetails(request,order_id):
                 'delivery_type': order.delivery_type.capitalize(),
                 'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
                 'customer_status': order.customer_status.capitalize(),
-                'payment_method': order.payment.get_payment_method_display(),
-                'payment_amount': str(order.payment.amount),
-                'transaction_id': order.payment.transaction_id,
-                'payment_status': order.payment.get_status_display(),
-                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S'), 
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
                 'items': order_items,
                 'additional_charges': additional_charges_data  
             })
@@ -2564,12 +2718,43 @@ def user_logout_view(request):
     logout(request)
     return redirect('index')
 
+@require_http_methods(['POST'])
+@csrf_protect
+@user_required
+def updatedelivery_type(request):
+    try:
+        user = request.user
+        data=json.loads(request.body)
+        delivery_type=data.get('deliveryType')
+        if not user.is_authenticated:
+            return JsonResponse({'success': False, 'error': 'User not authenticated.'})
+        update_delivery = CustomUser.objects.get(email=user)
+        if user:
+            update_delivery.delivery_type=delivery_type
+            update_delivery.save()
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'cartitem_group',
+                {
+                    'type': 'cart_update',
+                }
+            )
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'addprices_group',
+                {
+                    'type': 'addprices_update',
+                }
+            )
+            return JsonResponse({'success':True})
+        return JsonResponse({'success':False,'error':'Error in updating'})
+    except Exception as e:
+        return JsonResponse({'success':False,'error':str(e)})
 #delivery
 def deliverylogin(request):
     if request.method == 'POST':
         email = request.POST.get('email') 
         password = request.POST.get('password')
-        print(email,password)
         try:
             user = CustomUser.objects.get(email=email)
             if user is not None:
@@ -2816,35 +3001,43 @@ def deliverydeliveredorders(request):
 def applogin(request):
     return render(request,'applogin.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def apphome(request):
     return render(request,'apphome.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def appsearch(request):
     return render(request,'appsearch.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def appcheckout(request):
     return render(request,'appcheckout.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def appprofile(request):
     return render(request,'appprofile.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def apporderhistory(request):
     return render(request,'apporderhistory.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def apporderinfo(request):
     return render(request,'apporderinfo.html')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def applogout(request):
     logout(request)
     return redirect('applogin')
 
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @app_user_required
 def google_auth_redirect(request):
     next_url = request.GET.get('next') 
@@ -2855,3 +3048,703 @@ def google_auth_redirect(request):
     
 def pagenotfound(request):
     return render(request,'pagenotfound.html')
+
+
+logger = logging.getLogger('payment')
+
+
+logger = logging.getLogger(__name__)
+
+
+def generate_tran_id():
+    return str(uuid.uuid4()).replace('-', '')
+
+
+@csrf_exempt
+def initiate_payment(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest("Invalid request method.")
+
+    try:
+        data = json.loads(request.body)
+        cart_items = Cart.objects.filter(user=request.user)
+        transaction_id = generate_tran_id()
+        order = Order(user=request.user, delivery_type=request.user.delivery_type, delivery_address=data.get('delivery_address'))
+        order.create_order_from_cart(cart_items)
+        amount = order.total_price
+        payload = {
+            "merchantId": settings.PHONEPE_MERCHANT_ID,
+            "transactionId": transaction_id,
+            "merchantUserId":  order.order_id,
+            "amount": int(amount)*100,
+            "redirectUrl": "http://127.0.0.1:8000/callback/",
+            "redirectMode": "POST",
+            "callbackUrl": "http://127.0.0.1:8000/callback/",
+            "mobileNumber": "9999999999",
+            "paymentInstrument": {
+                "type": "PAY_PAGE"
+            }
+        }
+        data = base64.b64encode(json.dumps(payload).encode()).decode()
+        print(data)
+        checksum = generate_checksum(data, settings.PHONEPE_MERCHANT_KEY, settings.PHONEPE_SALT_INDEX)
+        print(checksum)
+        headers = {
+            "Content-Type": "application/json",
+            "X-VERIFY": checksum + "###" + settings.PHONEPE_SALT_INDEX
+        }
+
+        url = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay"
+        max_retries = 1
+        for attempt in range(max_retries):
+            response = requests.post(url, json=payload, headers=headers)
+            if response.status_code == 429: 
+                time.sleep(2 ** attempt)  
+            else:
+                break
+
+        if response.status_code == 200:
+            return JsonResponse({"status": "success", "data": response.json()})
+        else:
+            return JsonResponse({"status": "failure", "error": response.json()})
+    except Exception as e:
+        print(str(e))
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+def payment_callback(request):
+    if request.method == "POST":
+        data = request.body
+        # Validate the checksum from PhonePe callback
+        received_checksum = request.headers.get("X-VERIFY")
+        calculated_checksum = generate_checksum(data, settings.PHONEPE_MERCHANT_KEY)
+
+        if received_checksum == calculated_checksum:
+            data = json.loads(request.body.decode('utf-8'))
+            logger.info("Payment callback data: %s", data)
+
+            checksum = data.get('checksum')
+            transaction_status = data.get('status')
+            transaction_id = data.get('merchantTransactionId')
+            order_id = data.get('merchantUserId')
+            if not all([checksum, transaction_id, order_id, transaction_status]):
+                raise ValueError("Missing required parameters in callback data.")
+
+            if transaction_status not in ['SUCCESS', 'FAILURE']:
+                raise ValueError(f"Invalid transaction status: {transaction_status}")
+            try:
+                order = Order.objects.get(order_id=order_id)
+            except Order.DoesNotExist:
+                raise ValueError(f"Order with ID '{order_id}' not found.")
+
+            payment, created = Payment.objects.update_or_create(
+                transaction_id=transaction_id,
+                defaults={
+                    'user': order.user,
+                    'amount': Decimal(data['amount']) / 100,
+                    'status': transaction_status,
+                    'order_id': order_id,
+                    'payment_method': 'upi',  
+                    'message': data.get('message', ''),
+                    'payment_instrument': data.get('paymentInstrument', {}).get('type', '')
+                },
+            )
+            if transaction_status == 'SUCCESS':
+                order.payment = payment 
+                order.customer_status = 'confirmed'
+                order.save()
+                return render(request, 'payment_success.html', {'order': order})
+            else:
+                order.customer_status = 'cancelled'
+                order.save()
+                return render(request, 'payment_failed.html', {'order': order})
+    else:
+        return JsonResponse({"status": "failure", "error": "Checksum mismatch"})
+    
+
+ #resturant
+
+def resturantlogin(request):
+    if request.method == 'POST':
+        email = request.POST.get('email') 
+        password = request.POST.get('password')
+        try:
+            user = CustomUser.objects.get(email=email)
+            if user is not None:
+                if user.has_perm('canteenapp.is_restaurant'):
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                    return redirect('resturantdashoard')
+                else:
+                    return render(request, 'resturantlogin.html', {'error_message': 'Invalid user role.'})
+            else:
+                return render(request, 'resturantlogin.html', {'error_message': 'Invalid user role.'})
+        except CustomUser.DoesNotExist:
+            return render(request, 'resturantlogin.html', {'error_message': 'User does not exist.'})
+
+    return render(request, 'resturantlogin.html')
+
+@restaurant_required
+@require_http_methods(["GET"])
+@csrf_protect
+def restaurantgetmenu(request):
+    if request.method=='GET':
+        try:
+            menus = Menu.objects.all()
+            menu_list = []
+            for menu in menus:
+                menu_data = {
+                    'menu_id':menu.id,
+                    'menu_name':menu.menu_name,
+                    'menu_picture': menu.menu_image.url if menu.menu_image else None
+                }
+                menu_list.append(menu_data)
+            
+            return JsonResponse({'success': True, 'data': menu_list})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=405)
+
+@restaurant_required
+@require_http_methods(["POST"])
+@csrf_protect
+def restaurantgetsubmenusfordropdown(request):
+    if request.method == 'POST':
+        try:
+            data=json.loads(request.body)
+            menu_id=data.get('menu_id')
+            menu=Menu.objects.get(id=menu_id)
+            submenus = SubMenu.objects.filter(menu_name=menu)
+            submenu_data = [{'sub_menu_id': submenu.id, 'sub_menu_name': submenu.sub_menu_name} for submenu in submenus]
+            return JsonResponse({'success': True, 'data': submenu_data})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    
+@restaurant_required
+@require_POST
+@csrf_protect
+def restaurantadditem(request):
+    if request.method == 'POST':
+        try:
+            item_name = request.POST.get('itemname')
+            description = request.POST.get('description')
+            menu_id = request.POST.get('menu')
+            submenu_id = request.POST.get('submenu')
+            item_type = request.POST.get('type') 
+            price = request.POST.get('price')
+            is_available = request.POST.get('is_available')
+            item_image = request.FILES.get('itemimage')
+            preparation_time=request.POST.get('preparation_time')
+            restaurant=request.user.email
+            if is_available == 'on': 
+                is_available = True
+            elif is_available is None:
+                is_available = False
+            if not all([item_name, description, price]):
+                return JsonResponse({'success': False, 'error': 'Item name, description, and price are required.'})
+            if len(description) < 20:
+                return JsonResponse({'success': False, 'error': 'Description must be at least 20 characters long.'})
+
+            menu = Menu.objects.get(pk=menu_id) if menu_id else None
+            submenu = SubMenu.objects.get(pk=submenu_id) if submenu_id else None
+            restaurant=Restaurant.objects.get(email=restaurant) if restaurant else None
+
+            item = Item.objects.create(
+                menu=menu,
+                submenu=submenu,
+                item_name=item_name,
+                description=description,
+                type=item_type,  
+                price=price,
+                is_available=is_available,
+                item_image=item_image,
+                preparation_time=preparation_time,
+                resturant=restaurant
+            )
+            if item:
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    'allitems_group',
+                    {
+                        'type': 'item_update',
+                    }
+                )
+                return JsonResponse({'success': True})
+            
+        except Menu.DoesNotExist:
+            return JsonResponse({'success':False,'error':'Menu not exists.'})
+        except SubMenu.DoesNotExist:
+            return JsonResponse({'success':False,'error':'Submenu not exists.'})
+        except Exception as e:
+            return JsonResponse({'success':False,'error':str(e)})
+
+@require_POST  
+@restaurant_required
+@csrf_protect
+def restaurantgetallitems(request):
+    if request.method=='POST':
+        try:
+            restaurant=CustomUser.objects.get(email=request.user.email)
+            items = Item.objects.filter(resturant_id=restaurant)
+            item_data = [
+                {
+                    'item_id': item.id,
+                    'item_name':item.item_name,
+                    'menu': item.menu.menu_name if item.menu else None, 
+                    'submenu': item.submenu.sub_menu_name if item.submenu else None,
+                    'description':item.description,
+                    'restaurant':item.resturant.restaurant_name if item.resturant else None,
+                    'type':item.type,
+                    'price':item.price,
+                    'is_avialable':item.is_available,
+                    'preparation_time':item.preparation_time,
+                    'item_image': item.item_image.url if item.item_image else None
+                }
+                for item in items
+            ]
+            return JsonResponse({'success': True, 'data': item_data})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+@require_http_methods(["DELETE"])
+@restaurant_required
+@csrf_protect
+def restaurantdeleteitem(request):
+    try:
+        data = json.loads(request.body)
+        item_id = data.get('item_id')
+        if not item_id:
+            return JsonResponse({'success': False, 'error': 'Item ID is required.'}, status=400)
+        item = Item.objects.get(id=item_id)
+        if item.item_image:
+            try:
+                image_path = item.item_image.path 
+                if os.path.isfile(image_path):
+                    os.remove(image_path)
+            except Exception as e:
+                print(f"Error deleting image: {e}")
+        item.delete()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'allitems_group',
+            {
+                'type': 'item_update',
+            }
+        )
+        async_to_sync(channel_layer.group_send)(
+            'cartitem_group',
+            {
+                'type': 'cart_update',
+            }
+        )
+        return JsonResponse({'success': True})
+    except Menu.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Item not found.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@restaurant_required
+@require_POST
+@csrf_protect
+def restaurantupdateitem(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            item_id=data.get('item_id')
+            item_name = data.get('item_name')
+            description = data.get('description')
+            price = data.get('price')
+            is_available = data.get('is_avialable')
+            if is_available == 'on': 
+                is_available = True
+            elif is_available is None:
+                is_available = False
+            preparation_time = data.get('preparation_time')
+            if not item_name:
+                return JsonResponse({'success': False, 'error': 'Item name cannot be empty.'}, status=400)
+            if len(description.split()) < 10: 
+                return JsonResponse({'success': False, 'error': 'Description must be at least 20 words long.'}, status=400)
+
+            item=Item.objects.get(id=item_id)
+            item.item_name=item_name
+            item.preparation_time=preparation_time
+            item.description=description
+            item.price=price
+            item.is_available=is_available
+            item.save()
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'allitems_group',
+                {
+                    'type': 'item_update',
+                }
+            )
+            async_to_sync(channel_layer.group_send)(
+                'cartitem_group',
+                {
+                    'type': 'cart_update',
+                }
+            )
+            async_to_sync(channel_layer.group_send)(
+                'search_items_group',
+                {
+                    'type': 'search_update',
+                }
+            )
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+@restaurant_required
+@require_POST
+@csrf_protect
+def restaurantupdateitemimage(request):
+    if request.method=='POST':
+        try:
+            item_id = request.POST.get('item_id')
+            item = Item.objects.get(pk=item_id)
+            itemimage = request.FILES.get('itemimage')
+        
+            if itemimage:
+                if item.item_image: 
+                    try:
+                        old_image_path = os.path.join(settings.MEDIA_ROOT, str(item.item_image))
+                        if os.path.isfile(old_image_path):
+                            os.remove(old_image_path)
+                    except Exception as e:
+                        print(f"Error deleting old image: {e}")
+
+                item.item_image = itemimage
+                item.save()
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    'allitems_group',
+                    {
+                        'type': 'item_update',
+                    }
+                )
+                async_to_sync(channel_layer.group_send)(
+                    'cartitem_group',
+                    {
+                        'type': 'cart_update',
+                    }
+                )
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'No image provided.'})
+
+        except Item.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Menu not found.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'}) 
+
+@restaurant_required
+def resturantdashoard(request):
+    return render(request,'resturantdashboard.html')
+
+@restaurant_required
+def resturantitems(request):
+    return render(request,'resturantitems.html')
+
+@restaurant_required
+def restaurantneworders(request):
+    return render(request,'restaurantneworders.html')
+
+@require_http_methods(["GET"])
+@restaurant_required
+@csrf_protect
+def restaurantgetneworder(request):
+    if request.method == 'GET':
+        orders = Order.objects.filter(status='confirmed', customer_status='confirmed').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0 
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price  
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price),  
+                'total_item_price': str(item_total_price), 
+                'total_additional_charges': str(total_additional_charges), 
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items, 
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@restaurant_required
+@require_POST
+@csrf_exempt
+def restaruntcancelorder(request):
+    try:
+        data=json.loads(request.body)
+        order_id = data.get('order_id')
+        cancel_reason =data.get('cancel_reason')
+        
+        if not all([order_id, cancel_reason]):
+            return JsonResponse({'success': False, 'error': 'Missing required fields.'}, status=400)
+        try:
+            order = Order.objects.get(order_id=order_id)
+        except Order.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Order not found.'}, status=404)
+
+        if order.status == 'pending':
+            order.status = 'cancelled'
+            order.cancel_reason = cancel_reason
+            order.cancelled_at=timezone.now()
+            order.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'error': 'Order is not in pending state.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+@restaurant_required
+def restaurantallorders(request):
+    return render(request,'restaurantallorders.html')
+
+@require_http_methods(["GET"])
+@restaurant_required
+@csrf_protect
+def restaurantgetallorder(request):
+    if request.method == 'GET':
+        orders = Order.objects.filter().select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0  
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price 
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                'delivered_at': timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S') if order.delivered_at else None,
+                'cancelled_at': timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                'cancel_reason':order.cancel_reason,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price), 
+                'total_item_price': str(item_total_price),  
+                'total_additional_charges': str(total_additional_charges),  
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items,
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@restaurant_required
+def restaurantdeliveredorders(request):
+    return render(request,'restaurantdeliveredorders.html')
+
+@require_http_methods(['GET'])
+@restaurant_required
+@csrf_protect
+def restaurantgetdeliveredorders(request):
+    if request.method == 'GET':
+        orders = Order.objects.filter(status='delivered',customer_status='confirmed').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0  
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price 
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price), 
+                'total_item_price': str(item_total_price),  
+                'total_additional_charges': str(total_additional_charges),  
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'delivered_at':timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items,
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@restaurant_required
+def restaurantcancelledorders(request):
+    return render(request,'restaurantcancelledorders.html')
+
+@require_http_methods(['GET'])
+@restaurant_required
+@csrf_protect
+def restaurantgetcancelledorders(request):
+    if request.method == 'GET':
+        orders = Order.objects.filter(status='cancelled',customer_status='confirmed').select_related('user', 'payment').prefetch_related('items', 'additional_charges')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0  
+            for order_item in order.orderitem_set.all(): 
+                item = order_item.item
+                item_total_price += order_item.total_price 
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),  
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None 
+                })
+            additional_charges_data = []
+            total_additional_charges = 0 
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value  
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address':order.delivery_address,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price), 
+                'total_item_price': str(item_total_price),  
+                'total_additional_charges': str(total_additional_charges),  
+                'status': order.get_status_display(),
+                'delivery_type': order.delivery_type.capitalize(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'cancel_reason':order.cancel_reason,
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items,
+                'additional_charges': additional_charges_data  
+            })
+        
+        return JsonResponse({'orders': order_data})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

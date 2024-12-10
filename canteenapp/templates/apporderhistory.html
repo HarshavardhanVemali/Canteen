@@ -3,11 +3,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
     <title>Food Hub - Profile</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile.css' %}">
-    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
@@ -89,7 +91,6 @@
         margin-right: 5px;
         fill: #686b78;
     }
-
     .cart-count {
         font-weight: bold;
         font-size: 0.7rem;
@@ -135,6 +136,7 @@
         gap: 1rem;
         height: auto;
         overflow: auto;
+        justify-content: center;
     }
     .profile-section{
         margin-bottom: 5px;
@@ -191,8 +193,8 @@
         font-size: 12px;
     }
     svg{
-        width: 12px;
-        height: 12px;
+        width: 16px;
+        height: 16px;
     }
     .order-status svg{
         width: 20px;
@@ -220,6 +222,12 @@
     .item-order-price{
         font-family: Lato-Regular, Helvetica, sans-serif;
         font-weight: 500;
+    }
+    .header-title a{
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #202127;
     }
 </style>
 <body>

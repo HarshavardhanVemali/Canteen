@@ -69,8 +69,7 @@
                 <label for="statusfilter">Status</label>
                 <select name="statusfilter" id="statusfilter" class="filterselect" required>
                     <option value="" selected>All</option>
-                    <option value="Pending">New</option>
-                    <option value="Confirmed">Confirmed</option>
+                    <option value="Confirmed">New</option>
                     <option value="Prepared">Prepared</option>
                     <option value="Shipped">Shipped</option>
                     <option value="Delivered">Delivered</option>
@@ -113,6 +112,7 @@
                             <th>Order Id</th>
                             <th>Customer</th>
                             <th>Email</th>
+                            <th>Food Court</th>
                             <th>Total Amount</th>
                             <th>Payment Status</th>
                             <th>Customer Status</th>
@@ -211,6 +211,7 @@
                                 <td style="color:#3874ff;font-weight:530;" onclick="viewOrder('${order.order_id}')" id="orderid">${order.order_id}</td>
                                 <td style="font-weight:500;color:#31374a;">${order.customer}</td>
                                 <td style="font-weight:500;color:#31374a;">${order.email}</td>
+                                <td style="font-weight:500;color:#31374a;">${order.restaurant_name}</td>
                                 <td style="color:#31374a;font-weight:600;">Rs. ${order.total_price}</td>
                                 <td class="${paymentStatusClass}" style="font-weight:520;">${order.payment_status}</td>
                                 <td class="${customerStatusClass}" style="font-weight:520;">${order.customer_status}</td>
@@ -295,39 +296,7 @@
                     noResultsMessage.style.display = 'none'; 
                 }
             }
-            function confirmOrder(){
-                const order = ordersData.find(o => o.order_id === document.getElementById('order-id').textContent.replace('Order: ', ''));
-                if (order) {
-                    fetch('/adminconfirmorder/',{
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': getCookie('csrftoken'),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({'order_id': order.order_id})
-                    }) 
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.success){
-                            document.getElementById('displaymessage').textContent = 'Order Confirmed!';
-                            document.getElementById('success-overlay').style.display = 'flex';
-                            closeOverlay();
-                            getNewOrder();
-                        }
-                        else{
-                            document.getElementById('displaymessage').textContent = 'Something went wrong. Please try again.';
-                            document.getElementById('success-overlay').style.display = 'flex';
-                        }
-                    });
-                } else {
-                    document.getElementById('displaymessage').textContent = 'Something went wrong. Please try again.';
-                    document.getElementById('success-overlay').style.display = 'flex';
-                    console.error('Order not found to confirm:', orderId);
-                }
-                document.getElementById('confirmMessage').addEventListener('click', () => {
-                    document.getElementById('success-overlay').style.display = 'none';
-                });
-            }
+            
             function cancelOrder() {
                 const orderId = document.getElementById('overlay_order_id').textContent; 
                 const order = ordersData.find(o => o.order_id === orderId);

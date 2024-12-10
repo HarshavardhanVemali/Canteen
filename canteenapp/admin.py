@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, DeliveryPerson, RegularUser, Admin,FailedLoginAttempts,EmailVerification,Menu,SubMenu,Item,Cart,Prices,Order,Refund,OrderItem,Payment,OrderAdditionalCharges,DeliveryLocation
+from .models import CustomUser, DeliveryPerson, RegularUser, Admin,FailedLoginAttempts,EmailVerification,Menu,SubMenu,Item,Cart,Prices,Order,Refund,OrderItem,Payment,OrderAdditionalCharges,DeliveryLocation,Restaurant
 from django.utils.safestring import mark_safe
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -35,8 +35,8 @@ class SubMenuAdmin(admin.ModelAdmin):
             return 'No image found'
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display=('id','menu','submenu','item_name','type','price','rating','is_available','preview_image')
-    search_fields=('id','menu','submenu','item_name')
+    list_display=('id','menu','submenu','resturant','item_name','type','price','rating','is_available','preview_image')
+    search_fields=('id','menu','submenu','resturant','item_name')
     readonly_fields= ('preview_image',)
     def preview_image(self, obj):
         if obj.item_image:
@@ -64,7 +64,7 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'total_price','delivery_type','status','customer_status','created_at', 'updated_at')
+    list_display = ('order_id','daily_sequence', 'user', 'total_price','delivery_type','status','customer_status','created_at', 'updated_at')
     search_fields = ('order_id', 'user__email')
     list_filter = ('status',)
     ordering = ('-created_at',)
@@ -111,6 +111,16 @@ class DeliveryLocationAdmin(admin.ModelAdmin):
             return mark_safe(f'<img src="{obj.location_image.url}" style="max-width: 200px; max-height: 150px;">')
         else:
             return 'No image found'
+        
+
+class ResturantAdmin(admin.ModelAdmin):
+    list_display=('email','restaurant_name','preview_image')
+
+    def preview_image(self, obj):
+        if obj.restaurant_image:
+            return mark_safe(f'<img src="{obj.restaurant_image.url}" style="max-width: 200px; max-height: 150px;">')
+        else:
+            return 'No image found'
 
 admin.site.register(OrderAdditionalCharges, OrderAdditionalChargesAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
@@ -124,3 +134,4 @@ admin.site.register(SubMenu,SubMenuAdmin)
 admin.site.register(Item,ItemAdmin)
 admin.site.register(Cart,CartAdmin)
 admin.site.register(Prices,PricesAdmin)
+admin.site.register(Restaurant,ResturantAdmin)

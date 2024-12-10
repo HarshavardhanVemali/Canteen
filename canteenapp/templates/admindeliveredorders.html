@@ -81,6 +81,7 @@
                             <th>Order Id</th>
                             <th>Customer</th>
                             <th>Email</th>
+                            <th>Food Court</th>
                             <th>Total Amount</th>
                             <th>Payment Status</th>
                             <th>Status</th>
@@ -152,6 +153,7 @@
                                 <td style="color:#3874ff;font-weight:530;" onclick="viewOrder('${order.order_id}')" id="orderid">${order.order_id}</td>
                                 <td style="font-weight:500;color:#31374a;">${order.customer}</td>
                                 <td style="font-weight:500;color:#31374a;">${order.email}</td>
+                                <td style="font-weight:500;color:#31374a;">${order.restaurant_name}</td>
                                 <td style="color:#31374a;font-weight:600;">Rs. ${order.total_price}</td>
                                 <td class="${paymentStatusClass}" style="font-weight:520;">${order.payment_status}</td>
                                 <td class="${statusClass}" style="font-weight:520;">${order.status}</td>

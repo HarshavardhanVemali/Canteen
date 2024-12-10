@@ -3,8 +3,10 @@
 {% load static %}
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="cache-control" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Order Food</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -644,11 +646,10 @@
 
         </div>
         <select name="deliverytype" id="deliverytype">
-            <option value="" disabled selected>Delivery Choice</option>
-            <option value="delivery">Delivery</option>
-            <option value="pickup">Pick Up</option>
-            <option value="dingin">Dining</option>
-        </select>
+            <option value="dining" {% if user.delivery_type == 'dining' %}selected{% endif %}>Dining</option>
+            <option value="delivery" {% if user.delivery_type == 'delivery' %}selected{% endif %}>Delivery</option>
+            <option value="pickup" {% if user.delivery_type == 'pickup' %}selected{% endif %}>Pick Up</option>
+          </select>
     </div>
     <div class="checkout-page">
         <div class="checkout-left">
@@ -699,12 +700,15 @@
     let marker;
     let isDeliverySelected = false; 
     document.addEventListener('DOMContentLoaded', () => {
+        
         document.getElementById('bill-details').addEventListener('click', () => {
             window.scrollTo({
                 top: document.getElementById('bill-details').offsetTop,
                 behavior: 'smooth'
             });
+            
         });
+        
 
         document.querySelector('.checkout-nav-bar').addEventListener('click', (event) => {
             if (event.target && event.target.tagName === 'A' && event.target.hash === '#bill-details') {
@@ -717,10 +721,25 @@
         });
         const deliveryLocationDiv = document.querySelector('.delivery-location');
         let deliveryLocationVisible = false; 
+        const selectedDeliveryType = document.getElementById('deliverytype').value.trim();
+        if (selectedDeliveryType === 'delivery') {
+            if (!deliveryLocationVisible) {
+                deliveryLocationDiv.style.display = 'flex';
+                deliveryLocationDiv.animate([
+                    { opacity: 0, transform: 'translateY(20px)' }, 
+                    { opacity: 1, transform: 'translateY(0)' }    
+                ], {
+                    duration: 300, 
+                    easing: 'ease-in-out', 
+                    fill: 'forwards'
+                });
+                deliveryLocationVisible = true;
+            }
 
+        }
         document.getElementById('deliverytype').addEventListener('change', (event) => {
             const selectedDeliveryType = document.getElementById('deliverytype').value.trim();
-
+            
             if (selectedDeliveryType === 'delivery') {
                 if (!deliveryLocationVisible) {
                     deliveryLocationDiv.style.display = 'flex';
@@ -752,6 +771,7 @@
                 }
             }
         });
+        
     });
     function getWebSocketUrl() {
         const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
@@ -828,6 +848,27 @@
             confirmButton.disabled = true;
             confirmButton.style.cursor = 'not-allowed'; 
         }
+        delivery_type=document.getElementById('deliverytype').value;
+        fetch('/updatedelivery_type/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                deliveryType:delivery_type                      
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Updated Delivery Type.');
+            } else {
+                console.error('Error updating delivery type:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating delivery type:', error);
+        });
     });
     function selectLocation(locationName) {
         if (!isDeliverySelected) return;
@@ -1061,6 +1102,7 @@
     additionalpricesSocket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         const billDetailsDiv = document.querySelector('.bill-details');
+        billDetailsDiv.innerHTML='';
         const itemTotalDiv=document.createElement('div');
         itemTotalDiv.classList.add('bill-item');
         itemTotalDiv.innerHTML=`
@@ -1096,7 +1138,32 @@
             <a href="#bill-details">₹ ${finalAmount.toFixed(2)}<br><p style="color:rgb(27, 166, 114);font-size:13px;font-weight:600;margin:0;">View Bill</p></a>
             <button class="proceed-button" id="proceed-button">Proceed to Pay</button>
         `
+        document.getElementById('proceed-button').addEventListener('click', initiatePhonePePayment);
+
     };
+    
+    function initiatePhonePePayment() {
+        const amount = document.getElementById('order-total').textContent.replace('₹ ', '');
+        fetch('/initiate/', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ amount: amount, delivery_address:document.getElementById('selected-location').textContent }), // Send amount and delivery address
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+            window.location.href = data.redirectUrl; 
+            } else {
+            alert('Error initiating payment: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Error initiating payment: ' + error);
+        });
+    }
     
 </script>
 </html>

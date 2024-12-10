@@ -6,6 +6,7 @@ from canteenapp import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    #admin
     path('admin/', admin.site.urls),
     path('',views.home,name='home'),
     path('userlogin/',views.index,name='index'),
@@ -43,6 +44,7 @@ urlpatterns = [
     path('adminpriceupdation/',views.adminpriceupdation,name='adminpriceupdation'),
     path('adminaddprice/',views.adminaddprice,name='adminaddprice'),
     path('admingetaddprices/',views.admingetaddprices,name='admingetaddprices'),
+    path('updatedelivery_type/',views.updatedelivery_type,name='updatedelivery_type'),
     path('adminupdateprices/',views.adminupdateprices,name='adminupdateprices'),
     path('admindeleteprice/',views.admindeleteprice,name='admindeleteprice'),
     path('adminneworders/',views.adminneworders,name='adminneworders'),
@@ -80,7 +82,13 @@ urlpatterns = [
     path('adminorderhistory/',views.adminorderhistory,name='adminorderhistory'),
     path('adminsalesreports/',views.adminsalesreports,name='adminsalesreports'),
     path('admin_top_ordered_customers/',views.top_ordered_customers,name='admin_top_ordered_customers'),
+    path('adminresturants/',views.adminresturants,name='adminresturants'),
+    path('adminaddresturant/',views.adminaddresturant,name='adminaddresturant'),
+    path('admingetresturant/',views.admingetresturant,name='admingetresturant'),
+    path('adminupdateresturantimage/',views.adminupdateresturantimage,name='adminupdateresturantimage'),
+    path('admindeleteresturant/',views.admindeleteresturant,name='admindeleteresturant'),
 
+    #user
     path('getmenu/',views.getmenu,name='getmenu'),
     path('getallitems/',views.getallitems,name='getallitems'),
     path('checkout/',views.checkout,name='checkout'),
@@ -102,6 +110,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('accounts/', include('allauth.urls')),
 
+    #delivery
     path('deliverylogin/',views.deliverylogin,name='deliverylogin'),
     path('deliverydashboard/',views.deliverydashboard,name='deliverydashboard'),
     path('deliveryneworders/',views.deliveryneworders,name='deliveryneworders'),
@@ -114,7 +123,7 @@ urlpatterns = [
     path('deliverytemplate/',views.deliverytemplate,name='deliverytemplate'),
 
 
-
+    #app
     path('applogin/',views.applogin,name='applogin'),
     path('apphome/',views.apphome,name='apphome'),
     path('appsearch/',views.appsearch,name='appsearch'),
@@ -124,4 +133,28 @@ urlpatterns = [
     path('apporderinfo/',views.apporderinfo,name='apporderinfo'),
     path('applogout/',views.applogout,name='applogout'),
     path('pagenotfound/',views.pagenotfound,name='pagenotfound'),
+    path('initiate/', views.initiate_payment, name='initiate_payment'), 
+    path('callback/', views.payment_callback, name='payment_callback'),
+
+
+    #resturant
+    path('resturantdashoard/',views.resturantdashoard,name='resturantdashoard'),
+    path('resturantitems/',views.resturantitems,name='resturantitems'),
+    path('resturantlogin/',views.resturantlogin,name='resturantlogin'),
+    path('restaurantgetmenu/',views.restaurantgetmenu,name='restaurantgetmenu'),
+    path('restaurantgetsubmenusfordropdown/',views.restaurantgetsubmenusfordropdown,name='restaurantgetsubmenusfordropdown'),
+    path('restaurantadditem/',views.restaurantadditem,name='restaurantadditem'),
+    path('restaurantupdateitem/',views.restaurantupdateitem,name='restaurantupdateitem'),
+    path('restaurantupdateitemimage/',views.restaurantupdateitemimage,name='restaurantupdateitemimage'),
+    path('restaurantgetallitems/',views.restaurantgetallitems,name='restaurantgetallitems'),
+    path('restaurantdeleteitem/',views.restaurantdeleteitem,name='restaurantdeleteitem'),
+    path('restaurantallorders/',views.restaurantallorders,name='restaurantallorders'),
+    path('restaurantgetallorder/',views.restaurantgetallorder,name='restaurantgetallorder'),
+    path('restaruntcancelorder/',views.restaruntcancelorder,name='restaruntcancelorder'),
+    path('restaurantneworders/',views.restaurantneworders,name='restaurantneworders'),
+    path('restaurantgetneworder/',views.restaurantgetneworder,name='restaurantgetneworder'),
+    path('restaurantdeliveredorders/',views.restaurantdeliveredorders,name='restaurantdeliveredorders'),
+    path('restaurantgetdeliveredorders/',views.restaurantgetdeliveredorders,name='restaurantgetdeliveredorders'),
+    path('restaurantcancelledorders/',views.restaurantcancelledorders,name='restaurantcancelledorders'),
+    path('restaurantgetcancelledorders/',views.restaurantgetcancelledorders,name='restaurantgetcancelledorders'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

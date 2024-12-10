@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.db.models import Q
 
 def create_unique_username(strategy, details, backend, user=None, *args, **kwargs):
-    from .models import RegularUser  
+    from .models import RegularUser,CustomUser  
     from django.contrib.auth import authenticate, login
     from django.contrib.auth.models import Permission, ContentType
     from django.contrib.auth.decorators import user_passes_test
@@ -15,7 +15,7 @@ def create_unique_username(strategy, details, backend, user=None, *args, **kwarg
     email = details.get('email', '')
 
     print(details)
-    if RegularUser.objects.filter(email=email).exists():
+    if CustomUser.objects.filter(email=email).exists():
         return  
 
     if first_name and last_name:
@@ -24,7 +24,7 @@ def create_unique_username(strategy, details, backend, user=None, *args, **kwarg
             base_username = slugify(full_name)
             username = base_username
             counter = 1
-            while RegularUser.objects.filter(username=username).exists():
+            while CustomUser.objects.filter(username=username).exists():
                 username = f"{base_username}{counter}"
                 counter += 1
 

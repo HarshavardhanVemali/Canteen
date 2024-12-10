@@ -161,21 +161,42 @@ class AdditionalPricesConsumer(AsyncWebsocketConsumer):
 
     async def send_current_addprices(self):
         try:
-            add_prices = await self.get_add_prices()
+            all_prices = await self.get_add_prices()
+            delivery_type = self.user.delivery_type 
+            filtered_prices = self.filter_prices(all_prices, delivery_type)
+
             add_prices_list = [
                 {
                     'price_type': price.price_type,
                     'value_type': price.value_type,
                     'value': float(price.value),
                 }
-                for price in add_prices
+                for price in filtered_prices
             ]
             await self.send(text_data=json.dumps({'data': add_prices_list}))
         except Exception as e:
             print(f"Error sending additional prices: {e}")
 
-    async def addprices_update(self, event): 
+    async def addprices_update(self, event):
         await self.send_current_addprices()
+
+    def filter_prices(self, prices, delivery_type):
+        filtered_prices = []
+        common_prices = ['GST', 'Other', 'PlatFormFee'] 
+
+        for price in prices:
+            if price.price_type in common_prices:
+                filtered_prices.append(price)
+            elif delivery_type == 'delivery':
+                if price.price_type in ['Delivery', 'Packaging']:
+                    filtered_prices.append(price)
+            elif delivery_type == 'dining':
+                if price.price_type == 'Service':
+                    filtered_prices.append(price)
+            elif delivery_type == 'pickup':
+                if price.price_type == 'Packaging':
+                    filtered_prices.append(price)
+        return filtered_prices
 
 class SearchItemsConsumer(AsyncWebsocketConsumer): 
     async def connect(self):

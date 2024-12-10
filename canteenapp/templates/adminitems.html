@@ -95,6 +95,12 @@
                       <option value="" disabled selected>Select Submenu</option> 
                     </select>
                   </div>
+                  <div class="form-group">
+                    <label for="foodcourt" >Food Court</label>
+                    <select name="foodcourt" id="foodcourt" required>
+                      <option value="" disabled selected>Select Food Court</option> 
+                    </select>
+                  </div>
           
                   <div class="form-group">
                     <label for="type">Type</label>
@@ -194,6 +200,38 @@
                 console.error('Error fetching menu for dropdown:', error);
                 });
             }
+            function populateFoodCourtDropdown() {
+                const foodCourtSelect = document.getElementById('foodcourt');
+                foodCourtSelect.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select Food Court'; 
+                defaultOption.disabled = true;
+                defaultOption.selected = true; 
+                foodCourtSelect.appendChild(defaultOption);
+                fetch('/admingetresturant/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+                })
+                .then(response => response.json())
+                .then(data => {
+                if (data.success) {
+                    data.data.forEach(foodcourt => {
+                    const option = document.createElement('option');
+                    option.value = foodcourt.resturant_id; 
+                    option.textContent = foodcourt.resturant_name;
+                    foodCourtSelect.appendChild(option);
+                    });
+                } else {
+                    console.error('Error fetching menu for dropdown:', data.error);
+                }
+                })
+                .catch(error => {
+                console.error('Error fetching menu for dropdown:', error);
+                });
+            }
             function populateSubMenuDropdown(menuId) {
                 const submenuSelect = document.getElementById('submenu');
                 submenuSelect.innerHTML = ''; 
@@ -270,6 +308,8 @@
                                 document.getElementById('success-overlay').style.display = 'flex';
                                 closeItemForm();
                                 getItems();
+                                const imagePreview = document.getElementById('imagePreview');
+                                imagePreview.style.display = 'none';
                                 form.reset(); 
                             } else {
                                 document.getElementById('displaymessage').textContent = 'Failed to add item: ' + data.error;
@@ -323,6 +363,10 @@
                                     <div class="form-row">
                                         <label for="submenu-${item.item_id}">Sub Menu</label>
                                         <input type="text" value="${item.submenu}" id="itemSubMenu-${item.item_id}" class="update-inputs" style="border:transparent;font-weight:600;" disabled>
+                                    </div>
+                                    <div class="form-row">
+                                        <label for="submenu-${item.restaurant}">Sub Menu</label>
+                                        <input type="text" value="${item.restaurant}" id="itemSubMenu-${item.item_id}" class="update-inputs" style="border:transparent;font-weight:600;" disabled>
                                     </div>
                                     <div class="form-row">
                                         <label for="itemName-${item.item_id}">Item Name</label>
@@ -528,6 +572,7 @@
         }
         document.addEventListener('DOMContentLoaded', () => {
                 getItems();
+                populateFoodCourtDropdown();
         });
         </script>
   {% endblock %} 

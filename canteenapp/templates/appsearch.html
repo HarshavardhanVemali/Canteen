@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="cache-control" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Food Hub - Search</title>
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -875,15 +877,11 @@
                 alert("Speech recognition is not supported by your browser. Please upgrade.");
                 return;
             }
-
-            // Request microphone permission (if needed)
             navigator.mediaDevices.getUserMedia({ audio: true })
                 .then(stream => {
-                    // Microphone access granted
                     startRecording(stream);
                 })
                 .catch(error => {
-                    // Handle error, e.g., display a message to the user
                     console.error("Error accessing the microphone:", error);
                     if (error.name === 'NotAllowedError') {
                         alert("Microphone access is required for this feature.");
@@ -897,9 +895,9 @@
 
         function startRecording(stream) {
             recognition = new webkitSpeechRecognition();
-            recognition.continuous = false; // Capture one utterance at a time
-            recognition.interimResults = true; // Get partial results
-            recognition.lang = 'en-IN'; // Set language
+            recognition.continuous = false;
+            recognition.interimResults = true; 
+            recognition.lang = 'en-IN'; 
 
             recognition.onstart = () => {
                 startSound.play();
@@ -930,7 +928,7 @@
                     stopSpeechRecognition();
                     setTimeout(() => {
                         const searchTerm = searchInput.value;
-                        performSearch(searchTerm); // Replace with your search function
+                        performSearch(searchTerm); 
                         speakSearchTerm(searchTerm);
                     }, 300);
                 }
@@ -948,7 +946,6 @@
                         listeningOverlay.style.display = 'none';
                     }, 300);
                 }
-                // Stop the audio stream
                 stream.getTracks().forEach(track => track.stop());
             };
 
@@ -968,7 +965,6 @@
                 } else {
                     alert('An error occurred during speech recognition: ' + event.error);
                 }
-                // Stop the audio stream
                 stream.getTracks().forEach(track => track.stop());
             };
 
@@ -988,65 +984,56 @@
         }
 
         function speakSearchTerm(searchTerm) {
+            console.log(searchTerm);
             if ('speechSynthesis' in window) {
                 const synth = window.speechSynthesis;
                 const utterance = new SpeechSynthesisUtterance(`Searching results for ${searchTerm}`);
+                function setVoiceAndSpeak() {
+                    const voices = synth.getVoices();
+                    const indianVoice = voices.find(voice =>
+                        voice.name === "Google हिन्दी" || 
+                        voice.name === "Google भारतीय अंग्रेज़ी" || 
+                        voice.name.includes("Google UK English Female")
+                    );
+                    
+                    if (indianVoice) {
+                        utterance.voice = indianVoice;
+                        console.log(`Using voice: ${indianVoice.name}`);
+                    } else {
+                        console.warn("Desired Indian accent voice not found. Using default.");
+                    }
 
-                let voices = synth.getVoices();
-
-                if (voices.length === 0) {
-                    synth.onvoiceschanged = () => {
-                        voices = synth.getVoices();
-                        setDesiredVoice(utterance);
-                        synth.speak(utterance);
-                    };
-                } else {
-                    setDesiredVoice(utterance);
+                    adjustPitchAndRate(utterance);
                     synth.speak(utterance);
                 }
 
-                function setDesiredVoice(utterance) {
-                    const googleAssistantVoice = voices.find(voice => voice.name === "en-US-Standard-F");
-                    const siriVoice = voices.find(voice => voice.name === "en-US-Standard-C");
-
-                    if (googleAssistantVoice) {
-                        utterance.voice = googleAssistantVoice;
-                    } else if (siriVoice) {
-                        utterance.voice = siriVoice;
-                    } else {
-                        console.warn("Desired voice not found. Using default.");
-                    }
-                }
-
                 function adjustPitchAndRate(utterance) {
-                    const text = utterance.text;
                     let pitch = 1.1;
                     let rate = 1.0;
-                    if (text.endsWith('?')) {
+
+                    if (utterance.text.endsWith('?')) {
                         pitch = 1.2;
-                    } else if (text.endsWith('!')) {
+                    } else if (utterance.text.endsWith('!')) {
                         pitch = 1.3;
                     }
-                    const words = text.split(' ');
+
+                    const words = utterance.text.split(' ');
                     if (words.length > 8) {
                         rate = 1.05;
                     } else if (words.length < 4) {
                         rate = 0.95;
                     }
+
                     utterance.pitch = pitch;
                     utterance.rate = rate;
                 }
 
-                adjustPitchAndRate(utterance);
-
-                utterance.onend = () => {
-                    console.log('Speech synthesis finished');
-                };
-
-                utterance.onerror = (event) => {
-                    console.error('Speech synthesis error:', event.error);
-                };
-
+                // Wait for voices to load
+                if (synth.getVoices().length > 0) {
+                    setVoiceAndSpeak();
+                } else {
+                    synth.onvoiceschanged = setVoiceAndSpeak;
+                }
             } else {
                 console.warn("Speech synthesis not supported");
             }
