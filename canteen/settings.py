@@ -57,6 +57,7 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000", 
+    "https://foodhub-5tij.onrender.com",
 ]
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -93,6 +94,7 @@ CACHE_MIDDLEWARE_KEY_PREFIX = ''
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://foodhub-5tij.onrender.com",
 ]
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
