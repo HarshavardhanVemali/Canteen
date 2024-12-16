@@ -4032,7 +4032,7 @@ def payment_failure(request):
 
     return HttpResponseBadRequest("Invalid request method.")
 
-
+"""
 def verify_payment(transaction_id):
     try:
          response = payu_client.verify_payment({
@@ -4045,3 +4045,4 @@ def verify_payment(transaction_id):
     except Exception as e:  # Handle potential exceptions during verification
         print(f"Error verifying payment: {e}")
         return None  # Or return a specific error value
+"""

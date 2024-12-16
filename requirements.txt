@@ -37,7 +37,6 @@ oauthlib==3.2.2
 packaging==24.1
 payu-sdk==1.2.0
 payu-websdk==0.1.7
-phonepe-sdk==1.1.0
 pillow==10.4.0
 priority==1.3.0
 psycopg2==2.9.10
