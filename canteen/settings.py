@@ -91,10 +91,8 @@ MIDDLEWARE = [
 ]
 CACHE_MIDDLEWARE_SECONDS = 0  
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "https://foodhub-5tij.onrender.com",
+CSRF_TRUSTED_ORIGINS = [
+    'https://foodhub-5tij.onrender.com',
 ]
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
