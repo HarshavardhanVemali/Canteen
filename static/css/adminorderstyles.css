@@ -406,3 +406,187 @@ hr{
 .order-details-header span{
     margin-bottom: 10px;
 }
+.orders-left{
+    width: 50%;
+    height: 100%;
+    border-right: 1px solid rgba(100, 121, 143, 0.12);
+}
+.orders-right{
+    overflow: auto;
+    width: 50%;
+    height: 100%;
+    border-left: 1px solid rgba(100, 121, 143, 0.12);
+}
+.orders-container{
+    border: 1px solid rgba(100, 121, 143, 0.12);
+    background-color: #ffffff;
+    height: calc(100% - 22%);
+    border-radius: 25px;
+    gap: 3px;
+}
+.orders-sub{
+    height: calc(100% - 53px);
+    display: flex;
+    gap: 2px;
+    border-top: 1px solid rgba(100, 121, 143, 0.12);
+}
+.orders-container-nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+}
+#reload-btn,#backward-tn,#forward-btn{
+    border: none;
+    background: transparent;
+    padding:11px 12px 8px 12px;
+    border-radius: 50%;
+    transition: transform 0.5s ease-in-out;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+#reload-btn:hover,#backward-tn:hover,#forward-btn:hover{
+    border: 1px solid #cdcdcf;
+    background: #e4e4e6;
+}
+.tablelist{
+    margin-top: 0px;
+    border: none;
+    background-color: transparent;
+    padding-left: 8px;
+}
+.search{
+    width: 60%;
+    padding: 0px 10px;
+}
+.subnav {
+    display: block;
+}
+.search input[type="text"] {
+    width: 100%;
+    padding: 15px;
+}
+.search svg {
+    width: 20px;
+    height: 20px;
+}
+.filter-overlay {
+    position: absolute;
+    top: 139px;
+    left: 0;
+    width: 46%;
+    height: 100%;
+    z-index: 1000;
+    margin-left: calc(100% - 78.5%);
+    display: none;
+    transition: box-shadow .15s cubic-bezier(0.4,0,0.2,1);
+    transition-behavior: normal;
+    transition-duration: 0.15s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0s;
+    transition-property: box-shadow;
+  }
+  
+  .filter-overlay-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 0px;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.4);
+    border: 1px solid #e5e5e5;
+    
+  }
+  .filter-overlay-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .filter-overlay-content{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .filter-overlay-row label{
+    min-width: 150px;
+    color:  rgb(95, 99, 104);;
+  }
+  .filter-overlay select,.filter-overlay input,#datefilter{
+    border: none;
+    border-bottom: 1px solid #dbdee4;
+    border-radius: 0px;
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out;
+  }
+  .filter-overlay select:hover,.filter-overlay input:hover,#datefilter:hover{
+    background: #cdcdcf;
+    border-radius: 8px;
+    border-bottom: 1px solid transparent;
+  }
+  .filter-overlay select:focus,.filter-overlay input:focus,#datefilter:focus{
+    outline: none;
+    box-shadow: none;
+    border-bottom: 1px solid #729aeb;
+  }
+  #clearfilter{
+    background: transparent;
+    border: none;
+    color: rgba(60, 64, 67, .38);
+    font-weight: 520;
+    cursor: pointer;
+  }
+  #clearfilter:hover{
+    color: rgba(60, 64, 67, .88);
+  }
+  #searchfilter{
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: inline-flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    position: relative;
+    z-index: 0;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-family: "Google Sans", Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+    font-size: .875rem;
+    letter-spacing: normal;
+    background: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: #444746;
+    cursor: pointer;
+    font-weight: 520;
+    height: 36px;
+    min-width: 80px;
+    outline: none;
+    padding: 0 16px;
+    background-color: rgb(26, 115, 232);
+    color: #fff;
+    border: none;
+  }
+  #searchfilter:hover{
+    background: #4285f4;
+  }
+  .order-content{
+    padding: 20px;
+  }
+  .order-info-section, .order-items-section, .order-summary-section, .payment-details-section, .refund-section {
+    background-color: transparent;
+    padding: 10px 20px;
+    border-radius: 0px;
+    box-shadow: none;
+    border-bottom: 1px dashed #becff7 ;
+}
+.payment-details-section{
+    border-bottom: 1px solid transparent;
+}
+#no-order-selected{
+    color: rgb(32, 33, 36);
+    font-size: 100%;
+    text-align: center;
+    padding-top: 3em;
+    font-weight: 510;
+}

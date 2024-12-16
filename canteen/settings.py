@@ -195,3 +195,14 @@ PHONEPE_MERCHANT_ID = "PGTESTPAYUAT139"
 PHONEPE_MERCHANT_KEY = "695d0547-3728-4b1c-825d-996479133615"
 PHONEPE_BASE_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/"
 PHONEPE_SALT_INDEX="1"
+PAYU_MERCHANT_KEY = "3o6jgxhp"
+PAYU_MERCHANT_SALT = "67bAgZX1B3"
+PAYU_ENVIRONMENT = "test" 
+PAYU_CLIENT_ID = '03c54ecfaf8cacb1b841934445fdb99023d5e341a1c4a4d6025fdec184064853' 
+PAYU_CLIENT_SECRET = 'b926d95e4e1dad1130a4bd319cacbcac0b0816366698ed4086b8cb205f5c07fc' 
+PAYU_CONFIG = {
+    "key": "GhBaHX",
+    "salt": "",
+    "env": "test",  
+    "api_endpoint": "https://test.payu.in/merchant/postservice.php?form=2"
+}

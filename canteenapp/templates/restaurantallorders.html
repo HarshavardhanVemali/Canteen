@@ -13,35 +13,21 @@
 
 <body>
     {% block orders_block %}
-    <li class="nav-item has-submenu">
-        <a href="#" class="nav-link active">
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
-              </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
-                <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5M3.14 5l.5 2H5V5zM6 5v2h2V5zm3 0v2h2V5zm3 0v2h1.36l.5-2zm1.11 3H12v2h.61zM11 8H9v2h2zM8 8H6v2h2zM5 8H3.89l.5 2H5zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0m9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0"/>
-              </svg>
-            <span class="nav-link-text">Orders</span> 
-            
-        </a>
-        <ul class="submenu">
-            <li class="nav-item"><a class="nav-link active" href="{% url 'restaurantallorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
-                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
-              </svg>All Orders</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'restaurantneworders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-              </svg>New Orders</a></li>
-              <li class="nav-item"><a class="nav-link" href="{% url 'restaurantdeliveredorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                </svg>Delivered</a></li>
-              <li class="nav-item"><a class="nav-link" href="{% url 'restaurantcancelledorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-              </svg>Cancelled Orders</a></li>
-            
-        </ul>
-    </li>
+    <h6 class="nav-bar-heading">Orders</h6>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'restaurantallorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#f5365c" class="bi bi-three-dots" viewBox="0 0 16 16">
+            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+            </svg>All Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'restaurantneworders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+            </svg>New Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'restaurantdeliveredorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#28a745" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </svg>Delivered</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'restaurantcancelledorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#dc3545" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+            </svg>Cancelled Orders</a>
+        </li>
+        
     {% endblock %}
     {% block main_content %}
     <style>
@@ -49,139 +35,281 @@
     </style>
         <div class="subnav-container">
             <div class="subnav">
-                <h3>All Orders</h3>
                 <div class="search">
-                    <input type="text" placeholder="Search...">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
+                    <input type="text" placeholder="Search...">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" onclick="openFilterOverlay()"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg>
                 </div>
             </div>
             
         </div> 
-        <div class="filters">
-            <div style="display: flex;align-items: center;gap: 10px;">
-                <label for="datefilter">Date</label>
-                <input type="date" name="datefilter" id="datefilter">
-            </div>
-            <div style="display: flex;align-items: center;gap: 10px;">
-                <label for="statusfilter">Status</label>
-                <select name="statusfilter" id="statusfilter" class="filterselect" required>
-                    <option value="" selected>All</option>
-                    <option value="Confirmed">New</option>
-                    <option value="Prepared">Prepared</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            </div>
-            <div style="display: flex;align-items: center;gap: 10px;">
-                <label for="customerstatusfilter">Customer Status</label>
-                <select name="customerstatusfilter" id="customerstatusfilter" class="filterselect" required>
-                    <option value="" selected>All</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-            </div>
-            <div style="display: flex;align-items: center;gap: 10px;">
-                <label for="deliverychoice">Delivery Choice</label>
-                <select name="deliverychoice" id="deliverychoice" class="filterselect" required>
-                    <option value="" selected>All</option>
-                    <option value="Delivery">Delivery</option>
-                    <option value="Pickup">Pickup</option>
-                    <option value="Dining">Dining</option>
-                </select>
-            </div>
-            <div style="display: flex;align-items: center;gap: 10px;">
-                <label for="paymentstatus">Payment Status</label>
-                <select name="paymentstatus" id="paymentstatus" class="filterselect" required>
-                    <option value="" selected>All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Success">Success</option>
-                    <option value="Failed">Failed</option>
-                </select>
-            </div>
-
-        </div>
-        <div class="tablelist">
-            <div class="table-container">
-                <table id="orderstable" class="tables">
-                    <thead>
-                        <tr>
-                            <th>Order Id</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>Total Amount</th>
-                            <th>Payment Status</th>
-                            <th>Customer Status</th>
-                            <th>Status</th>
-                            <th>Delivery Type</th>
-                            <th>Order Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-                <p id="noResults" style="display: none;font-size: 14px;text-align: center;">No results found...!</p>
-            </div>
-        </div>
-        <div class="overlay-container" id="allordersoverlay">
-            <div class="overlay-content">
-              <div class="order-details-container" id="order-details">
-                <button class="close-overlay" onclick="closeOverlay()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                  
-                </svg></button>
-                <div class="order-content">
-                    
+        <div class="filter-overlay">
+            <div class="filter-overlay-content">
+                <div style="display: flex;justify-content: flex-end;">
+                    <button class="close-overlay" onclick="closeFilterOverlay()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                      
+                    </svg></button>
                 </div>
-                <div class="addbutton" style="display: flex;justify-content: center;" id="action-buttons">
+                <div class="filter-overlay-row">
+                    <label for="datefilter">Date</label>
+                    <input type="date" name="datefilter" id="datefilter">
                 </div>
-              </div>
+                <div class="filter-overlay-row">
+                    <label for="statusfilter">Status</label>
+                    <select name="statusfilter" id="statusfilter" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Confirmed">New</option>
+                        <option value="Prepared">Prepared</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="customerstatusfilter">Customer Status</label>
+                    <select name="customerstatusfilter" id="customerstatusfilter" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="deliverychoice">Delivery Choice</label>
+                    <select name="deliverychoice" id="deliverychoice" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Delivery">Delivery</option>
+                        <option value="Pickup">Pickup</option>
+                        <option value="Dining">Dining</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="paymentstatus">Payment Status</label>
+                    <select name="paymentstatus" id="paymentstatus" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Success">Success</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row" style="display: flex;align-items: center;justify-content: flex-end;">
+                    <button id="clearfilter" onclick="clearFilters()">Clear filter</button>
+                    <button id="searchfilter" onclick="filterTable()">Search</button>
+                </div>
             </div>
         </div>
-        <div class="overlay-container" id="cancelformoverlay">
-            <div class="overlay-content">
-                <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
-                    <h3>Reason for Cancellation</h3>
-                    <button class="close-overlay" onclick="closeCancelForm()">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+        <div class="orders-container">
+            <div class="orders-container-nav">
+                <button id="reload-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                      </svg>
+                </button>
+                <div>
+                    <button id="backward-tn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-chevron-compact-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M9.224 1.553a.5.5 0 0 1 .223.67L6.56 8l2.888 5.776a.5.5 0 1 1-.894.448l-3-6a.5.5 0 0 1 0-.448l3-6a.5.5 0 0 1 .67-.223"/>
                         </svg>
                     </button>
-                </section>
-                <section>
-                    <p class="error-message" id="cancelordererror"></p>
-                    <form method="post" id="cancelorderform"> 
-                        {% csrf_token %} 
-                        <div class="form-group">
-                            <label for="ordercanceldescription">Reason:</label> 
-                            <textarea name="order-cancel-description" id="ordercanceldescription" required></textarea> 
-                        </div>
-                        <div class="addbutton addformbtn">
-                            <button type="submit" id="submitcancellation">Confirm Cancellation</button>
-                        </div>
-                    </form>
-                </section>
+                    <button id="forward-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-chevron-compact-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M6.776 1.553a.5.5 0 0 1 .671.223l3 6a.5.5 0 0 1 0 .448l-3 6a.5.5 0 1 1-.894-.448L9.44 8 6.553 2.224a.5.5 0 0 1 .223-.671"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>        
+            <div class="orders-sub">
+                <div class="orders-left">
+                
+                    <div class="tablelist">
+                        <div class="table-container">
+                            <table id="orderstable" class="tables">
+                                <thead>
+                                    <tr>
+                                        <th>Order Id</th>
+                                        <th>Order Date</th>
+                                        <th>Sequence Number</th>
+                                        <th>Customer</th>
+                                        <th>Email</th>
+                                        <th>Food Court</th>
+                                        <th>Total Amount</th>
+                                        <th>Payment Status</th>
+                                        <th>Customer Status</th>
+                                        <th>Status</th>
+                                        <th>Delivery Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <p id="noResults" style="display: none;font-size: 14px;text-align: center;">No results found...!</p>
+                        </div>
+                    </div>
+                    <div class="overlay-container" id="cancelformoverlay">
+                        <div class="overlay-content">
+                            <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+                                <h3>Reason for Cancellation</h3>
+                                <button class="close-overlay" onclick="closeCancelForm()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                                    </svg>
+                                </button>
+                            </section>
+                            <section>
+                                <p class="error-message" id="cancelordererror"></p>
+                                <form method="post" id="cancelorderform"> 
+                                    {% csrf_token %} 
+                                    <div class="form-group">
+                                        <label for="ordercanceldescription">Reason:</label> 
+                                        <textarea name="order-cancel-description" id="ordercanceldescription" required></textarea> 
+                                    </div>
+                                    <div class="addbutton addformbtn">
+                                        <button type="submit" id="submitcancellation">Confirm Cancellation</button>
+                                    </div>
+                                </form>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="orders-right">
+                    <p id="no-order-selected" >No order Selected</p>
+                    <div class="order-content">
+                        
+                    </div>
+                    <div class="addbutton" style="display: flex;justify-content: center;" id="action-buttons">
+                    </div>
+                </div>
+            </div>
+        </div>       
         <script>
+            function openFilterOverlay(){
+                document.querySelector('.filter-overlay ').style.display='block';
+            }
+            function closeFilterOverlay(){
+                document.querySelector('.filter-overlay ').style.display='none';
+            }
             let ordersData = []; 
+            let currentOrderIndex = -1;
+            let lastOrderIndex=0;
+            let updateTimeout;
+            let socket;
+            let isInitialDataLoaded = false;
             document.addEventListener('DOMContentLoaded', function() {
-                getNewOrder();
-                const filters = document.querySelectorAll('.filterselect');
-                filters.forEach(filter => {
-                    filter.addEventListener('change', filterTable);
-                });
+                initializeWebSocket();
                 const searchInput = document.querySelector('.search input');
                 searchInput.addEventListener('input', Search); 
-                const dateFilter = document.getElementById('datefilter');
-                dateFilter.addEventListener('change', filterTable); 
+                document.getElementById('reload-btn').addEventListener('click',function(){
+                    getNewOrder();
+                });
+                document.getElementById('forward-btn').addEventListener('click',nextOrder);
+                document.getElementById('backward-tn').addEventListener('click',prevOrder);  
             });
+            function initializeWebSocket() {
+                const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+                socket = new WebSocket(
+                    `${wsScheme}://${window.location.host}/ws/restaurantconsumers/`
+                );
+
+                socket.onopen = () => {
+                    console.log("WebSocket connection opened");
+                    socket.send(JSON.stringify({
+                        type: 'order_subscribe'
+                    }));
+                  getNewOrder();
+                };
+                socket.onclose = (event) => {
+                    if (event.wasClean) {
+                        console.log('WebSocket connection closed cleanly');
+                    } else {
+                        console.error('WebSocket connection abruptly closed');
+                        setTimeout(initializeWebSocket, 5000);
+                    }
+                };
+
+                socket.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                         if (data.type === 'restaurant_all_order') {
+                            handleNewOrders(data.orders);
+                        }else {
+                            console.log("Unexpected message type", data);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing WebSocket message:', error, event.data);
+                    }
+                };
+
+                socket.onerror = (error) => {
+                    console.error("WebSocket error:", error);
+                };
+            }
+            function handleNewOrders(orders) {
+                ordersData = orders;
+                 if(!isInitialDataLoaded) {
+                    isInitialDataLoaded = true;
+                 }
+                debouncedRefreshTable();
+            }
+            function refreshTable() {
+                const orderTable = document.querySelector('#orderstable tbody');
+                orderTable.innerHTML = ''; 
+                if(ordersData.length===0){
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="11">No Orders found.</td>';
+                    orderTable.appendChild(row);
+                    currentOrderIndex = -1; 
+                    updateNavigationButtons();
+                    document.querySelector('.order-content').innerHTML='';
+                    document.getElementById('no-order-selected').style.display = 'block';
+                }
+                else{
+                    lastOrderIndex=ordersData.length - 1;
+                    ordersData.forEach((order,index) => {
+                        const row = document.createElement('tr');
+                        let statusClass = `status-${order.status.toLowerCase()}`;
+                        let paymentStatusClass=`payment-${order.payment_status.toLowerCase()}`
+                        let customerStatusClass = `customer-status-${order.customer_status.toLowerCase()}`;
+                        let deliveryClass = `delivery-${order.delivery_type.toLowerCase()}`; 
+
+                        row.innerHTML = `
+                            <td style="color:#3874ff;font-weight:530;" onclick="viewOrder('${order.order_id}',${index})" id="orderid">${order.order_id}</td>
+                            <td>${order.created_at}</td>
+                            <td>${order.daily_sequence}</td>
+                            <td style="font-weight:500;color:#31374a;">${order.customer}</td>
+                            <td style="font-weight:500;color:#31374a;">${order.email}</td>
+                            <td style="font-weight:500;color:#31374a;">${order.restaurant_name}</td>
+                            <td style="color:#31374a;font-weight:600;">Rs. ${order.total_price}</td>
+                            <td class="${paymentStatusClass}" style="font-weight:520;">${order.payment_status}</td>
+                            <td class="${customerStatusClass}" style="font-weight:520;">${order.customer_status}</td>
+                            <td class="${statusClass}" style="font-weight:520;">${order.status}</td>
+                            <td class="${deliveryClass}">${order.delivery_type}</td>
+                        `;
+                        orderTable.appendChild(row);
+                        if(index===0){
+                            currentOrderIndex = 0; 
+                        }
+                    });
+                    if(ordersData.length > 0){
+                        viewOrder(ordersData[currentOrderIndex].order_id,currentOrderIndex);
+                        updateNavigationButtons();
+                    }
+                    else{
+                        document.querySelector('.order-content').innerHTML='';
+                        document.getElementById('no-order-selected').style.display = 'block';
+                    }
+                }
+            }
+            function debouncedRefreshTable() {
+                clearTimeout(updateTimeout);
+                updateTimeout = setTimeout(refreshTable, 100);
+            }
             function getNewOrder(){
                 fetch('/restaurantgetallorder/',{
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'X-CSRFToken': getCookie('csrftoken'),
                         'Content-Type': 'application/json'
@@ -189,36 +317,10 @@
                 }) 
                 .then(response => response.json())
                 .then(data => {
-                    const orderTable = document.querySelector('#orderstable tbody');
-                    orderTable.innerHTML = ''; 
-                    ordersData = data.orders;
-                    if(data.orders.length===0){
-                        const row = document.createElement('tr');
-                        row.innerHTML = '<td colspan="9">No Orders found.</td>';
-                        orderTable.appendChild(row);
-                    }
-                    else{
-                        
-                        data.orders.forEach(order => {
-                            const row = document.createElement('tr');
-                            let statusClass = `status-${order.status.toLowerCase()}`;
-                            let paymentStatusClass=`payment-${order.payment_status.toLowerCase()}`
-                            let customerStatusClass = `customer-status-${order.customer_status.toLowerCase()}`;
-                            let deliveryClass = `delivery-${order.delivery_type.toLowerCase()}`; 
-
-                            row.innerHTML = `
-                                <td style="color:#3874ff;font-weight:530;" onclick="viewOrder('${order.order_id}')" id="orderid">${order.order_id}</td>
-                                <td style="font-weight:500;color:#31374a;">${order.customer}</td>
-                                <td style="font-weight:500;color:#31374a;">${order.email}</td>
-                                <td style="color:#31374a;font-weight:600;">Rs. ${order.total_price}</td>
-                                <td class="${paymentStatusClass}" style="font-weight:520;">${order.payment_status}</td>
-                                <td class="${customerStatusClass}" style="font-weight:520;">${order.customer_status}</td>
-                                <td class="${statusClass}" style="font-weight:520;">${order.status}</td>
-                                <td class="${deliveryClass}">${order.delivery_type}</td>
-                                <td>${order.created_at}</td>
-                            `;
-                            orderTable.appendChild(row);
-                        });
+                    if (data.orders) {
+                        handleNewOrders(data.orders);
+                    } else {
+                        console.error("No Orders available in initial load")
                     }
                 })
                 .catch(error => {
@@ -230,7 +332,44 @@
                     document.getElementById('success-overlay').style.display = 'none';
                 });
             }
+            function nextOrder() {
+                if (ordersData.length > 0) {
+                    currentOrderIndex = (currentOrderIndex + 1) % ordersData.length;
+                    viewOrder(ordersData[currentOrderIndex].order_id,currentOrderIndex);
+                    updateNavigationButtons();
+                }
+            }
+
+            function prevOrder() {
+                if(ordersData.length > 0){
+                    currentOrderIndex = (currentOrderIndex - 1 + ordersData.length) % ordersData.length;
+                    viewOrder(ordersData[currentOrderIndex].order_id,currentOrderIndex);
+                    updateNavigationButtons();
+                }
+            }
+            function updateNavigationButtons() {
+                const backwardButton = document.getElementById('backward-tn');
+                const forwardButton = document.getElementById('forward-btn');
+    
+                if(ordersData.length > 0){
+                    backwardButton.disabled = currentOrderIndex === 0;
+                    forwardButton.disabled = currentOrderIndex === lastOrderIndex;
+                }
+                else{
+                   backwardButton.disabled = true;
+                   forwardButton.disabled = true;
+               }
+            }
+            function clearFilters() {
+                document.getElementById('statusfilter').value = '';
+                document.getElementById('customerstatusfilter').value = '';
+                document.getElementById('deliverychoice').value = '';
+                document.getElementById('paymentstatus').value = '';
+                document.getElementById('datefilter').value = '';
+                filterTable();
+            }
             function filterTable() {
+                closeFilterOverlay();
                 const selectedStatus = document.getElementById('statusfilter').value.toLowerCase();
                 const selectedCustomerStatus = document.getElementById('customerstatusfilter').value.toLowerCase();
                 const selectedDeliveryChoice = document.getElementById('deliverychoice').value.toLowerCase();
@@ -241,11 +380,11 @@
                 let hasVisibleRow = false;
 
                 tableRows.forEach(row => {
-                    const status = row.querySelector('td:nth-child(7)').textContent.toLowerCase();
-                    const customerStatus = row.querySelector('td:nth-child(6)').textContent.toLowerCase();
-                    const deliveryChoice = row.querySelector('td:nth-child(8)').textContent.toLowerCase();
-                    const paymentStatus = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-                    const dateText = row.querySelector('td:nth-child(9)').textContent; 
+                    const status = row.querySelector('td:nth-child(10)').textContent.toLowerCase();
+                    const customerStatus = row.querySelector('td:nth-child(9)').textContent.toLowerCase();
+                    const deliveryChoice = row.querySelector('td:nth-child(11)').textContent.toLowerCase();
+                    const paymentStatus = row.querySelector('td:nth-child(7)').textContent.toLowerCase();
+                    const dateText = row.querySelector('td:nth-child(2)').textContent; 
                     const [day, month, year] = dateText.split(' ')[0].split('-');
                     const formattedDate = `${year}-${month}-${day}`;
 
@@ -278,8 +417,8 @@
                 let hasVisibleRow = false; 
                 tableRows.forEach(row => {
                     const orderId = row.querySelector('td:first-child').textContent.toLowerCase().replace(/\s+/g, '').trim();
-                    const customerName = row.querySelector('td:nth-child(2)').textContent.toLowerCase().replace(/\s+/g, '').trim();
-                    const customerEmail = row.querySelector('td:nth-child(3)').textContent.toLowerCase().replace(/\s+/g, '').trim();
+                    const customerName = row.querySelector('td:nth-child(4)').textContent.toLowerCase().replace(/\s+/g, '').trim();
+                    const customerEmail = row.querySelector('td:nth-child(5)').textContent.toLowerCase().replace(/\s+/g, '').trim();
                     const cleanSearchText = searchText.toLowerCase().replace(/\s+/g, '').trim();
                     if (orderId.includes(cleanSearchText) || customerName.includes(cleanSearchText) || customerEmail.includes(cleanSearchText)) {
                         row.style.display = ''; 
@@ -307,7 +446,7 @@
                         document.getElementById('cancelordererror').textContent = '';
                         const cancelReason = document.getElementById('ordercanceldescription').value;
 
-                        fetch('/admincancelorder/', { 
+                        fetch('/restaruntcancelorder/', { 
                             method: 'POST',
                             headers: {
                                 'X-CSRFToken': getCookie('csrftoken'),
@@ -361,9 +500,12 @@
             }
             
 
-            function viewOrder(orderId) {
+            function viewOrder(orderId,index) {
                 const order = ordersData.find(o => o.order_id === orderId);
                 if (order) {
+                    currentOrderIndex=index;
+                    updateNavigationButtons();
+                    document.getElementById('no-order-selected').style.display='none';
                     const orderDetailsContainer = document.querySelector('.order-content');
 
                     let orderItemsHTML = '';
@@ -406,7 +548,6 @@
                                 </div>
                                 <div class="item-details"> 
                                     <span class="order-details-item-name">${item.item_name}</span>
-                                    <span class="order-details-item-description">${item.description}</span>
                                     <span class="order-details-item-quantity">Quantity: ${item.quantity}</span>
                                     
                                 </div>
@@ -471,7 +612,6 @@
                     orderDetailsContainer.innerHTML = `
                         <div class="order-info-section">
                             <div class="order-details-header">
-                                <h3>Order Details</h3>
 
                                 <div class="order-details-summary-item">
                                     <h4 class="orer-details-orderid" style="color:#3874ff;">${order.order_id}</h4>
@@ -480,6 +620,10 @@
                                 <span class="order-details-name" style="color:#333;font-weight:520;">${order.customer}</span>
                                 <span class="order-details-number" style="color:#333;font-weight:520;">This Order is tracking by: ${order.phone_number}</span>
                                 <span class="order-details-email" style="color:#333;font-weight:520;">${order.email}</span>
+                                <div class="order-details-summary-item">
+                                    <span class="order-details-summary-label">Sequence Number:</span>
+                                    <span class="order-details-status">${order.daily_sequence}</span>
+                                </div>
                                 <div class="order-details-summary-item">
                                     <span class="order-details-summary-label">Status:</span>
                                     <span class="order-details-status">${order.status}</span>
@@ -594,7 +738,7 @@
                         ${refundSectionHTML} 
                     `;
                     generateQRCode(qrCodeText); 
-                    document.getElementById('allordersoverlay').style.display = 'flex';
+                    
                 } else {
                     console.error('Order not found in data:', orderId);
                 }
@@ -608,10 +752,6 @@
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
                 });
-            }
-
-            function closeOverlay() {
-                document.getElementById('allordersoverlay').style.display = 'none';
             }
             function openCancelForm(){
                 document.getElementById('cancelformoverlay').style.display='flex';

@@ -1,6 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import Menu,Item,Cart,CustomUser,Prices
+from .models import Menu,Item,Cart,CustomUser,Prices,Order
+from django.utils import timezone
+from datetime import timedelta
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -77,7 +79,8 @@ class AllItemsConsumer(AsyncWebsocketConsumer):
                     'preparation_time': item.preparation_time,
                     'item_image': item.item_image.url if item.item_image else None,
                     'in_cart': item.id in cart_dict,  
-                    'quantity': cart_dict.get(item.id, 0) 
+                    'quantity': cart_dict.get(item.id, 0),
+                    'resturant_name':item.resturant.restaurant_name 
                 }
                 for item in items
             ]
@@ -231,3 +234,505 @@ class SearchItemsConsumer(AsyncWebsocketConsumer):
         }
         
         await self.send_search_update()
+
+
+class AdminOrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope.get('user')
+        if user and user.is_authenticated and user.role == 'admin':
+            self.group_name = 'admin_group'
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        print("Disconnected from WebSocket")
+
+    async def admin_all_order(self, event):
+        orders_data = await self.get_order_data()
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'admin_all_order',
+                'orders':orders_data
+            }))
+    
+    async def admin_new_order(self, event):
+        orders_data = await self.get_order_data('confirmed')
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'admin_new_order',
+                'orders':orders_data
+            }))
+
+    async def admin_cancelled_order(self, event):
+        orders_data = await self.get_order_data('cancelled')
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'admin_cancelled_order',
+                'orders':orders_data
+            }))
+
+    async def admin_delivered_order(self, event):
+         orders_data = await self.get_order_data('delivered')
+         if orders_data:
+             await self.send(text_data=json.dumps({
+                 'type':'admin_delivered_order',
+                 'orders':orders_data
+             }))
+    @database_sync_to_async
+    def get_order_data(self,status='None'):
+        try:
+            if not status or status=='None':
+                orders = Order.objects.all().select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            else:
+                orders = Order.objects.filter(status=status).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            order_data = []
+
+            for order in orders:
+                order_items = []
+                item_total_price = 0  
+                for order_item in order.orderitem_set.all(): 
+                    item = order_item.item
+                    item_total_price += order_item.total_price 
+
+                    order_items.append({
+                        'item_name': item.item_name,
+                        'quantity': order_item.quantity,
+                        'price_at_order_time': str(order_item.price_at_purchase),  
+                        'type': item.get_type_display(),
+                        'is_available': item.is_available,
+                        'item_image': item.item_image.url if item.item_image else None 
+                    })
+                additional_charges_data = []
+                total_additional_charges = 0 
+                for charge in order.additional_charges.all():
+                    additional_charges_data.append({
+                        'charge_type': charge.charge_type,
+                        'value_type': charge.value_type,
+                        'value': str(charge.value),
+                        'calculated_value': str(charge.calculated_value)
+                    })
+                    total_additional_charges += charge.calculated_value  
+
+                order_data.append({
+                    'order_id': order.order_id,
+                    'email': order.user.email,
+                    'phone_number': order.user.phone_number,
+                    'delivery_address':order.delivery_address,
+                    'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                    'delivered_at': timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S') if order.delivered_at else None,
+                    'cancelled_at': timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                    'cancel_reason':order.cancel_reason,
+                    'customer': order.user.first_name + ' ' + order.user.last_name,
+                    'total_price': str(order.total_price), 
+                    'total_item_price': str(item_total_price),  
+                    'total_additional_charges': str(total_additional_charges),  
+                    'status': order.get_status_display(),
+                    'delivery_type': order.delivery_type.capitalize(),
+                    'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                    'customer_status': order.customer_status.capitalize(),
+                    'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                    'payment_amount': str(order.payment.amount) if order.payment else '-',
+                    'transaction_id': order.payment.transaction_id if order.payment else '-',
+                    'payment_status': order.payment.get_status_display() if order.payment else '-',
+                    'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                    'items': order_items,
+                    'additional_charges': additional_charges_data,
+                    'restaurant_name':order.restaurant.restaurant_name,
+                    'daily_sequence':order.daily_sequence,
+                })
+            return order_data
+        except Order.DoesNotExist:
+            return None
+        
+class RestaurantOrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope.get('user')
+        if user and user.is_authenticated and user.role == 'restaurant':
+            self.restaurant=CustomUser.objects.get(email=user.email)
+            self.group_name = 'restaurant_group'
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+            await self.send_all_orders()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        print("Disconnected from WebSocket")
+
+    async def send_all_orders(self):
+        orders_data = await self.get_order_data(restaurant=self.restaurant)
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'restaurant_all_order',
+                'orders':orders_data
+            }))
+
+
+    async def restaurant_all_order(self, event):
+         orders_data = await self.get_order_data(restaurant=self.restaurant)
+         if orders_data:
+             await self.send(text_data=json.dumps({
+                 'type':'restaurant_all_order',
+                 'orders':orders_data
+             }))
+    
+    async def restaurant_new_order(self, event):
+        orders_data = await self.get_order_data(status='confirmed',restaurant=self.restaurant)
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'restaurant_new_order',
+                'orders':orders_data
+            }))
+
+    async def restaurant_cancelled_order(self, event):
+        orders_data = await self.get_order_data(status='cancelled',restaurant=self.restaurant)
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'restaurant_cancelled_order',
+                'orders':orders_data
+            }))
+
+    async def restaurant_delivered_order(self, event):
+         orders_data = await self.get_order_data(status='delivered',restaurant=self.restaurant)
+         if orders_data:
+             await self.send(text_data=json.dumps({
+                 'type':'restaurant_delivered_order',
+                 'orders':orders_data
+             }))
+
+    @database_sync_to_async
+    def get_order_data(self, status='None', restaurant=None):
+        try:
+            if not restaurant:
+                return None
+
+            if not status or status=='None':
+                orders = Order.objects.filter(restaurant=restaurant).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            else:
+                orders = Order.objects.filter(status=status, restaurant=restaurant).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            order_data = []
+
+            for order in orders:
+                order_items = []
+                item_total_price = 0  
+                for order_item in order.orderitem_set.all(): 
+                    item = order_item.item
+                    item_total_price += order_item.total_price 
+
+                    order_items.append({
+                        'item_name': item.item_name,
+                        'quantity': order_item.quantity,
+                        'price_at_order_time': str(order_item.price_at_purchase),  
+                        'type': item.get_type_display(),
+                        'is_available': item.is_available,
+                        'item_image': item.item_image.url if item.item_image else None 
+                    })
+                additional_charges_data = []
+                total_additional_charges = 0 
+                for charge in order.additional_charges.all():
+                    additional_charges_data.append({
+                        'charge_type': charge.charge_type,
+                        'value_type': charge.value_type,
+                        'value': str(charge.value),
+                        'calculated_value': str(charge.calculated_value)
+                    })
+                    total_additional_charges += charge.calculated_value  
+
+                order_data.append({
+                    'order_id': order.order_id,
+                    'email': order.user.email,
+                    'phone_number': order.user.phone_number,
+                    'delivery_address':order.delivery_address,
+                    'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                    'delivered_at': timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S') if order.delivered_at else None,
+                    'cancelled_at': timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                    'cancel_reason':order.cancel_reason,
+                    'customer': order.user.first_name + ' ' + order.user.last_name,
+                    'total_price': str(order.total_price), 
+                    'total_item_price': str(item_total_price),  
+                    'total_additional_charges': str(total_additional_charges),  
+                    'status': order.get_status_display(),
+                    'delivery_type': order.delivery_type.capitalize(),
+                    'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                    'customer_status': order.customer_status.capitalize(),
+                    'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                    'payment_amount': str(order.payment.amount) if order.payment else '-',
+                    'transaction_id': order.payment.transaction_id if order.payment else '-',
+                    'payment_status': order.payment.get_status_display() if order.payment else '-',
+                    'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                    'items': order_items,
+                    'additional_charges': additional_charges_data,
+                    'restaurant_name':order.restaurant.restaurant_name,
+                    'daily_sequence':order.daily_sequence,
+                })
+            return order_data
+        except Order.DoesNotExist:
+            return None
+            
+class DeliveryOrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope.get('user')
+        if user and user.is_authenticated and user.role == 'delivery_person':
+            self.delivery=CustomUser.objects.get(email=user.email)
+            self.group_name = 'delivery_group'
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        print("Disconnected from WebSocket")
+    
+    async def delivery_new_order(self, event):
+        orders_data = await self.get_order_data(status='shipped',delivery=self.delivery)
+        if orders_data:
+            await self.send(text_data=json.dumps({
+                'type':'delivery_new_order',
+                'orders':orders_data
+            }))
+
+    async def delivery_delivered_order(self, event):
+         orders_data = await self.get_order_data(status='delivered',delivery=self.delivery)
+         if orders_data:
+             await self.send(text_data=json.dumps({
+                 'type':'delivery_delivered_order',
+                 'orders':orders_data
+             }))
+
+    @database_sync_to_async
+    def get_order_data(self, status='None', delivery=None):
+        try:
+            if not delivery:
+                return None
+
+            if not status or status=='None':
+                orders = Order.objects.filter(delivery_person=delivery).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            else:
+                orders = Order.objects.filter(status=status, delivery_person=delivery).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+            order_data = []
+
+            for order in orders:
+                order_items = []
+                item_total_price = 0  
+                for order_item in order.orderitem_set.all(): 
+                    item = order_item.item
+                    item_total_price += order_item.total_price 
+
+                    order_items.append({
+                        'item_name': item.item_name,
+                        'quantity': order_item.quantity,
+                        'price_at_order_time': str(order_item.price_at_purchase),  
+                        'type': item.get_type_display(),
+                        'is_available': item.is_available,
+                        'item_image': item.item_image.url if item.item_image else None 
+                    })
+                additional_charges_data = []
+                total_additional_charges = 0 
+                for charge in order.additional_charges.all():
+                    additional_charges_data.append({
+                        'charge_type': charge.charge_type,
+                        'value_type': charge.value_type,
+                        'value': str(charge.value),
+                        'calculated_value': str(charge.calculated_value)
+                    })
+                    total_additional_charges += charge.calculated_value  
+
+                order_data.append({
+                    'order_id': order.order_id,
+                    'email': order.user.email,
+                    'phone_number': order.user.phone_number,
+                    'delivery_address':order.delivery_address,
+                    'delivery_person': order.delivery_person.first_name if order.delivery_person else None,
+                    'delivered_at': timezone.localtime(order.delivered_at).strftime('%d-%m-%Y %H:%M:%S') if order.delivered_at else None,
+                    'cancelled_at': timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                    'cancel_reason':order.cancel_reason,
+                    'customer': order.user.first_name + ' ' + order.user.last_name,
+                    'total_price': str(order.total_price), 
+                    'total_item_price': str(item_total_price),  
+                    'total_additional_charges': str(total_additional_charges),  
+                    'status': order.get_status_display(),
+                    'delivery_type': order.delivery_type.capitalize(),
+                    'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                    'customer_status': order.customer_status.capitalize(),
+                    'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                    'payment_amount': str(order.payment.amount) if order.payment else '-',
+                    'transaction_id': order.payment.transaction_id if order.payment else '-',
+                    'payment_status': order.payment.get_status_display() if order.payment else '-',
+                    'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                    'items': order_items,
+                    'additional_charges': additional_charges_data,
+                    'restaurant_name':order.restaurant.restaurant_name,
+                    'daily_sequence':order.daily_sequence,
+                })
+            return order_data
+        except Order.DoesNotExist:
+            return None
+        
+
+"""     
+
+        
+class CustomerOrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = self.scope.get('user')
+        if user and user.is_authenticated and user.role == 'delivery_person':
+            self.delivery_person_id = user.id
+            self.group_name = f'delivery_person_{self.delivery_person_id}'
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+            await self.send_new_orders()
+        else:
+            await self.close()
+
+    async def disconnect(self, close_code):
+        if hasattr(self, 'group_name'):
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        print("Disconnected from WebSocket")
+
+    @database_sync_to_async
+    def get_new_orders(self, user_id):
+        orders = Order.objects.filter(
+            delivery_person_id=user_id,
+            status='shipped'
+        ).select_related('user', 'payment').prefetch_related('items', 'additional_charges').order_by('-created_at')
+        order_data = []
+
+        for order in orders:
+            order_items = []
+            item_total_price = 0
+            for order_item in order.orderitem_set.all():
+                item = order_item.item
+                item_total_price += order_item.total_price
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None
+                })
+            additional_charges_data = []
+            total_additional_charges = 0
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value
+
+            order_data.append({
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address': order.delivery_address,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price),
+                'total_item_price': str(item_total_price),
+                'total_additional_charges': str(total_additional_charges),
+                'status': order.get_status_display(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items,
+                'additional_charges': additional_charges_data,
+                'restaurant_name': order.restaurant.restaurant_name,
+                'daily_sequence':order.daily_sequence,
+            })
+        return order_data
+
+    async def send_new_orders(self):
+        if hasattr(self, 'delivery_person_id'):
+            orders = await self.get_new_orders(self.delivery_person_id)
+            await self.send(text_data=json.dumps({
+                'type': 'new_orders',
+                'orders': orders
+            }))
+        else:
+            await self.send(text_data=json.dumps({'type': 'error', 'message': 'User is not authenticated or user is None, unable to send orders.'}))
+
+    async def new_order(self, event):
+        order_id = event['order_id']
+        order = await self.get_order_data(order_id)
+        if order:
+            await self.send(text_data=json.dumps({
+                'type':'new_order',
+                'order':order
+            }))
+    @database_sync_to_async
+    def get_order_data(self,order_id):
+        try:
+            order = Order.objects.filter(
+                order_id=order_id,
+                delivery_person_id=self.delivery_person_id,
+                status='shipped'
+            ).select_related('user', 'payment').prefetch_related('items', 'additional_charges').first()
+            if not order:
+                return None
+            order_items = []
+            item_total_price = 0
+            for order_item in order.orderitem_set.all():
+                item = order_item.item
+                item_total_price += order_item.total_price
+
+                order_items.append({
+                    'item_name': item.item_name,
+                    'quantity': order_item.quantity,
+                    'price_at_order_time': str(order_item.price_at_purchase),
+                    'type': item.get_type_display(),
+                    'is_available': item.is_available,
+                    'item_image': item.item_image.url if item.item_image else None
+                })
+            additional_charges_data = []
+            total_additional_charges = 0
+            for charge in order.additional_charges.all():
+                additional_charges_data.append({
+                    'charge_type': charge.charge_type,
+                    'value_type': charge.value_type,
+                    'value': str(charge.value),
+                    'calculated_value': str(charge.calculated_value)
+                })
+                total_additional_charges += charge.calculated_value
+
+            order_data = {
+                'order_id': order.order_id,
+                'email': order.user.email,
+                'phone_number': order.user.phone_number,
+                'delivery_address': order.delivery_address,
+                'customer': order.user.first_name + ' ' + order.user.last_name,
+                'total_price': str(order.total_price),
+                'total_item_price': str(item_total_price),
+                'total_additional_charges': str(total_additional_charges),
+                'status': order.get_status_display(),
+                'created_at': timezone.localtime(order.created_at).strftime('%d-%m-%Y %H:%M:%S'),
+                'cancelled_at':timezone.localtime(order.cancelled_at).strftime('%d-%m-%Y %H:%M:%S') if order.cancelled_at else None,
+                'customer_status': order.customer_status.capitalize(),
+                'payment_method': order.payment.get_payment_method_display() if order.payment else '-',
+                'payment_amount': str(order.payment.amount) if order.payment else '-',
+                'transaction_id': order.payment.transaction_id if order.payment else '-',
+                'payment_status': order.payment.get_status_display() if order.payment else '-',
+                'payment_date': timezone.localtime(order.payment.payment_date).strftime('%d-%m-%Y %H:%M:%S') if order.payment and order.payment.payment_date else '-',
+                'items': order_items,
+                'additional_charges': additional_charges_data,
+                'restaurant_name': order.restaurant.restaurant_name,
+                'daily_sequence':order.daily_sequence,
+            }
+            print(order_data)
+            return order_data
+        except Order.DoesNotExist:
+            return None"""

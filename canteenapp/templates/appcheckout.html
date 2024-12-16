@@ -1144,13 +1144,18 @@
     
     function initiatePhonePePayment() {
         const amount = document.getElementById('order-total').textContent.replace('₹ ', '');
+        // Get delivery_address
+        let deliveryAddress = document.getElementById('selected-location').textContent
+        if (document.getElementById('deliverytype').value !== 'delivery') {
+                deliveryAddress='Pick Up'
+        }
         fetch('/initiate/', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: JSON.stringify({ amount: amount, delivery_address:document.getElementById('selected-location').textContent }), // Send amount and delivery address
+            body: JSON.stringify({ amount: amount, delivery_address: deliveryAddress }), // Send amount and delivery address
         })
         .then(response => response.json())
         .then(data => {

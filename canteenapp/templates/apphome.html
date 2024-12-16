@@ -1104,38 +1104,38 @@ filter-content h4 {
           </div>
             <div class="dish-carousel"> 
                 <div class="carousel-track">
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Chicken')">
                         <img src="https://b.zmtcdn.com/data/dish_images/197987b7ebcd1ee08f8c25ea4e77e20f1634731334.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Chicken</h3>
                         </div>
                     </div>
                     
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Idli')">
                         <img src="https://b.zmtcdn.com/data/dish_images/d9766dd91cd75416f4f65cf286ca84331634805483.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Idli</h3>
                         </div>
                     </div>
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Rolls')">
                         <img src="https://b.zmtcdn.com/data/dish_images/c2f22c42f7ba90d81440a88449f4e5891634806087.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Rolls</h3>
                         </div>
                     </div>
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Paneer')">
                         <img src="https://b.zmtcdn.com/data/dish_images/e44c42ff4b60b025225c8691ef9735b11635781903.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Paneer</h3>
                         </div>
                     </div>
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Cakes')">
                         <img src="https://b.zmtcdn.com/data/dish_images/d5ab931c8c239271de45e1c159af94311634805744.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Cakes</h3>
                         </div>
                     </div>
-                    <div class="dish-card">
+                    <div class="dish-card" onclick="redirectToSearch('Biryani')">
                         <img src="https://b.zmtcdn.com/data/o2_assets/bf2d0e73add1c206aeeb9fec762438111727708719.png" alt="Chicken Dish">
                         <div class="dish-info">
                             <h3>Biryani</h3>
@@ -1538,6 +1538,7 @@ filter-content h4 {
               const itemHtml = `
                 <div class="item-card" data-item-id="${item.item_id}">
                     <div class="item-info">
+                      <h5 style="margin:0;">${item.resturant_name}</h5>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
                             <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
                             <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
@@ -1697,6 +1698,9 @@ filter-content h4 {
             if (data.success) {
                 console.log('Cart updated successfully.');
             } else {
+              if(data.replace_cart){
+                alert("Replace cart")
+              }
                 console.error(data.error);
             }
         })
@@ -1883,6 +1887,7 @@ filter-content h4 {
               const itemHtml = `
                   <div class="item-card" data-item-id="${item.item_id}">
                       <div class="item-info">
+                          <h5 style="margin:0;">${item.resturant_name}</h5>
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
                               <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
                               <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
@@ -1937,7 +1942,6 @@ filter-content h4 {
       if (lessThan300Button.classList.contains('active')) {
         lessThan300Button.classList.remove('active');
       }
-      document.getElementById('orderfoodonline-loading-page').style.display='flex';
       const priceRange = document.getElementById('priceRange');
       priceRange.value = 5000;
       document.getElementById('priceOutput').innerText = '₹5000';
@@ -1956,6 +1960,7 @@ filter-content h4 {
                     const itemHtml = `
                       <div class="item-card" data-item-id="${item.item_id}">
                           <div class="item-info">
+                             <h5 style="margin:0;">${item.resturant_name}</h5>
                               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
                                   <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
                                   <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>

@@ -117,6 +117,7 @@ urlpatterns = [
     path('deliverygetneworders/',views.deliverygetneworders,name='deliverygetneworders'),
     path('deliveryupdatetoshipped/',views.deliveryupdatetoshipped,name='deliveryupdatetoshipped'),
     path('deliveryupdatestatus/',views.deliveryupdatestatus,name='deliveryupdatestatus'),
+    path('deliveryupdatedeliverystatus/',views.deliveryupdatedeliverystatus,name='deliveryupdatedeliverystatus'),
     path('deliverydelivered/',views.deliverydelivered,name='deliverydelivered'),
     path('deliverydeliveredorders/',views.deliverydeliveredorders,name='deliverydeliveredorders'),
     path('get_delivery_performance_chart_data/',views.get_delivery_performance_chart_data,name='get_delivery_performance_chart_data'),
@@ -133,8 +134,9 @@ urlpatterns = [
     path('apporderinfo/',views.apporderinfo,name='apporderinfo'),
     path('applogout/',views.applogout,name='applogout'),
     path('pagenotfound/',views.pagenotfound,name='pagenotfound'),
-    path('initiate/', views.initiate_payment, name='initiate_payment'), 
-    path('callback/', views.payment_callback, name='payment_callback'),
+    path('initiate/', views.checkout_view, name='initiate_payment'),
+    path('payment-success/', views.payment_success, name='payment_success'),
+    path('payment-failure/', views.payment_failure, name='payment_failure'),
 
 
     #resturant
