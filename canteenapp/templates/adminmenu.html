@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminmenu.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  <script src="{% static 'js/adminmenu.js' %}"></script>
+  {% endblock %}
+  
+</head>
+
+<body>
+    {% block menu_block %}
+    <h6 class="nav-bar-heading">Menu</h6>
+    <li><a class="nav-link active" href="{% url 'adminmenu' %}" > <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+    </svg>Create Menu</a></li>
+    <li><a class="nav-link" href="{% url 'adminsubmenu' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#00bcd4" class="bi bi-menu-button" viewBox="0 0 16 16">
+      <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h8A1.5 1.5 0 0 1 11 1.5v2A1.5 1.5 0 0 1 9.5 5h-8A1.5 1.5 0 0 1 0 3.5zM1.5 1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5z"/>
+      <path d="m7.823 2.823-.396-.396A.25.25 0 0 1 7.604 2h.792a.25.25 0 0 1 .177.427l-.396.396a.25.25 0 0 1-.354 0M0 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm1 3v2a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2zm14-1V8a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v2zM2 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0 4a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5"/>
+    </svg>Create Sub Menu</a></li>
+    <li><a class="nav-link" href="{% url 'adminitems' %}" >
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5c6bc0" class="bi bi-bag-plus-fill" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0M8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5z"/>
+      </svg>Items</a></li>
+        
+    {% endblock %}
+  {% block main_content %}
+        <div class="subnav-container">
+            <div class="subnav">
+                <h3>Menu</h3>
+                <div class="addbutton">
+                <button id="addmenubtn" onclick="showMenuForm()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg> <span>Create Menu</span>
+                </button>
+            </div>
+            </div>
+        </div> 
+        <div class="overlay-container" id="addmenuoverlay">
+            <div class="overlay-content">
+                <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+                    <h3>Create Menu</h3>
+                    <button class="close-overlay" id="closeSignup" onclick="closeMenuForm()" style="display: flex; align-items: center; justify-content: space-between;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
+                    </button>
+                </section>
+                <section>
+                    <form method="post" enctype="multipart/form-data" id="addmenuform" action="{% url 'adminaddmenu' %}"> 
+                        {% csrf_token %} 
+                        <div class="form-group">
+                            <label for="menuname">Menu Name</label>
+                            <input type="text" name="menuname" id="menuname" placeholder="Name" required>
+                            <span class="error-message" id="nameError"></span> 
+                        </div>
+                        <div class="form-group">
+                            <label for="menuimage">Photo</label>
+                            <input type="file" name="menuimage" id="menuimage" accept="image/*" required>
+                        </div>
+                        <div class="displayimage">
+                            <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; max-height: 200px; display: none;"> 
+                        </div>
+                        <div class="addbutton addformbtn">
+                            <button type="submit" id="addmenubtn">Create Menu</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+        <div class="menuitems">
+
+        </div>
+  {% endblock %} 
+</body>
+</html>

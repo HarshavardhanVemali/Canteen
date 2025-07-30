@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/deliveryappstyles.css' %}">
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+</head>
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f1f3f6;
+        color: #333;
+        margin: 0;
+        height: 100%;
+    }
+
+    .container {
+        margin-top: 50px;
+        max-width: 1200px;
+        padding: 10px;
+        height: 100%;
+    }
+     .header-container {
+        background-color: white;
+        padding: 5px 20px;
+        box-shadow: none;
+        border-bottom: 0.5px solid rgb(207, 214, 246);
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        position: fixed
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .header-title{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 530;
+        color: #202127;
+    }
+    .no-notifications{
+        display: none;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center;
+        justify-content: center; 
+        min-height: 80vh;
+        font-size: 18px;
+        color: #aaa;
+    }
+    .no-notifications h3{
+        font-size: 16px;
+        color: #aaa;
+        font-weight: 600;
+        margin: 5px 0;
+    }
+    .no-notifications p{
+        font-size: 15px;
+        color: #aaa;
+        font-weight:400;
+        margin: 5px 0;
+    }
+    .placeholder-notification {
+        width: 90%;
+        margin:10px auto;
+        height: 50px;
+        background: rgba(247, 164, 190, 0.2); 
+        border-radius: 4px; 
+        display: flex;
+        align-items: center;
+        padding:0px 10px; 
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); 
+    }
+    #placeholder-notification-1{
+        background: rgba(245, 139, 206, 0.3); 
+        transform: rotate(2deg); 
+    }
+    #placeholder-notification-2{
+        background: rgba(251, 172, 107, 0.3);
+        transform: rotate(-2deg); 
+    }
+    #placeholder-notification-3{
+        background: rgba(146, 225, 245, 0.3);
+        transform: rotate(1deg); 
+    }
+    #placeholder-notification-1 svg{
+        background: rgba(245, 139, 206, 0.5); 
+    }
+    #placeholder-notification-2 svg{
+        background: rgba(251, 172, 107, 0.5);
+    }
+    #placeholder-notification-3 svg{
+        background: rgba(146, 225, 245, 0.5);
+    }
+    .placeholder-notification svg {
+        margin-right: 15px;
+        width: 25px; 
+        height: 25px;
+        fill: rgba(200, 200, 200, 0.8);
+        border-radius: 50%;
+        padding: 4px 6px;
+    }
+    .sub-placeholder-notification{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        min-width: 250px;
+        gap:7px;
+    }
+    .sub-placeholder-notification span {
+        height: 12px;
+        display: inline-block;
+        border-radius: 1px;
+        width: 100%;
+        backdrop-filter: blur(4px);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(1.9px);
+        -webkit-backdrop-filter: blur(1.9px);
+    }
+
+    .placeholder-notification span:nth-child(2) {
+        width: 40%; 
+        margin-right: 5px;
+    }
+
+    .placeholder-notification span:nth-child(3) {
+        width: 60%;
+    }
+    .header-title a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #202127;
+    }
+    .notifications {
+        margin-bottom: 70px;
+    }
+    .notification-item {
+        width: 90%;
+        margin: 10px auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: flex-start;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(91, 110, 148, 0.2);
+    }
+
+    .notification-item .icon {
+        margin-right: 15px;
+        padding: 4px 6px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .notification-item .icon svg{
+        fill: #fff;
+        width: 20px;
+        height: 20px;
+    }
+     .notification-item.general .icon {
+        background: rgba(146, 225, 245, 0.8);
+    }
+     .notification-item.order .icon {
+        background: rgba(251, 172, 107, 0.8);
+    }
+     .notification-item.item .icon {
+        background: rgba(245, 139, 206, 0.8);
+    }
+    .notification-item .content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .notification-item .content .title {
+        font-weight: 500;
+        font-size: 14px;
+        color: #202127;
+        margin-bottom: 5px;
+    }
+   .notification-item .content .message {
+       font-size: 12px;
+       color: #6a6d77;
+    }
+    .notification-item .time {
+        color: #aaa;
+        font-size: 11px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .notification-item .time span{
+        display: flex;
+        align-items: center;
+    }
+</style>
+<body>
+  <div class="main-loading-animation">
+    
+  </div>
+  
+  <header class="header-container" style="overflow: hidden;">
+    <div class="header-content">
+        
+        <div class="header-title"> 
+            <a href="{%  url 'deliveryapphome' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                  </svg>
+            </a>
+            <p>Notifications</p>
+        </div>
+    </div>
+</header> 
+
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item">
+              <a href="/deliveryapphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                  Home
+              </a>
+            </li> 
+            <li class="nav-item search-item">
+              <a href="/deliveryappdelivered"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+                </svg>
+                  Delieverd
+              </a>
+            </li>
+            <li class="nav-item">
+                <a href="/deliveryappscan"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"></path>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"></path>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"></path>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"></path>
+                        <path d="M12 9h2V8h-2z"></path>
+                      </svg>
+                  Scan
+                </a>
+            </li> 
+            <li class="nav-item active">
+                <a href="/deliveryappnotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+                    Notifications
+                </a>
+            </li>
+            <li class="nav-item ">
+                <a href="/deliveryappprofile">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                      </svg>
+                Profile
+                </a>
+            </li>     
+        </ul>
+    </div>
+    <div class="main-loading-animation">
+    
+    </div>
+    <div class="container">
+        <div class="no-notifications">
+            <h3>NO NOTIFICATIONS</h3>
+            <p>We will notify you once we have something for you</p>
+            <div class="placeholder-notification" id="placeholder-notification-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="placeholder-notification" id="placeholder-notification-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="placeholder-notification" id="placeholder-notification-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="notifications">
+
+        </div>
+    </div>
+</body>
+<script>
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+<script>
+    function getTimeAgo(date) {
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+      
+        if (diffInSeconds < 60) {
+            return `${diffInSeconds} seconds ago`;
+        } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+        } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+        } else {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days} day${days === 1 ? '' : 's'} ago`;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const refreshIndicator = document.getElementById('refreshIndicator');
+        const loaderIcon = refreshIndicator ? refreshIndicator.querySelector('.loader-icon') : null;
+        let startY = 0;
+        let pullDistance = 0;
+        let isPulling = false;
+        let isRefreshing = false;
+        const refreshThreshold = window.innerHeight * 0.15;
+        const navItemsContainer = document.querySelector('.nav-items-container');
+        hideAppLoadingAnimation();
+    
+        navItemsContainer.addEventListener('click', function(event) {
+        if (event.target.closest('a')) {
+            showAppLoadingAnimation();
+        }
+        });
+        function startRefresh() {
+            if (isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+            isRefreshing = true;
+            refreshIndicator.style.transform = 'translateY(0)';
+            refreshIndicator.style.opacity = 1;
+            loaderIcon.style.transition = 'transform 0.3s ease'; 
+            loaderIcon.style.transform = 'rotate(360deg)';
+
+            setTimeout(() => {
+                location.reload();
+            }, 400);
+        }
+
+        function lockScroll() {
+            document.body.style.overflow = 'hidden';
+        }
+
+        function unlockScroll() {
+            document.body.style.overflow = '';
+        }
+
+        window.addEventListener('touchstart', (e) => {
+            if (isRefreshing || !refreshIndicator || window.scrollY > 0) return;
+
+            startY = e.touches[0].pageY;
+            isPulling = true;
+            loaderIcon.style.transition = 'none'; 
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+            pullDistance = e.touches[0].pageY - startY;
+
+            if (pullDistance > 0) {
+                lockScroll();
+                e.preventDefault(); 
+                const cappedPullDistance = Math.min(pullDistance, refreshThreshold); 
+
+                const rotationAngle = (cappedPullDistance / refreshThreshold) * 360;
+                loaderIcon.style.transform = `rotate(${rotationAngle}deg)`;
+                refreshIndicator.style.transform = `translateY(${cappedPullDistance / 2}px)`;
+                refreshIndicator.style.opacity = cappedPullDistance / refreshThreshold;
+
+
+                if (cappedPullDistance >= refreshThreshold * 0.5) { 
+                    refreshIndicator.classList.add('pulling');
+                } else {
+                    refreshIndicator.classList.remove('pulling');
+                }
+            } else if (pullDistance < 0) {
+                unlockScroll();
+
+                loaderIcon.style.transform = 'rotate(0deg)';
+                refreshIndicator.style.transform = 'translateY(-100%)';
+                refreshIndicator.style.opacity = 0;
+                refreshIndicator.classList.remove('pulling'); 
+            }
+        });
+        window.addEventListener('touchend', () => {
+            if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+            loaderIcon.style.transition = 'transform 0.3s ease'; 
+
+            if (pullDistance > refreshThreshold) {
+                startRefresh();
+            } else {
+                loaderIcon.style.transform = 'rotate(0deg)';
+                refreshIndicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                refreshIndicator.style.transform = 'translateY(-100%)';
+                refreshIndicator.style.opacity = 0;
+                refreshIndicator.classList.remove('pulling'); 
+            }
+
+            unlockScroll();
+            isPulling = false;
+            pullDistance = 0;
+        });
+        let notificationOverlay = document.querySelector('.notification-overlay');
+        const notificationContainer = document.querySelector('.notifications')
+        const noNotificationsContainer = document.querySelector('.no-notifications');
+        const overlayKey = 'notificationOverlayOpen';
+        const socketUrl = `ws://${window.location.host}/ws/deliverynotifications/`;
+        const socket = new WebSocket(socketUrl);
+        socket.onopen = () => {
+            console.log("WebSocket connection established")
+        };
+            socket.onclose = (e) => {
+                console.log("Websocket connection closed");
+        };
+            socket.onmessage = (event) =>{
+            const data = JSON.parse(event.data);
+            if(data.type === 'delivery_notification_update'){
+                updateNotification(data.notifications);
+            }
+        };
+        socket.onerror = (e) => {
+            console.error("Websocket error",e)
+        }
+        fetchNotifications();
+    });
+    function updateNotification(notifications){
+            const notificationContainer = document.querySelector('.notifications')
+            const noNotificationsContainer = document.querySelector('.no-notifications');
+            
+            if(notifications && notifications.length > 0){
+                noNotificationsContainer.style.display = 'none';
+                notificationContainer.innerHTML = '';
+                notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.classList.add('notification-item');
+                notificationItem.classList.add(notification.notification_type);
+                                              
+                const icon = document.createElement('div');
+                icon.classList.add('icon');
+                                              
+                let svgIcon = '';
+                if (notification.notification_type === 'general') {
+                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></svg>`;
+                } else if(notification.notification_type === 'order'){
+                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16"><path d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/></svg>`;
+                }
+                icon.innerHTML = svgIcon;
+                const content = document.createElement('div');
+                content.classList.add('content');
+      
+                const title = document.createElement('div');
+                title.classList.add('title');
+                title.textContent = notification.title;
+      
+                const message = document.createElement('div');
+                message.classList.add('message');
+                message.textContent = notification.message;
+      
+                const timeContainer = document.createElement('div');
+                timeContainer.classList.add('time');
+      
+               const timeIcon = document.createElement('svg');
+                timeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="#aaa" class="bi bi-clock" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>';
+      
+                const time = document.createElement('span');
+                const notificationDate = new Date(notification.created_at);
+                const timeAgo = getTimeAgo(notificationDate);
+                time.textContent = timeAgo;
+                timeContainer.appendChild(timeIcon);
+                timeContainer.appendChild(time);
+      
+                content.appendChild(title);
+                content.appendChild(message);
+                notificationItem.appendChild(icon);
+                notificationItem.appendChild(content);
+                notificationItem.appendChild(timeContainer);
+                notificationContainer.appendChild(notificationItem);
+            });
+            }else{
+                noNotificationsContainer.style.display = 'flex';
+                notificationContainer.innerHTML = '';
+            }
+        }
+        function fetchNotifications() {
+            const notificationContainer = document.querySelector('.notifications')
+            const noNotificationsContainer = document.querySelector('.no-notifications');
+             fetch('/deliverynotifications/',{
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+              updateNotification(data.notifications)
+        })
+        .catch(error => {
+            console.error('Error fetching notifications:', error);
+        })
+    } 
+  
+</script>
+</html>

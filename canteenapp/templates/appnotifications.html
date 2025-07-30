@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub - Profile</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+</head>
+<style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button, a, img {
+        outline: none;
+    }
+    a:focus,button:focus {
+        outline: none;  
+        box-shadow: none; 
+        -webkit-tap-highlight-color: transparent;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
+    body{
+        font-family: 'Poppins', sans-serif;
+        user-select: none; 
+        -webkit-user-select: none;
+        -ms-user-select: none; 
+    }
+    .header-container {
+        background-color: white;
+        padding: 5px 20px;
+        box-shadow: none;
+        border-bottom: 0.5px solid rgb(207, 214, 246);
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        position: fixed
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .header-title{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 530;
+        color: #202127;
+    }
+    .navbarbottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0; 
+        z-index: 9999;
+        width: 100%; 
+    }
+
+    .nav-items-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        margin: 0;
+        padding: 5px 0 0;
+        background: #fff;
+        border-top: 1px solid rgba(72, 87, 109, 0.1);
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        fill: #686b78;
+    }
+    .cart-count {
+        font-weight: bold;
+        font-size: 0.6rem;
+        padding: 2px 5px;
+        position: absolute;
+        top: 9px;
+        right: 24px;
+        min-width: 15px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 10px;
+        font-weight: 500;
+        align-items: center;
+    }
+
+    .nav-item a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .nav-item {
+            margin-bottom: 0px;
+        }
+    }
+
+    .nav-item {
+        margin-left: 0px;
+    }
+
+    .no-notifications{
+        display: none;
+        flex-direction: column;
+        align-items: center; 
+        text-align: center;
+        justify-content: center; 
+        min-height: 80vh;
+        font-size: 18px;
+        color: #aaa;
+    }
+    .no-notifications h3{
+        font-size: 16px;
+        color: #aaa;
+        font-weight: 600;
+        margin: 5px 0;
+    }
+    .no-notifications p{
+        font-size: 15px;
+        color: #aaa;
+        font-weight:400;
+        margin: 5px 0;
+    }
+    .placeholder-notification {
+        width: 90%;
+        margin:10px auto;
+        height: 50px;
+        background: rgba(247, 164, 190, 0.2); 
+        border-radius: 4px; 
+        display: flex;
+        align-items: center;
+        padding:0px 10px; 
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); 
+    }
+    #placeholder-notification-1{
+        background: rgba(245, 139, 206, 0.3); 
+        transform: rotate(2deg); 
+    }
+    #placeholder-notification-2{
+        background: rgba(251, 172, 107, 0.3);
+        transform: rotate(-2deg); 
+    }
+    #placeholder-notification-3{
+        background: rgba(146, 225, 245, 0.3);
+        transform: rotate(1deg); 
+    }
+    #placeholder-notification-1 svg{
+        background: rgba(245, 139, 206, 0.5); 
+    }
+    #placeholder-notification-2 svg{
+        background: rgba(251, 172, 107, 0.5);
+    }
+    #placeholder-notification-3 svg{
+        background: rgba(146, 225, 245, 0.5);
+    }
+    .placeholder-notification svg {
+        margin-right: 15px;
+        width: 25px; 
+        height: 25px;
+        fill: rgba(200, 200, 200, 0.8);
+        border-radius: 50%;
+        padding: 4px 6px;
+    }
+    .sub-placeholder-notification{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        min-width: 250px;
+        gap:7px;
+    }
+    .sub-placeholder-notification span {
+        height: 12px;
+        display: inline-block;
+        border-radius: 1px;
+        width: 100%;
+        backdrop-filter: blur(4px);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(1.9px);
+        -webkit-backdrop-filter: blur(1.9px);
+    }
+
+    .placeholder-notification span:nth-child(2) {
+        width: 40%; 
+        margin-right: 5px;
+    }
+
+    .placeholder-notification span:nth-child(3) {
+        width: 60%;
+    }
+    .header-title a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #202127;
+    }
+    .notifications {
+        margin-bottom: 70px;
+    }
+    .notification-item {
+        width: 90%;
+        margin: 10px auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        display: flex;
+        align-items: flex-start;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(91, 110, 148, 0.2);
+    }
+
+    .notification-item .icon {
+        margin-right: 15px;
+        padding: 4px 6px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .notification-item .icon svg{
+        fill: #fff;
+        width: 20px;
+        height: 20px;
+    }
+     .notification-item.general .icon {
+        background: rgba(146, 225, 245, 0.8);
+    }
+     .notification-item.order .icon {
+        background: rgba(251, 172, 107, 0.8);
+    }
+     .notification-item.item .icon {
+        background: rgba(245, 139, 206, 0.8);
+    }
+    .notification-item .content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .notification-item .content .title {
+        font-weight: 500;
+        font-size: 14px;
+        color: #202127;
+        margin-bottom: 5px;
+    }
+   .notification-item .content .message {
+       font-size: 12px;
+       color: #6a6d77;
+    }
+    .notification-item .time {
+        color: #aaa;
+        font-size: 11px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .notification-item .time span{
+        display: flex;
+        align-items: center;
+    }
+    .container {
+        margin-top: 50px;
+        max-width: 1200px;
+        padding: 10px;
+        height: 100%;
+    }
+    .nav-item svg {
+        background: linear-gradient(to right, transparent 50%, transparent 50%);
+        border-radius: 18px;
+        padding: 6px 22px;
+        display: inline-flex;
+        align-items: center;
+        transition: padding 0.3s ease, box-shadow 0.3s ease;
+        background-size: 50% 50%;
+        background-position: center;
+    }
+
+    .nav-item.active svg {
+        background: rgba(250, 246, 235, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        background-size: 100% 100%;
+        background-position: center;
+        transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, box-shadow 0.3s ease;
+        fill: #c2a97c;
+    }
+</style>
+<div class="main-loading-animation">
+    
+</div>
+<body>
+    
+    <header class="header-container" style="overflow: hidden;">
+        <div class="header-content">
+            
+            <div class="header-title"> 
+                <a href="{%  url 'apphome' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                      </svg>
+                </a>
+                <p>Notifications</p>
+            </div>
+        </div>
+    </header>
+    <div class="navbarbottom" style="overflow: hidden;">
+        <ul class="nav-items-container">  
+                <li class="nav-item">
+                <a href="/apphome"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                    </svg>
+                    Home
+                </a>
+                </li> 
+                <li class="nav-item search-item">
+                <a href="/appsearch"> 
+                    <svg class="ppAwf" viewBox="5 -1 12 25" height="20" width="20" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                    Search
+                </a>
+                </li>
+                <li class="nav-item active">
+                <a href="/appnotifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                    </svg>
+                    Notifications
+                </a>
+            </li>
+                <li class="nav-item cart-item">
+                <a href="/appcheckout">
+                    <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count"></span>
+                    </span>
+                    Cart 
+                </a>
+            </li>
+                <li class="nav-item">
+                <a href="/appprofile"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                    </svg>
+                    Account
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+    <div class="container">
+        <div class="no-notifications">
+            <h3>NO NOTIFICATIONS</h3>
+            <p>We will notify you once we have something for you</p>
+            <div class="placeholder-notification" id="placeholder-notification-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="placeholder-notification" id="placeholder-notification-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="placeholder-notification" id="placeholder-notification-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                </svg>
+                <div class="sub-placeholder-notification">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="notifications">
+
+        </div>
+    </div>
+    
+    <script>
+      
+        function getWebSocketUrl() {
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const host = window.location.host;
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?$/; 
+            if (ipRegex.test(host)) {
+                return `${protocol}${host}/ws/`; 
+            } else {
+                return `${protocol}${host}/ws/`; 
+            }
+        }
+        
+        const cartitemscountSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const cartIcon = document.querySelector('.cart-icon');
+            const cartCount = document.querySelector('.cart-count');
+
+            if (data.data && data.data.length > 0) {
+                cartIcon.style.fill = '#60b246';
+                cartCount.style.color = '#60b246';
+                cartCount.textContent = data.data.length;
+            
+            }
+            else {
+                cartIcon.style.fill = 'currentColor';
+                cartCount.style.color = 'inherit';
+                cartCount.textContent = '';
+            }
+        };
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItemsContainer = document.querySelector('.nav-items-container');
+            hideAppLoadingAnimation();
+            navItemsContainer.addEventListener('click', function(event) {
+            if (event.target.closest('a')) {
+                showAppLoadingAnimation();
+            }
+            });
+            const notificationsContainer = document.querySelector('.notifications');
+            const noNotificationsContainer = document.querySelector('.no-notifications');
+
+            function fetchNotifications() {
+                const csrftoken = getCookie('csrftoken');
+                fetch('/usernotifications/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.notifications.length > 0) {
+                            noNotificationsContainer.style.display = 'none';
+                            notificationsContainer.innerHTML = '';
+
+                            data.notifications.forEach(notification => {
+                                const notificationItem = document.createElement('div');
+                                notificationItem.classList.add('notification-item');
+                                notificationItem.classList.add(notification.notification_type);
+                                  if (notification.related_order) {
+                                  notificationItem.dataset.orderId = notification.related_order;
+                                  notificationItem.style.cursor = 'pointer';
+                                  notificationItem.addEventListener('click', () => {
+                                    window.location.href = `/apporderinfo/?order_id=${notification.related_order}`;
+                                    });
+                                  }
+
+                                const icon = document.createElement('div');
+                                icon.classList.add('icon');
+
+                                let svgIcon = '';
+                                if (notification.notification_type === 'general') {
+                                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></svg>`;
+                                } else if (notification.notification_type === 'order') {
+                                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16"><path d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/></svg>`;
+                                } else if (notification.notification_type === 'item') {
+                                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-gift-fill" viewBox="0 0 16 16"><path d="M3 2.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1 5 0v.006c0 .07 0 .27-.038.494H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h2.038A2.968 2.968 0 0 1 3 2.506zm10.08 3-.863.552a2.153 2.153 0 0 1-.328.129H4.262a2.153 2.153 0 0 1-.328-.129L3.04 5.518A1.492 1.492 0 0 0 2 6.71v4.58a1.492 1.492 0 0 0 1.04 1.206l1.971 1.262a1.492 1.492 0 0 0 .667.227.816.816 0 0 0 .545 0c.231-.083.434-.179.667-.227l1.971-1.262A1.492 1.492 0 0 0 14 11.29V6.71a1.492 1.492 0 0 0-1.92-.79z"/></svg>`;
+                                }
+                                icon.innerHTML = svgIcon
+                                const content = document.createElement('div');
+                                content.classList.add('content');
+
+                                const title = document.createElement('div');
+                                title.classList.add('title');
+                                title.textContent = notification.title;
+
+                                const message = document.createElement('div');
+                                message.classList.add('message');
+                                message.textContent = notification.message;
+
+                                const timeContainer = document.createElement('div');
+                                timeContainer.classList.add('time');
+
+                                const timeIcon = document.createElement('span');
+                                timeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="#aaa" class="bi bi-clock" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>';
+                                
+                                const time = document.createElement('span');
+                                const notificationDate = new Date(notification.created_at);
+                                const timeAgo = getTimeAgo(notificationDate);
+                                time.textContent = timeAgo;
+
+                                timeContainer.appendChild(timeIcon);
+                                timeContainer.appendChild(time);
+
+                                content.appendChild(title);
+                                content.appendChild(message);
+                                content.appendChild(timeContainer);
+
+                                notificationItem.appendChild(icon);
+                                notificationItem.appendChild(content);
+                                notificationsContainer.appendChild(notificationItem);
+                            });
+                        } else {
+                            noNotificationsContainer.style.display = 'flex';
+                            notificationsContainer.innerHTML = '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching notifications:', error);
+                    });
+            }
+
+            function getTimeAgo(date) {
+                const now = new Date();
+                const diffInSeconds = Math.floor((now - date) / 1000);
+
+                if (diffInSeconds < 60) {
+                    return `${diffInSeconds} seconds ago`;
+                } else if (diffInSeconds < 3600) {
+                    const minutes = Math.floor(diffInSeconds / 60);
+                    return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+                } else if (diffInSeconds < 86400) {
+                    const hours = Math.floor(diffInSeconds / 3600);
+                    return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+                } else {
+                    const days = Math.floor(diffInSeconds / 86400);
+                    return `${days} day${days === 1 ? '' : 's'} ago`;
+                }
+            }
+
+            fetchNotifications();
+            setInterval(fetchNotifications, 30000);
+        });
+    </script>
+</body>
+</html>

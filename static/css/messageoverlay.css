@@ -1,0 +1,53 @@
+#message-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    position: absolute;
+    left: 50%;
+    bottom: 50px; 
+    transform: translate(-50%, 20px); 
+    width: fit-content; 
+    max-width: 90%; 
+    background: linear-gradient(135deg, #2f3442, #1c1f26);
+    color: white;
+    text-align: center;
+    padding: 20px 25px;
+    border-radius: 10px; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    z-index: 100000; 
+    gap: 7px;
+    height: fit-content;
+}
+#message-overlay h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+#message-overlay.show {
+    opacity: 1;
+    transform: translate(-50%, 0); 
+}
+@media (max-width: 768px) {
+    #message-overlay {
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+    #message-overlay h2 {
+        margin: 0;
+        font-size: 0.6rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+    #message-overlay svg{
+        width: 14px;
+        height: 14px;
+    }
+    #message-overlay.show {
+        opacity: 1;
+        transform: translate(-50%, 0); 
+    }
+}

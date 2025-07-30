@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVGR(A)</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/3.png">
+    <link rel="stylesheet" href="{% static 'css/adminpage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/adminorderstyles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'css/messageoverlay.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
+    <script src="{% static 'js/messageoverlay.js' %}"></script>
+    {% block link_section %}
+    {% endblock %}
+</head>
+
+<body>
+    <div class="main-container">
+        <div id="overlay-container"></div>
+        {% block nav_bar %}
+        <nav class="sidebar" id="mySidebar">
+            <ul class="mainnavbar">
+                <li class="dashboardtitle-li">
+                    <div id="college_title" style="display: flex;align-items: center;">
+                      <div class="menu-toggle" style="margin-right: 5px;margin-top: 3px;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#888" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleSidebar()">
+                              <line x1="3" y1="12" x2="21" y2="12"></line>
+                              <line x1="3" y1="6" x2="21" y2="6"></line>
+                              <line x1="3" y1="18" x2="21" y2="18"></line>
+                          </svg>
+                      </div>
+                      <div id="college_sub_title">
+                          <h5 id="title_name">Resturant Dashboard</h5>
+                      </div>
+                    </div>
+                  </li>
+                {% block dashboard_block %}
+                <li><a class="nav-link" href="{% url 'resturantdashoard' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-speedometer" viewBox="0 0 16 16">
+                    <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+                    <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0"/>
+                  </svg>Dashboard</a></li>
+                  {% endblock %}
+                {% block items %}
+                <li><a class="nav-link" href="{% url 'resturantitems' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5c6bc0" class="bi bi-bag-plus-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0M8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5z"/>
+                  </svg>Items</a></li>
+                {% endblock %}
+                <hr class="tempateline">
+                {% block orders_block %}
+                <h6 class="nav-bar-heading">Orders</h6>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'restaurantallorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#f5365c" class="bi bi-three-dots" viewBox="0 0 16 16">
+                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                        </svg>All Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'restaurantneworders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+                        </svg>New Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'restaurantdeliveredorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#28a745" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>Delivered</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'restaurantcancelledorders' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#dc3545" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                        </svg>Cancelled Orders</a>
+                    </li>
+                    
+                {% endblock %}
+                {% block place_order %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'restaurantplaceorderpage' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="rgb(102, 187, 106)" class="bi bi-shop" viewBox="0 0 16 16">
+                    <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z"/>
+                    </svg>Place Order</a>
+                </li>
+                {% endblock %}
+            <ul>
+                <li class="logout-item">
+                    <a class="nav-link" href="{% url 'restaurantlogout' %}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endblock %}
+        <main class="content"> 
+            <header>
+                <div class="header-container">
+                    
+                    <div id="college_title" style="display: flex; gap: 10px; align-items: center;">    
+                        <div class="sidebartoogler">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#888" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleSidebar()">
+                                <line x1="3" y1="12" x2="30" y2="12"></line>
+                                <line x1="3" y1="6" x2="18" y2="6"></line>
+                                <line x1="3" y1="18" x2="18" y2="18"></line>
+                            </svg>
+                        </div>
+                        <div id="college_sub_title" style="color: rgb(82, 91, 117);">
+                        </div>
+                    </div>
+                    <div class="header-container-links" style="display: flex; align-items: center;">
+                        
+                        <div class="notification-icon">
+                            <span class="d-block" style="height:20px;width:20px;cursor: pointer;" onclick="openNotificationOverlay()"> 
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell" style="height:20px;width:20px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            </span>
+                            <p class="notification-count"></p>
+                        </div>
+                        <div class="scan-icon" onclick="showScanOverlay()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16" >
+                                <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"/>
+                                <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"/>
+                                <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"/>
+                                <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"/>
+                                <path d="M12 9h2V8h-2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                      
+                </div>
+            </header>
+            <div class="message-overlay" id="delete-overlay">
+                <div class="message-overlay-content">
+                    <p>Are you sure you want to delete?</p>
+                    <div style="display: flex;align-items: center;justify-content: space-evenly;">
+                      <div>
+                          <button id="cancelDelete">Cancel</button>
+                      </div>
+                      <div>
+                        <button id="confirmDelete">Delete</button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            <div id="message-overlay">
+
+            </div>
+            {% block main_content %} 
+
+            {% endblock %} 
+        </main> 
+        <div class="notification-overlay">
+            <div class="notification-overlay-header">
+                <h3>Notifications</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#e74c3c" class="bi bi-x-lg" viewBox="0 0 16 16" style="cursor: pointer;" onclick="closeNotificationOverlay()">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </div>
+            <div class="no-notifications">
+              <h3>NO NOTIFICATIONS</h3>
+              <p>We will notify you once we have something for you</p>
+              <div class="placeholder-notification" id="placeholder-notification-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                      <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                  </svg>
+                  <div class="sub-placeholder-notification">
+                      <span></span>
+                      <span></span>
+                  </div>
+              </div>
+              <div class="placeholder-notification" id="placeholder-notification-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                      <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                  </svg>
+                  <div class="sub-placeholder-notification">
+                      <span></span>
+                      <span></span>
+                  </div>
+              </div>
+              <div class="placeholder-notification" id="placeholder-notification-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                      <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/>
+                  </svg>
+                  <div class="sub-placeholder-notification">
+                      <span></span>
+                      <span></span>
+                  </div>
+              </div>
+            </div>
+            <div class="notifications">
+  
+            </div>
+        </div>
+        <div class="notification-message">
+            <div></div>
+        </div>
+    </div>
+    <div class="scan-overlay-container" id="scanOverlayContainer">
+        <div class="scan-close-btn" onclick="hideScanOverlay()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+        </div>
+        <div class="scan-overlay" id="scanOverlay">
+          <video id="qr-video" autoplay muted></video>
+          <div class="scanning-line"></div>
+          <div class="processing-message" style="display:none;position:absolute;top:60%;left:50%;transform:translateX(-50%);color:white;">Processing Details</div>
+        </div>
+    </div>
+    <div class="scan-order-display-overlay" id="scanOrderDisplayOverlay">
+        <div class="order-details-overlay-content" id="scan-order-details-container">
+            <div style="display: flex;justify-content: space-between;">
+                <div>
+
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#e74c3c" class="bi bi-x-lg" viewBox="0 0 16 16" style="cursor: pointer;" onclick="closeOrderDetailsOverlay()">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </div>
+            <div id="order-content">
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+   
+    <script>
+        function getTimeAgo(date) {
+          const now = new Date();
+          const diffInSeconds = Math.floor((now - date) / 1000);
+      
+          if (diffInSeconds < 60) {
+              return `${diffInSeconds} seconds ago`;
+          } else if (diffInSeconds < 3600) {
+              const minutes = Math.floor(diffInSeconds / 60);
+              return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+          } else if (diffInSeconds < 86400) {
+              const hours = Math.floor(diffInSeconds / 3600);
+              return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+          } else {
+              const days = Math.floor(diffInSeconds / 86400);
+              return `${days} day${days === 1 ? '' : 's'} ago`;
+          }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+              const navLinks = document.querySelectorAll('.nav-link');
+              const submenus = document.querySelectorAll('.submenu');
+              const mainContent = document.querySelector('main .content');
+              let notificationOverlay = document.querySelector('.notification-overlay');
+              const notificationContainer = document.querySelector('.notifications')
+              const noNotificationsContainer = document.querySelector('.no-notifications');
+              
+              const overlayKey = 'notificationOverlayOpen';
+              const socketUrl = `ws://${window.location.host}/ws/restaurantnotifications/`;
+              const socket = new WebSocket(socketUrl);
+                  socket.onopen = () => {
+                       console.log("WebSocket connection established")
+                   };
+                   socket.onclose = (e) => {
+                      console.log("Websocket connection closed");
+                   };
+                   socket.onmessage = (event) =>{
+                     const data = JSON.parse(event.data);
+                     if(data.type === 'restaurant_notification_update'){
+                       updateNotification(data.notifications);
+                       }
+                    };
+                    socket.onerror = (e) => {
+                      console.error("Websocket error",e)
+                    }
+              fetchNotifications();
+              function openNotificationOverlay(){
+                  notificationOverlay.classList.add("show");
+                    localStorage.setItem(overlayKey, 'true');
+                   if(notificationContainer.innerHTML==''){
+                       fetchNotifications();
+                   }
+                 }
+              function closeNotificationOverlay(){
+                  notificationOverlay.classList.remove("show");
+                  localStorage.setItem(overlayKey, 'false');
+              }
+              const closeNotificationBtn = document.querySelector('.notification-overlay-header svg');
+              closeNotificationBtn.onclick = closeNotificationOverlay;
+              window.openNotificationOverlay= openNotificationOverlay
+              window.closeNotificationOverlay=closeNotificationOverlay
+              function setInitialOverlayState(){
+                  const overlayOpen = localStorage.getItem(overlayKey);
+                  if(overlayOpen === 'true'){
+                      notificationOverlay.classList.add("show");
+                  }
+              }
+
+              setInitialOverlayState();
+        });
+        function updateNotification(notifications){
+            const notificationContainer = document.querySelector('.notifications')
+            const noNotificationsContainer = document.querySelector('.no-notifications');
+            const notificationCount = document.querySelector('.notification-count');
+            if(notifications && notifications.length > 0){
+                noNotificationsContainer.style.display = 'none';
+                notificationContainer.innerHTML = '';
+                notificationCount.style.display = 'block';
+                notificationCount.textContent = notifications.length;
+                notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.classList.add('notification-item');
+                notificationItem.classList.add(notification.notification_type);
+                                              
+                const icon = document.createElement('div');
+                icon.classList.add('icon');
+                                              
+                let svgIcon = '';
+                if (notification.notification_type === 'general') {
+                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"/></svg>`;
+                } else if(notification.notification_type === 'order'){
+                    svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bag-fill" viewBox="0 0 16 16"><path d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5zm1 0v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4z"/></svg>`;
+                }
+                icon.innerHTML = svgIcon;
+                const content = document.createElement('div');
+                content.classList.add('content');
+      
+                const title = document.createElement('div');
+                title.classList.add('title');
+                title.textContent = notification.title;
+      
+                const message = document.createElement('div');
+                message.classList.add('message');
+                message.textContent = notification.message;
+      
+                const timeContainer = document.createElement('div');
+                timeContainer.classList.add('time');
+      
+               const timeIcon = document.createElement('svg');
+                timeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="#aaa" class="bi bi-clock" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>';
+      
+                const time = document.createElement('span');
+                const notificationDate = new Date(notification.created_at);
+                const timeAgo = getTimeAgo(notificationDate);
+                time.textContent = timeAgo;
+                timeContainer.appendChild(timeIcon);
+                timeContainer.appendChild(time);
+      
+                content.appendChild(title);
+                content.appendChild(message);
+                notificationItem.appendChild(icon);
+                notificationItem.appendChild(content);
+                notificationItem.appendChild(timeContainer);
+                notificationContainer.appendChild(notificationItem);
+            });
+            }else{
+                noNotificationsContainer.style.display = 'flex';
+                notificationContainer.innerHTML = '';
+            }
+        }
+        function fetchNotifications() {
+            const notificationContainer = document.querySelector('.notifications')
+            const noNotificationsContainer = document.querySelector('.no-notifications');
+             fetch('/restaurant_notifications/',{
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+              updateNotification(data.notifications)
+        })
+        .catch(error => {
+            console.error('Error fetching notifications:', error);
+        })
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+    }
+    const video = document.getElementById('qr-video');
+        let stream;
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const scanStatusDiv = document.createElement('div');
+        scanStatusDiv.style.position='absolute'
+        scanStatusDiv.style.top='50px'
+        scanStatusDiv.style.color='white'
+        scanStatusDiv.style.fontSize='20px'
+        scanStatusDiv.style.left = "50%";
+        scanStatusDiv.style.transform = "translateX(-50%)";
+        const qrOverlay = document.getElementById('scanOverlay');
+        qrOverlay.appendChild(scanStatusDiv)
+        const processingDiv = document.querySelector('.processing-message');
+        let scanning = true;
+        let scanningTimeout;
+        const scanInterval = 200;
+        const scanTimeout = 5000;
+        let order_id;
+        function initializeCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(localStream => {
+                stream = localStream;
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+                scanQRCode(); 
+            })
+            .catch(err => {
+                scanStatusDiv.innerHTML = 'Error accessing camera: ' + err.message;
+            });
+        }
+         function scanQRCode() {
+            if (!scanning) return;
+
+            clearTimeout(scanningTimeout);
+
+            scanningTimeout = setTimeout(() => {
+                scanStatusDiv.innerHTML = 'No QR code detected. Please try again.';
+            }, scanTimeout);
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    clearTimeout(scanningTimeout);
+                    scanning = false;
+                     qrOverlay.style.display = 'block';
+                    processingDiv.style.display='block'
+                    sendDataToDjango(code.data);
+                }
+            } 
+            if (scanning) { 
+                setTimeout(scanQRCode, scanInterval); 
+            }
+        }
+        function sendDataToDjango(data){
+            const dataArray = data.split('\n');
+            const code = dataArray[0].split(': ')[1].trim()
+            const decryptedId = decryptOrderId(code);
+            if (decryptedId) {
+                getOrderedDetails(decryptedId);
+            }else{
+                processingDiv.style.display='none'
+                 scanStatusDiv.textContent = 'Invalid QR Code'
+            }
+            
+        }
+        function decryptOrderId(encrypted_order_id) {
+            const part_length = Math.floor(encrypted_order_id.length / 4);
+            if (encrypted_order_id.length % 4 !== 0 || part_length <= 0) {
+                return null; 
+            }
+            let parts = [];
+            for (let i = 0; i < 4; i++) {
+                parts.push(encrypted_order_id.substring(i * part_length, (i + 1) * part_length));
+            }
+             [parts[0], parts[2]] = [parts[2], parts[0]];
+             const swapped_order_id = parts.join("");
+
+
+            const new_part_length = Math.floor(swapped_order_id.length / 5);
+
+            if (swapped_order_id.length % 5 !== 0 || new_part_length <=0) {
+                return null
+            }
+
+            let new_parts = [];
+            for (let i = 0; i < 5; i++) {
+                new_parts.push(swapped_order_id.substring(i * new_part_length, (i + 1) * new_part_length));
+            }
+            [new_parts[0], new_parts[2]] = [new_parts[2], new_parts[0]];
+            [new_parts[1], new_parts[4]] = [new_parts[4], new_parts[1]];
+             return new_parts.join("");
+        }
+        function showScanOverlay(){
+            initializeCamera(); 
+            const overlayContainer = document.getElementById('scanOverlayContainer')
+            overlayContainer.style.display = 'flex';
+        }
+         function hideScanOverlay() {
+            const overlayContainer = document.getElementById('scanOverlayContainer');
+             overlayContainer.style.display = 'none';
+            if (video && video.srcObject) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+                 scanning = true;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function(){
+            hideScanOverlay();
+        });
+         function getOrderedDetails(orderId) {
+            fetch(`/restaurantgetorderdetails/${orderId}/`, {
+                method: 'GET',
+                headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.orders.length>0){
+                    populateOrderDetails(data.orders[0]);
+                }
+                else{
+                    showMessage('Invalid Order Id', 'error');
+                    hideScanOverlay();
+                }
+            })
+            .catch(error => {
+            console.error('Error fetching order details:', error);
+            });
+        }
+        function closeOrderDetailsOverlay(){
+            document.getElementById('scanOrderDisplayOverlay').style.display = 'none';
+        }
+        function getStatusIndex(deliveryType, status) {
+            if (deliveryType === 'Delivery') {
+                return ['pending', 'confirmed', 'prepared', 'shipped', 'delivered', 'cancelled'].indexOf(status);
+            } else if (deliveryType === 'Pickup') {
+                return ['pending', 'confirmed', 'preparing', 'ready_to_take', 'delivered', 'cancelled'].indexOf(status);
+            } else if (deliveryType === 'Dining') {
+                return ['pending', 'confirmed', 'preparing', 'delivered', 'cancelled'].indexOf(status);
+            }
+            return -1;
+        }
+        function populateOrderDetails(order) {
+                hideScanOverlay();
+                console.log('printing');
+                const orderDetailsContainer = document.getElementById('scan-order-details-container');
+                const orderContentContainer = document.getElementById('order-content');
+                 
+
+                let orderItemsHTML = '';
+                let orderStatusTimelineHTML = '';
+                let statusChoices = [];
+                if (order.delivery_type === 'Delivery') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Prepared', label: 'Prepared' },
+                    { status: 'Shipped', label: 'Shipped' },
+                    { status: 'Delivered', label: 'Delivered' }
+                    ];
+                } else if (order.delivery_type === 'Pickup') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Preparing', label: 'Preparing' },
+                    { status: 'Ready to Take', label: 'Ready to Take' },
+                    { status: 'Received by Customer', label: 'Received' }
+                    ];
+                } else if (order.delivery_type === 'Dining') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Preparing', label: 'Preparing' },
+                    { status: 'Served to Customer', label: 'Served' }
+                    ];
+                }
+                order.items.forEach(item => {
+                    orderItemsHTML += `
+                        <div class="order-details-item">
+                            
+                            <div class="item-image-container">
+                                <img src="${item.item_image}" class="item-image" alt="${item.item_name}">  
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                    <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                </svg>  
+                            </div>
+                            <div class="item-details"> 
+                                <span class="order-details-item-name">${item.item_name}</span>
+                                <span class="order-details-item-description">${item.description}</span>
+                                <span class="order-details-item-quantity">Quantity: ${item.quantity}</span>
+                                
+                            </div>
+                            <span class="order-details-item-price">₹${item.price_at_order_time}</span>
+                        </div>
+                    `;
+                });
+
+                let additionalChargesHTML = '';
+                if (order.additional_charges && order.additional_charges.length > 0) {
+                    order.additional_charges.forEach(charge => {
+                        const formattedChargeType = charge.charge_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                        additionalChargesHTML += `
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">${formattedChargeType} (${charge.value_type === 'fixed' ? 'Fixed' : `${charge.value}%`}):</span>
+                            <span class="price-summary-value">₹${charge.calculated_value}</span>
+                        </div>
+                        `;
+                    });
+                }else {
+                    additionalChargesHTML = `
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Additional Charges:</span>
+                            <span class="price-summary-value">None</span>
+                        </div>
+                    `;
+                }
+
+                orderStatusTimelineHTML = `
+                    <div class="order-status-timeline">
+                `;
+                    const currentStatusIndex = getStatusIndex(order.delivery_type, order.status);
+                    statusChoices.forEach((choice, index) => {
+                    const statusIndex = getStatusIndex(order.delivery_type, choice.status);
+                    const isActive = order.status === choice.status || (order.status === 'Cancelled' && index === 0);
+                    const isCompleted = (order.status !== 'Pending' && order.status !== 'Cancelled' && index < statusChoices.findIndex(c => c.status === order.status)) ||
+                    (order.status === 'Delivered' && choice.status === 'delivered') ||
+                    (order.status === 'Received by Customer' && choice.status === 'delivered') ||
+                    (order.status === 'Served to Customer' && choice.status === 'delivered');
+
+                    const isLineActive = isCompleted && index < statusChoices.length - 1;
+                    const isDisabled = statusIndex < currentStatusIndex;
+
+
+                    orderStatusTimelineHTML += `
+                    <div class="status-point ${isActive ? 'active' : (isCompleted ? 'completed' : '')} ${isDisabled ? 'disabled' : ''}" 
+                    data-status="${choice.label}"
+                    ${isDisabled ? '' : `onclick="updateOrderStatus('${choice.status}','${order.order_id}')"`}
+                    style="${isDisabled ? 'pointer-events: none; cursor: not-allowed;' : ''}"
+                    ></div>
+                    ${index < statusChoices.length - 1 ? `<div class="status-line ${isLineActive ? 'active' : (order.status === 'Cancelled' ? 'cancelled' : '')}"></div>` : ''}
+                    `;
+                    });
+
+                orderStatusTimelineHTML += `
+                    </div>
+                `;
+
+                let refundSectionHTML = '';
+                if (order.status === 'Cancelled') {
+                    refundSectionHTML = `
+                        <div class="refund-section">
+                            <p><span class="refund-status">Refund Completed</span> - ${order.cancel_reason ? order.cancel_reason : 'No reason provided'}</p>
+                        </div>
+                    `;
+                }
+                
+                orderContentContainer.innerHTML = `
+                    <div class="order-info-section">
+                        <div class="order-details-header">
+                            
+                            <div class="order-details-summary-item">
+                            <h4 class="orer-details-orderid" style="color:#3874ff;">${order.order_id}</h4>
+                                <span class="order-details-date">${order.created_at}</span>
+                            </div>
+                            <span class="order-details-name" style="color:#333;font-weight:520;">${order.customer}</span>
+                            <span class="order-details-number" style="color:#333;font-weight:520;">This Order is tracking by: ${order.phone_number}</span>
+                            <span class="order-details-email" style="color:#333;font-weight:520;">${order.email}</span>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Status:</span>
+                                <span class="order-details-status">${order.status}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Delivery Type:</span>
+                                <span class="order-details-delivery-type">${order.delivery_type}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Customer Status:</span>
+                                <span class="order-details-summary-value">${order.customer_status}</span>
+                            </div>   
+                        </div>  
+                    </div>
+
+                    <div class="order-items-section">
+                        <h3>Ordered Items</h3>
+                        ${orderItemsHTML}
+                        ${orderStatusTimelineHTML}
+                    </div>
+
+                    <div class="price-summary-container order-summary-section">
+                        <h3>Order Payment Details</h3>
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Item Total:</span>
+                            <span class="price-summary-value">₹${order.total_item_price}</span>
+                        </div>
+                        ${additionalChargesHTML}
+                        <hr>
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Total:</span>
+                            <span class="price-summary-value total-price">₹${order.total_price}</span>
+                        </div>
+                    </div>
+                    <div class="payment-details-section">
+                        <h3>Payment Mode</h3>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Method:</span>
+                            <span class="order-details-summary-value">${order.payment_method}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Transaction ID:</span>
+                            <span class="order-details-summary-value">${order.transaction_id}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Amount:</span>
+                            <span class="order-details-summary-value">₹${order.payment_amount}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Status:</span>
+                            <span class="order-details-summary-value">${order.payment_status}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Date:</span>
+                            <span class="order-details-summary-value">${order.payment_date}</span>
+                        </div>
+                    </div>
+                    ${refundSectionHTML} 
+                `;
+                processingDiv.style.display='none';
+                document.getElementById('scanOrderDisplayOverlay').style.display = 'flex';
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+        function updateOrderStatus(status,order){
+            fetch('/restaurantupdateorderstatus/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'order_id': order,
+                    'status': status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Updated Successfully', 'success');
+                    closeOrderDetailsOverlay();
+                } else {
+                    showMessage('An error occured', 'warning');
+                    console.error('An error occured:', error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating order:', error);
+                showMessage('An error occured', 'warning');
+            });
+        }
+    </script>
+</body>
+</html>

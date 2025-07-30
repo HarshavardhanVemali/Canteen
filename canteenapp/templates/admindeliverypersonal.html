@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/admindelivery.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  <script src="{% static 'js/admindelivery.js' %}"></script>
+  {% endblock %}
+  
+</head>
+
+<body>
+  {% block delivery_block %}
+  <h6 class="nav-bar-heading">Delivery</h6>
+  <li><a class="nav-link active" href="{% url 'admindeliverypersonal' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+  </svg>Delivery Personnel</a></li>
+  <li><a class="nav-link" href="{% url 'adminassignorder' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#00bcd4" class="bi bi-person-add" viewBox="0 0 16 16">
+    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+    <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+  </svg>Assign Order</a></li>
+  <li><a class="nav-link" href="{% url 'admindeliveryperformance' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00bcd4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart">
+    <line x1="12" y1="20" x2="12" y2="10"></line>
+    <line x1="18" y1="20" x2="18" y2="4"></line>
+    <line x1="6" y1="20" x2="6" y2="16"></line>
+  </svg>Delivery Performance</a></li>
+  <li><a class="nav-link" href="{% url 'admindeliverylocations' %}" >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fb6340" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+      <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+    </svg>Delivery Locations</a></li>
+  {% endblock %}
+  {% block main_content %}
+    <div class="subnav-container">
+        <div class="subnav">
+            <h3>Delivery Personnel</h3>
+            <div class="addbutton">
+              <button id="addpersonnelbtn" onclick="showAddPersonnelForm()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                      <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg> <span>Add Delivery Personnel</span>
+              </button>
+          </div>
+        </div>
+    </div>
+    <div class="overlay-container" id="adddeliverypersonneloverlay">
+      <div class="overlay-content">
+        <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+          <h3></h3>
+          <button class="close-overlay" id="closeSignup" onclick="closeAddPersonnelForm()" style="display: flex; align-items: center; justify-content: space-between;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+          </button>
+        </section>
+        <section>
+          <form method="post" enctype="multipart/form-data" id="addpersonnelform" action="{% url 'adminaddpersonnel' %}">
+            {% csrf_token %} 
+            <div class="form-group">
+              <label for="personnelname">Name</label>
+              <input type="text" name="personnelname" id="personnelname" placeholder="Name" required>
+              <span class="error-message" id="nameError"></span> 
+            </div>
+    
+            <div class="form-group">
+              <label for="personnelphonenumber">Phone</label>
+              <input type="tel" name="personnelphonenumber" id="personnelphonenumber" placeholder="Phone Number" required>
+              <span class="error-message" id="phoneError"></span>
+             </div>
+    
+            <div class="form-group">
+              <label for="personnelemail">Email</label>
+              <input type="email" name="personnelemail" id="personnelemail" placeholder="Email" required>
+              <span class="error-message" id="emailError"></span> 
+            </div>
+    
+            <div class="form-group">
+              <label for="personnelimage">Photo</label>
+              <input type="file" name="personnelimage" id="personnelimage">
+            </div>
+            <div class="addbutton addformbtn">
+              <button type="submit" id="addpersonnel">Add Personnel</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+    <div class="deliveryPersonal">
+      
+    </div>
+  {% endblock %} 
+</body>
+</html>

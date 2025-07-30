@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub</title>
+    <link rel="stylesheet" href="{% static 'css/restaurantappstyles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+</head>
+<body>
+  <div class="main-loading-animation">
+    
+  </div>
+  
+    <header>
+
+        <div class="header-container">
+          <div class="header-content">
+            <div class="header-title">
+              <a href="{% url 'apphome' %}" class="logo-link" title="Food Delivery">
+                  <img src="{% static '/images/foodhublogo.png' %}" alt="logo">
+                </a>
+                <h3>MVGRCE<br><p style="font-size: 8px;margin: 0px;">Captive Hospitality Services</p></h3>
+            </div>
+          </div>
+          <div style="display: flex;gap: 1px;align-items: center;">
+            
+            <a href="/appprofile"> 
+              <h3 class="profile-letter"></h3>
+            </a>
+          </div>
+        </div>
+    </header>
+  <main class="main">  
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item active">
+              <a href="/restaurantapphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                Home
+              </a>
+            </li> 
+            <li class="nav-item">
+              <a href="/appsearch"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-truck" viewBox="0 0 16 16">
+                  <path d="M0 3.5A1.5 1.5 0 0 1 1.5 2h9A1.5 1.5 0 0 1 12 3.5V5h1.02a1.5 1.5 0 0 1 1.17.563l1.481 1.85a1.5 1.5 0 0 1 .329.938V10.5a1.5 1.5 0 0 1-1.5 1.5H14a2 2 0 1 1-4 0H5a2 2 0 1 1-3.998-.085A1.5 1.5 0 0 1 0 10.5zm1.294 7.456A2 2 0 0 1 4.732 11h5.536a2 2 0 0 1 .732-.732V3.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .294.456M12 10a2 2 0 0 1 1.732 1h.768a.5.5 0 0 0 .5-.5V8.35a.5.5 0 0 0-.11-.312l-1.48-1.85A.5.5 0 0 0 13.02 6H12zm-9 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2m9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/>
+                </svg>
+                  Orders
+              </a>
+            </li>
+            <li class="nav-item">
+                <a href="/appprofile"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"></path>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"></path>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"></path>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"></path>
+                        <path d="M12 9h2V8h-2z"></path>
+                      </svg>
+                  Scan
+                </a>
+            </li> 
+            <li class="nav-item">
+                <a href="/appnotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+                    Notifications
+                </a>
+            </li>
+            
+            <li class="nav-item cart-item">
+              <a href="/appcheckout">
+                <span class="cart-icon-container" style="display: flex;align-items: center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                  </svg>
+                  <span class="cart-count"></span>
+                </span>
+                Cart 
+              </a>
+            </li> 
+        </ul>
+    </div>
+    
+  </main>
+</body>
+<script>
+  let overlayOpen = false;
+    document.addEventListener('DOMContentLoaded', () => {
+
+    document.querySelector('header').classList.add('show-header');
+    const profileLetter = document.querySelector('.profile-letter');
+    const fullName = "{{ user.first_name }}";
+    profileLetter.textContent = fullName.split(' ')[0].charAt(0);  
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const refreshIndicator = document.getElementById('refreshIndicator');
+      const loaderIcon = refreshIndicator ? refreshIndicator.querySelector('.loader-icon') : null;
+      let startY = 0;
+      let pullDistance = 0;
+      let isPulling = false;
+      let isRefreshing = false;
+      const refreshThreshold = window.innerHeight * 0.15;
+
+      function startRefresh() {
+          if (isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          isRefreshing = true;
+          refreshIndicator.style.transform = 'translateY(0)';
+          refreshIndicator.style.opacity = 1;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+          loaderIcon.style.transform = 'rotate(360deg)';
+
+          setTimeout(() => {
+              location.reload();
+          }, 400);
+      }
+
+      function lockScroll() {
+          document.body.style.overflow = 'hidden';
+      }
+
+      function unlockScroll() {
+          document.body.style.overflow = '';
+      }
+
+      window.addEventListener('touchstart', (e) => {
+          if (isRefreshing || !refreshIndicator || window.scrollY > 0) return;
+
+          startY = e.touches[0].pageY;
+          isPulling = true;
+          loaderIcon.style.transition = 'none'; 
+      });
+
+      window.addEventListener('touchmove', (e) => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          pullDistance = e.touches[0].pageY - startY;
+
+          if (pullDistance > 0) {
+              lockScroll();
+              e.preventDefault(); 
+              const cappedPullDistance = Math.min(pullDistance, refreshThreshold); 
+
+              const rotationAngle = (cappedPullDistance / refreshThreshold) * 360;
+              loaderIcon.style.transform = `rotate(${rotationAngle}deg)`;
+              refreshIndicator.style.transform = `translateY(${cappedPullDistance / 2}px)`;
+              refreshIndicator.style.opacity = cappedPullDistance / refreshThreshold;
+
+
+              if (cappedPullDistance >= refreshThreshold * 0.5) { 
+                  refreshIndicator.classList.add('pulling');
+              } else {
+                  refreshIndicator.classList.remove('pulling');
+              }
+          } else if (pullDistance < 0) {
+              unlockScroll();
+
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+      });
+      window.addEventListener('touchend', () => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+
+          if (pullDistance > refreshThreshold) {
+              startRefresh();
+          } else {
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+
+          unlockScroll();
+          isPulling = false;
+          pullDistance = 0;
+      });
+
+  }); 
+  
+</script>
+</html>

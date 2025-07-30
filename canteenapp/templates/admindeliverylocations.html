@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/admindelivery.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  {% endblock %}
+  
+</head>
+
+<body>
+    {% block delivery_block %}
+    <h6 class="nav-bar-heading">Delivery</h6>
+    <li><a class="nav-link" href="{% url 'admindeliverypersonal' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+    </svg>Delivery Personnel</a></li>
+    <li><a class="nav-link" href="{% url 'adminassignorder' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#00bcd4" class="bi bi-person-add" viewBox="0 0 16 16">
+      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+      <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+    </svg>Assign Order</a></li>
+    <li><a class="nav-link" href="{% url 'admindeliveryperformance' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00bcd4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart">
+      <line x1="12" y1="20" x2="12" y2="10"></line>
+      <line x1="18" y1="20" x2="18" y2="4"></line>
+      <line x1="6" y1="20" x2="6" y2="16"></line>
+    </svg>Delivery Performance</a></li>
+    <li><a class="nav-link active" href="{% url 'admindeliverylocations' %}" >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fb6340" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+      </svg>Delivery Locations</a></li>
+    {% endblock %}
+  {% block main_content %}
+    <div class="subnav-container">
+        <div class="subnav">
+            <h3>Delivery Locations</h3>
+            <div class="addbutton">
+              <button id="addpersonnelbtn" onclick="showAddLocationForm()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                      <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg> <span>Add Delivery Location</span>
+              </button>
+          </div>
+        </div>
+    </div>
+    <div class="overlay-container" id="addlocationoverlay">
+      <div class="overlay-content">
+        <section style="display: flex; align-items: center; justify-content: space-between;" class="overlay-container-title">
+          <h3>Add Location</h3>
+          <button class="close-overlay" id="closeSignup" onclick="closeAddLocationForm()" style="display: flex; align-items: center; justify-content: space-between;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+          </button>
+        </section>
+        <section>
+          <form id="addlocationform" method="post" enctype="multipart/form-data">
+            {% csrf_token %} 
+            <div class="form-group">
+              <label for="locationname">Name</label>
+              <input type="text" name="locationname" id="locationname" placeholder="Name" required>
+              <span class="error-message" id="nameError"></span> 
+            </div>    
+            <div class="form-group">
+              <label for="locationimage">Location Image</label>
+              <input type="file" name="locationimage" id="locationimage">
+            </div>
+            <div class="displayimage">
+                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 200px; max-height: 200px; display: none;"> 
+            </div>
+            <div class="addbutton addformbtn">
+              <button type="submit" id="addlocation">Add Location</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+    <div class="deliverylocation">
+      
+    </div>
+    <script>
+        function showAddLocationForm() {
+            document.getElementById('addlocationoverlay').style.display = 'flex';
+            const imageInput = document.getElementById('locationimage');
+            const imagePreview = document.getElementById('imagePreview');
+
+            imageInput.addEventListener('change', function(event) {
+                if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                }
+                reader.readAsDataURL(this.files[0]);
+                } else {
+                imagePreview.src = '#';
+                imagePreview.style.display = 'none';
+                }
+            });
+        }
+        function closeAddLocationForm() {
+            document.getElementById('addlocationoverlay').style.display = 'none';
+        }
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('addlocationform').addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                document.getElementById('nameError').textContent = '';
+                const name = document.getElementById('locationname').value;
+                let isValid = true;
+            
+                if (!/^[a-zA-Z\s.]+$/.test(name)) {
+                    document.getElementById('nameError').textContent = 'Invalid Name.';
+                    isValid = false;
+                }
+            
+                if (isValid) {
+                    const form = event.target;
+                    const formData = new FormData(form);
+            
+                    fetch('/adminaddlocation/', { 
+                        method: form.method,
+                        headers: {
+                        'X-CSRFToken': getCookie('csrftoken') 
+                        },
+                        body: formData 
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                        showMessage('Added Successfully','warning');
+                        closeAddLocationForm();
+                        getLocations();
+                        const imagePreview = document.getElementById('imagePreview');
+                        imagePreview.src = '#';
+                        imagePreview.style.display = 'none';
+                        form.reset(); 
+                        } else {
+                        showMessage('Failed to add location','error');
+                        getLocations();
+                        const imagePreview = document.getElementById('imagePreview');
+                        imagePreview.src = '#';
+                        imagePreview.style.display = 'none';
+                        closeAddLocationForm();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error adding location:', error);
+                        showMessage('An error occured','warning');
+                        closeSubMenuForm();
+                    });
+                }
+            });
+        });
+        function getLocations() {
+            fetch('/admingetlocations/', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const LocationsContainer = document.querySelector('.deliverylocation');
+                    LocationsContainer.innerHTML = '';
+
+                    data.data.forEach(location => {
+                        const locationDiv = document.createElement('div');
+                        locationDiv.classList.add('location-items');
+
+                        locationDiv.innerHTML = `
+                        <div class="location-item">
+                            <div class="image-container">
+                            ${location.location_image
+                                ? `<img src="${location.location_image}" alt="Menu Image">`
+                                : `<img src="static/images/failed_image_2.jpg" alt="Default Image">`
+                            }
+                            </div>
+                            <h4>${location.location_name}</h4>
+                            <div class="location-actions">
+                            <button onclick="deleteLocation('${location.location_id}')" class="deletebtn">
+                                <svg style="margin-right: 3px;" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" class="h-5 w-5 shrink-0">
+                                    <path fill="currentColor" fill-rule="evenodd" d="M10.556 4a1 1 0 0 0-.97.751l-.292 1.14h5.421l-.293-1.14A1 1 0 0 0 13.453 4zm6.224 1.892-.421-1.639A3 3 0 0 0 13.453 2h-2.897A3 3 0 0 0 7.65 4.253l-.421 1.639H4a1 1 0 1 0 0 2h.1l1.215 11.425A3 3 0 0 0 8.3 22H15.7a3 3 0 0 0 2.984-2.683l1.214-11.425H20a1 1 0 1 0 0-2zm1.108 2H6.112l1.192 11.214A1 1 0 0 0 8.3 20H15.7a1 1 0 0 0 .995-.894zM10 10a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1" clip-rule="evenodd"></path>
+                                </svg> Delete
+                            </button>
+                            </div>
+                        </div>
+                        `;
+                        LocationsContainer.appendChild(locationDiv);
+                    });
+                } else {
+                    console.error('Error fetching locations:', data.error);
+                    showMessage('An error occured','warning');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching locations:', error);
+                showMessage('An error occured','warning');
+            });
+        }
+        function deleteLocation(locationId){
+            document.getElementById('delete-overlay').style.display = 'flex'; 
+            const confirmDeleteButton = document.getElementById('confirmDelete');
+            confirmDeleteButton.onclick = function() { 
+                fetch('/admindeletelocation/',{
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body:JSON.stringify({location_id:locationId})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('Deleted Successfully','delete');
+                        getLocations();
+                        document.getElementById('delete-overlay').style.display = 'none';
+                    } else {
+                        console.error('Error deleting location:', data.error);
+                        showMessage('Failed to delete','error');
+                        document.getElementById('delete-overlay').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting location :', error);
+                    showMessage('An error occured','warning');
+                });
+            };
+            document.getElementById('cancelDelete').onclick = function() { 
+                document.getElementById('delete-overlay').style.display = 'none';
+            };  
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            getLocations();
+        });
+    </script>
+  {% endblock %} 
+</body>
+</html>

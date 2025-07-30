@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub - Order</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/master/qrcode.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/messageoverlay.css' %}">
+    <script src="{% static 'js/messageoverlay.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/deliveryappstyles.css' %}">
+</head>
+
+<body>
+  <div class="main-loading-animation">
+    
+  </div>
+    <div id="message-overlay">
+
+    </div>
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item">
+              <a href="/deliveryapphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                  Home
+              </a>
+            </li> 
+            <li class="nav-item search-item">
+              <a href="/deliveryappneworders"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+                </svg>
+                  Delieverd
+              </a>
+            </li>
+            <li class="nav-item active" id="scan-nav-item">
+                <a href="/deliveryappscan"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"></path>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"></path>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"></path>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"></path>
+                        <path d="M12 9h2V8h-2z"></path>
+                      </svg>
+                  Scan
+                </a>
+            </li> 
+            <li class="nav-item">
+                <a href="/deliveryappnotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+                    Notifications
+                </a>
+            </li>
+            <li class="nav-item ">
+                <a href="/deliveryappprofile">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                      </svg>
+                Profile
+                </a>
+            </li>      
+        </ul>
+    </div>
+    <div class="scan-overlay-container" id="scanOverlayContainer" style="display: none;">
+        <div class="scan-overlay" id="scanOverlay">
+          <video id="qr-video" autoplay muted></video>
+          <div class="scanning-line"></div>
+          
+        </div>
+    </div>
+    <div class="scan-order-display-overlay" id="scanOrderDisplayOverlay">
+        <div class="order-details-overlay-content" id="scan-order-details-container">
+            <div style="display: flex;justify-content: space-between;margin-right: 10px;margin-bottom: 10px;">
+                <div>
+
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#e74c3c" class="bi bi-x-lg" viewBox="0 0 16 16" style="cursor: pointer;" onclick="closeOrderDetailsOverlay()">
+                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                </svg>
+            </div>
+            <div id="order-content">
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+        showScanOverlay();
+  }); 
+
+  document.addEventListener('DOMContentLoaded', () => {
+      const refreshIndicator = document.getElementById('refreshIndicator');
+      const loaderIcon = refreshIndicator ? refreshIndicator.querySelector('.loader-icon') : null;
+      let startY = 0;
+      let pullDistance = 0;
+      let isPulling = false;
+      let isRefreshing = false;
+      const refreshThreshold = window.innerHeight * 0.15;
+
+      function startRefresh() {
+          if (isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          isRefreshing = true;
+          refreshIndicator.style.transform = 'translateY(0)';
+          refreshIndicator.style.opacity = 1;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+          loaderIcon.style.transform = 'rotate(360deg)';
+
+          setTimeout(() => {
+              location.reload();
+          }, 400);
+      }
+
+      function lockScroll() {
+          document.body.style.overflow = 'hidden';
+      }
+
+      function unlockScroll() {
+          document.body.style.overflow = '';
+      }
+
+      window.addEventListener('touchstart', (e) => {
+          if (isRefreshing || !refreshIndicator || window.scrollY > 0) return;
+
+          startY = e.touches[0].pageY;
+          isPulling = true;
+          loaderIcon.style.transition = 'none'; 
+      });
+
+      window.addEventListener('touchmove', (e) => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+
+          pullDistance = e.touches[0].pageY - startY;
+
+          if (pullDistance > 0) {
+              lockScroll();
+              e.preventDefault(); 
+              const cappedPullDistance = Math.min(pullDistance, refreshThreshold); 
+
+              const rotationAngle = (cappedPullDistance / refreshThreshold) * 360;
+              loaderIcon.style.transform = `rotate(${rotationAngle}deg)`;
+              refreshIndicator.style.transform = `translateY(${cappedPullDistance / 2}px)`;
+              refreshIndicator.style.opacity = cappedPullDistance / refreshThreshold;
+
+
+              if (cappedPullDistance >= refreshThreshold * 0.5) { 
+                  refreshIndicator.classList.add('pulling');
+              } else {
+                  refreshIndicator.classList.remove('pulling');
+              }
+          } else if (pullDistance < 0) {
+              unlockScroll();
+
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+      });
+      window.addEventListener('touchend', () => {
+          if (!isPulling || isRefreshing || !refreshIndicator || !loaderIcon) return;
+          loaderIcon.style.transition = 'transform 0.3s ease'; 
+
+          if (pullDistance > refreshThreshold) {
+              startRefresh();
+          } else {
+              loaderIcon.style.transform = 'rotate(0deg)';
+              refreshIndicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+              refreshIndicator.style.transform = 'translateY(-100%)';
+              refreshIndicator.style.opacity = 0;
+              refreshIndicator.classList.remove('pulling'); 
+          }
+
+          unlockScroll();
+          isPulling = false;
+          pullDistance = 0;
+      });
+
+  }); 
+        const video = document.getElementById('qr-video');
+        let stream;
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const scanStatusDiv = document.createElement('div');
+        scanStatusDiv.style.position='absolute'
+        scanStatusDiv.style.top='50px'
+        scanStatusDiv.style.color='white'
+        scanStatusDiv.style.fontSize='20px'
+        scanStatusDiv.style.left = "50%";
+        scanStatusDiv.style.transform = "translateX(-50%)";
+        const qrOverlay = document.getElementById('scanOverlay');
+        qrOverlay.appendChild(scanStatusDiv)
+        let scanning = true;
+        let scanningTimeout;
+        const scanInterval = 200;
+        const scanTimeout = 5000;
+        let order_id;
+        function initializeCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(localStream => {
+                stream = localStream;
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+                scanQRCode(); 
+            })
+            .catch(err => {
+                scanStatusDiv.innerHTML = 'Error accessing camera: ' + err.message;
+            });
+        }
+         function scanQRCode() {
+            if (!scanning) return;
+
+            clearTimeout(scanningTimeout);
+
+            scanningTimeout = setTimeout(() => {
+                scanStatusDiv.innerHTML = 'No QR code detected. Please try again.';
+            }, scanTimeout);
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    clearTimeout(scanningTimeout);
+                    scanning = false;
+                     qrOverlay.style.display = 'block';
+                    sendDataToDjango(code.data);
+                }
+            } 
+            if (scanning) { 
+                setTimeout(scanQRCode, scanInterval); 
+            }
+        }
+        function sendDataToDjango(data){
+            const dataArray = data.split('\n');
+            const code = dataArray[0].split(': ')[1].trim()
+            const decryptedId = decryptOrderId(code);
+            if (decryptedId) {
+                getOrderedDetails(decryptedId);
+            }else{
+                 scanStatusDiv.textContent = 'Invalid QR Code'
+            }
+            
+        }
+        function decryptOrderId(encrypted_order_id) {
+            const part_length = Math.floor(encrypted_order_id.length / 4);
+            if (encrypted_order_id.length % 4 !== 0 || part_length <= 0) {
+                return null; 
+            }
+            let parts = [];
+            for (let i = 0; i < 4; i++) {
+                parts.push(encrypted_order_id.substring(i * part_length, (i + 1) * part_length));
+            }
+             [parts[0], parts[2]] = [parts[2], parts[0]];
+             const swapped_order_id = parts.join("");
+
+
+            const new_part_length = Math.floor(swapped_order_id.length / 5);
+
+            if (swapped_order_id.length % 5 !== 0 || new_part_length <=0) {
+                return null
+            }
+
+            let new_parts = [];
+            for (let i = 0; i < 5; i++) {
+                new_parts.push(swapped_order_id.substring(i * new_part_length, (i + 1) * new_part_length));
+            }
+            [new_parts[0], new_parts[2]] = [new_parts[2], new_parts[0]];
+            [new_parts[1], new_parts[4]] = [new_parts[4], new_parts[1]];
+             return new_parts.join("");
+        }
+        function showScanOverlay(){
+            initializeCamera(); 
+             const overlayContainer = document.getElementById('scanOverlayContainer')
+            overlayContainer.style.display = 'flex';
+        }
+         function hideScanOverlay() {
+            const overlayContainer = document.getElementById('scanOverlayContainer');
+             overlayContainer.style.display = 'none';
+            if (video && video.srcObject) {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+                 scanning = true;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function(){
+             const scanNavItem = document.querySelector('.nav-item.active');
+              if(scanNavItem.querySelector('a').getAttribute('href') !== '/deliveryappscan'){
+                hideScanOverlay();
+              }
+            });
+            const navItemsContainer = document.querySelector('.nav-items-container');
+            hideAppLoadingAnimation();
+    
+            navItemsContainer.addEventListener('click', function(event) {
+            if (event.target.closest('a')) {
+                showAppLoadingAnimation();
+            }
+            });
+         function getOrderedDetails(orderId) {
+            fetch(`/deliverygetorderdetails/${orderId}/`, {
+                method: 'GET',
+                headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.orders.length>0){
+                    populateOrderDetails(data.orders[0]);
+                }
+                else{
+                    showMessage('Invalid Order Id', 'error');
+                    hideScanOverlay();
+                }
+            })
+            .catch(error => {
+            console.error('Error fetching order details:', error);
+            });
+        }
+        function closeOrderDetailsOverlay(){
+            showScanOverlay();
+            document.getElementById('scanOrderDisplayOverlay').style.display = 'none';
+        }
+        function getStatusIndex(deliveryType, status) {
+            if (deliveryType === 'Delivery') {
+                return ['pending', 'confirmed', 'prepared', 'shipped', 'delivered', 'cancelled'].indexOf(status);
+            } else if (deliveryType === 'Pickup') {
+                return ['pending', 'confirmed', 'preparing', 'ready_to_take', 'delivered', 'cancelled'].indexOf(status);
+            } else if (deliveryType === 'Dining') {
+                return ['pending', 'confirmed', 'preparing', 'delivered', 'cancelled'].indexOf(status);
+            }
+            return -1;
+        }
+        function populateOrderDetails(order) {
+                hideScanOverlay();
+                const orderDetailsContainer = document.getElementById('scan-order-details-container');
+                const orderContentContainer = document.getElementById('order-content');
+                 
+
+                let orderItemsHTML = '';
+                let orderStatusTimelineHTML = '';
+                let statusChoices = [];
+                if (order.delivery_type === 'Delivery') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Prepared', label: 'Prepared' },
+                    { status: 'Shipped', label: 'Shipped' },
+                    { status: 'Delivered', label: 'Delivered' }
+                    ];
+                } else if (order.delivery_type === 'Pickup') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Preparing', label: 'Preparing' },
+                    { status: 'Ready to Take', label: 'Ready to Take' },
+                    { status: 'Received by Customer', label: 'Received' }
+                    ];
+                } else if (order.delivery_type === 'Dining') {
+                    statusChoices = [
+                    { status: 'Pending', label: 'Ordered' },
+                    { status: 'Confirmed', label: 'Confirmed' },
+                    { status: 'Preparing', label: 'Preparing' },
+                    { status: 'Served to Customer', label: 'Served' }
+                    ];
+                }
+                order.items.forEach(item => {
+                    orderItemsHTML += `
+                        <div class="order-details-item">
+                            
+                            <div class="item-image-container">
+                                <img src="${item.item_image}" class="item-image" alt="${item.item_name}">  
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${item.type === 'NON VEG' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                    <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                </svg>  
+                            </div>
+                            <div class="item-details"> 
+                                <span class="order-details-item-name">${item.item_name}</span>
+                                <span class="order-details-item-quantity">Quantity: ${item.quantity}</span>
+                                
+                            </div>
+                            <span class="order-details-item-price">₹${item.price_at_order_time}</span>
+                        </div>
+                    `;
+                });
+
+                let additionalChargesHTML = '';
+                if (order.additional_charges && order.additional_charges.length > 0) {
+                    order.additional_charges.forEach(charge => {
+                        const formattedChargeType = charge.charge_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                        additionalChargesHTML += `
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">${formattedChargeType} (${charge.value_type === 'fixed' ? 'Fixed' : `${charge.value}%`}):</span>
+                            <span class="price-summary-value">₹${charge.calculated_value}</span>
+                        </div>
+                        `;
+                    });
+                }else {
+                    additionalChargesHTML = `
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Additional Charges:</span>
+                            <span class="price-summary-value">None</span>
+                        </div>
+                    `;
+                }
+
+                orderStatusTimelineHTML = `
+                    <div class="order-status-timeline">
+                `;
+                    const currentStatusIndex = getStatusIndex(order.delivery_type, order.status);
+                    statusChoices.forEach((choice, index) => {
+                    const statusIndex = getStatusIndex(order.delivery_type, choice.status);
+                    const isActive = order.status === choice.status || (order.status === 'Cancelled' && index === 0);
+                    const isCompleted = (order.status !== 'Pending' && order.status !== 'Cancelled' && index < statusChoices.findIndex(c => c.status === order.status)) ||
+                    (order.status === 'Delivered' && choice.status === 'delivered') ||
+                    (order.status === 'Received by Customer' && choice.status === 'delivered') ||
+                    (order.status === 'Served to Customer' && choice.status === 'delivered');
+
+                    const isLineActive = isCompleted && index < statusChoices.length - 1;
+                    const isDisabled = statusIndex < currentStatusIndex;
+
+
+                    orderStatusTimelineHTML += `
+                    <div class="status-point ${isActive ? 'active' : (isCompleted ? 'completed' : '')} ${isDisabled ? 'disabled' : ''}" 
+                    data-status="${choice.label}"
+                    ${isDisabled ? '' : `onclick="updateOrderStatus('${choice.status}','${order.order_id}')"`}
+                    style="${isDisabled ? 'pointer-events: none; cursor: not-allowed;' : ''}"
+                    ></div>
+                    ${index < statusChoices.length - 1 ? `<div class="status-line ${isLineActive ? 'active' : (order.status === 'Cancelled' ? 'cancelled' : '')}"></div>` : ''}
+                    `;
+                    });
+
+                orderStatusTimelineHTML += `
+                    </div>
+                `;
+
+                let refundSectionHTML = '';
+                if (order.status === 'Cancelled') {
+                    refundSectionHTML = `
+                        <div class="refund-section">
+                            <p><span class="refund-status">Refund Completed</span> - ${order.cancel_reason ? order.cancel_reason : 'No reason provided'}</p>
+                        </div>
+                    `;
+                }
+                
+                orderContentContainer.innerHTML = `
+                    <div class="order-info-section">
+                        <div class="order-details-header">
+                            
+                            <div class="order-details-summary-item">
+                            <h4 class="orer-details-orderid" style="color:#3874ff;">${order.order_id}</h4>
+                                <span class="order-details-date">${order.created_at}</span>
+                            </div>
+                            <span class="order-details-name" style="color:#333;font-weight:520;">${order.customer}</span>
+                            <span class="order-details-number" style="color:#333;font-weight:520;">This Order is tracking by: ${order.phone_number}</span>
+                            <span class="order-details-email" style="color:#333;font-weight:520;">${order.email}</span>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Status:</span>
+                                <span class="order-details-status">${order.status}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Delivery Type:</span>
+                                <span class="order-details-delivery-type">${order.delivery_type}</span>
+                            </div>
+                            <div class="order-details-summary-item">
+                                <span class="order-details-summary-label">Customer Status:</span>
+                                <span class="order-details-summary-value">${order.customer_status}</span>
+                            </div>   
+                        </div>  
+                    </div>
+
+                    <div class="order-items-section">
+                        <h3>Ordered Items</h3>
+                        ${orderItemsHTML}
+                        ${orderStatusTimelineHTML}
+                    </div>
+
+                    <div class="price-summary-container order-summary-section">
+                        <h3>Order Payment Details</h3>
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Item Total:</span>
+                            <span class="price-summary-value">₹${order.total_item_price}</span>
+                        </div>
+                        ${additionalChargesHTML}
+                        <hr>
+                        <div class="price-summary-item">
+                            <span class="price-summary-label">Total:</span>
+                            <span class="price-summary-value total-price">₹${order.total_price}</span>
+                        </div>
+                    </div>
+                    <div class="payment-details-section">
+                        <h3>Payment Mode</h3>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Method:</span>
+                            <span class="order-details-summary-value">${order.payment_method}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Transaction ID:</span>
+                            <span class="order-details-summary-value">${order.transaction_id}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Amount:</span>
+                            <span class="order-details-summary-value">₹${order.payment_amount}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Status:</span>
+                            <span class="order-details-summary-value">${order.payment_status}</span>
+                        </div>
+                        <div class="order-details-summary-item">
+                            <span class="order-details-summary-label">Payment Date:</span>
+                            <span class="order-details-summary-value">${order.payment_date}</span>
+                        </div>
+                    </div>
+                    ${refundSectionHTML} 
+                `;
+                document.getElementById('scanOrderDisplayOverlay').style.display = 'flex';
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+        function updateOrderStatus(status,order){
+            fetch('/deliveryupdatedeliverystatus/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'order_id': order,
+                    'status': status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Updated Successfully', 'success');
+                    closeOrderDetailsOverlay();
+                } else {
+                    showMessage('An error occured', 'warning');
+                    console.error('An error occured:', error);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating order:', error);
+                showMessage('An error occured', 'warning');
+            });
+        }
+</script>
+</html>

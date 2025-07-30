@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+{% extends 'admintemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Admin Dashboard{% endblock %}</title> 
+  {% block link_section %}
+    <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+    <link rel="stylesheet" href="{% static '/css/admindashboard.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% endblock %}
+</head>
+<body>
+  {% block dashboard_block %}
+  <li><a class="nav-link active" href="{% url 'admindashboard' %}" ><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#5e72e4" class="bi bi-speedometer" viewBox="0 0 16 16">
+      <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2M3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707M2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8m9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5m.754-4.246a.39.39 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.39.39 0 0 0-.029-.518z"/>
+      <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.95 11.95 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0"/>
+    </svg>Dashboard</a></li>
+  {% endblock %}
+  {% block main_content %}
+    <div class="dashboard-widgets">
+      <h3>Order Overview</h3>
+      <div class="tablelist quickstatslist" style="border: 1px solid rgba(203, 208, 221, 0.54);">
+        
+        <div class="table-container" id="quickstatstable-container">
+            <table id="quickstatstable" class="tables">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #800080;background-color: #f5e1f5;">
+                            <span>All Orders</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>
+                              </svg>
+                         </th>
+                        <th style="border: 1px solid #007bff;background-color: #cce5ff;">
+                           <span>New Orders</span> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                          </svg>
+                        </th>
+                        <th style="border: 1px solid #28a745;  background-color: #d4edda;">
+                            
+                                <span>
+                                    Delivered Orders
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                  </svg>
+                            
+                        </th>  
+                        <th style="border: 1px solid #A9A9A9; background-color: #e9e9e9; ">
+                            <span>Cancelled Orders</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                            </svg>
+                        </th> 
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+      </div>  
+        <div class="topsellingitems">
+          <h3>Top Selling Items</h3>
+          <div id="topSellingItemsContainer">
+            <div class="top-item" id="topItem1">
+              </div>
+            <div class="top-item" id="topItem2">
+              </div>
+            <div class="top-item" id="topItem3">
+              </div>
+            </div>
+        </div>
+        <div class="salesoverview">
+          <h3>Sales Overview</h3>
+          <div class="comparisoncharts" style="display: flex;justify-content: space-around;">
+            <h4>Orders</h4>
+            <h4>Revenue Generated</h4>
+          </div>
+          <div class="comparisoncharts">
+            <div class="dashboard-chart">
+              <canvas id="ordersChart"></canvas>
+            </div>
+            <div class="dashboard-chart">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+          <div class="comparisoncharts">
+            <div class="dashboard-chart">
+              <canvas id="ordersChartWeek"></canvas>
+            </div>
+            <div class="dashboard-chart">
+              <canvas id="revenueChartWeek"></canvas>
+            </div>
+          </div>
+          <div class="comparisoncharts">
+            <div class="dashboard-chart">
+              <canvas id="ordersChartMonth"></canvas>
+            </div>
+            <div class="dashboard-chart">
+              <canvas id="revenueChartMonth"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="orderbreakdown">
+          <h3>Order Breakdown</h3>
+          <div class="comparisoncharts">
+            <div class="dashboard-chart">
+              <canvas id="orderBreakdownChart"></canvas>
+            </div>
+            <div class="dashboard-chart">
+              <canvas id="orderBreakdownChartWeek"></canvas>
+            </div>
+          </div>
+          <div class="comparisoncharts">
+            <div class="dashboard-chart">
+              <canvas id="orderBreakdownChartMonth"></canvas>
+            </div>
+            <div class="dashboard-chart">
+              <div class="order-breakdown-table">
+                <h4>Order Breakdown by Unique Users</h4>
+                <table id="orderBreakdownTable">
+                  <thead>
+                    <tr>
+                      <th>Delivery Type</th>
+                      <th>Past 7 Days (Users)</th>
+                      <th>Past 5 Weeks (Users)</th>
+                      <th>Past 12 Months (Users)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+          </div>
+          
+        </div>
+    </div> 
+    <script>
+     function getTopSellingItems() {
+        fetch('/admin_top_selling_items/', {
+          method: "GET",
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const topItemsContainer = document.getElementById('topSellingItemsContainer');
+                topItemsContainer.innerHTML = '';
+                if(data.data.length>0){
+                    data.data.forEach((item, index) => { 
+                        const itemDiv = document.createElement('div');
+                        itemDiv.classList.add('top-item');
+                        itemDiv.id = `topItem${index + 1}`; 
+
+                        if (item.item_image) {
+                        const imageElement = document.createElement('img');
+                        imageElement.src = item.item_image;
+                        imageElement.alt = item.item_name;
+                        imageElement.classList.add('top-item-image'); 
+                        itemDiv.appendChild(imageElement);
+                        } else {
+                        }
+
+                        const itemName = document.createElement('h4');
+                        itemName.textContent = item.item_name;
+                        itemName.classList.add('top-item-name'); 
+                        itemDiv.appendChild(itemName);
+
+                        const quantitySpan = document.createElement('span');
+                        quantitySpan.textContent = `Quantity Sold: ${item.total_quantity}`;
+                        quantitySpan.classList.add('top-item-quantity'); 
+                        itemDiv.appendChild(quantitySpan);
+
+                        const revenueSpan = document.createElement('span');
+                        revenueSpan.textContent = `Revenue Generated: Rs. ${item.total_revenue}`;
+                        revenueSpan.classList.add('top-item-revenue');
+                        itemDiv.appendChild(revenueSpan);
+
+                        topItemsContainer.appendChild(itemDiv);
+                    });
+                }
+                else{
+                topItemsContainer.innerHTML=`<p>No Itmes found right this time.</p>`;
+                }
+            } else {
+                console.error("Error fetching top selling items.");
+            }
+        })
+        .catch(error => {
+          console.error("Error fetching top selling items:", error);
+        });
+      }
+      function salesreports(){
+        fetch('/admin_sales_overview/',{
+          method: "GET",
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const ordersChartCanvas = document.getElementById('ordersChart');
+            const ordersChart = new Chart(ordersChartCanvas, {
+              type: 'bar',
+              data: data.context.orders_chart_data,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+  
+            const revenueChartCanvas = document.getElementById('revenueChart');
+            const revenueChart = new Chart(revenueChartCanvas, {
+              type: 'line',
+              data: data.context.revenue_chart_data,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+  
+            const ordersChartCanvasWeek = document.getElementById('ordersChartWeek');
+            const ordersChartWeek = new Chart(ordersChartCanvasWeek, {
+              type: 'bar',
+              data: data.context.orders_chart_data_week,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+  
+            const revenueChartCanvasWeek = document.getElementById('revenueChartWeek');
+            const revenueChartWeek = new Chart(revenueChartCanvasWeek, {
+              type: 'line',
+              data: data.context.revenue_chart_data_week,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+            const ordersChartCanvasMonth = document.getElementById('ordersChartMonth');
+            const ordersChartMonth = new Chart(ordersChartCanvasMonth, {
+              type: 'bar',
+              data: data.context.orders_chart_data_month,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+            const revenueChartCanvasMonth = document.getElementById('revenueChartMonth');
+            const revenueChartMonth = new Chart(revenueChartCanvasMonth, {
+              type: 'line',
+              data: data.context.revenue_chart_data_month,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+              }
+            });
+          } else {
+            console.error("Error fetching data.");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
+      }
+      function orderBreakDownReports(){
+        fetch('/admin_order_breakdown/',{
+          method: "GET",
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const orderBreakdownChartCanvas = document.getElementById('orderBreakdownChart');
+            const orderBreakdownChart = new Chart(orderBreakdownChartCanvas, {
+              type: 'bar',
+              data: data.context.order_breakdown_chart_data,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      font: {
+                        size: 14
+                      }
+                    }
+                  }
+                },
+              }
+            });
+  
+            const orderBreakdownChartCanvasWeek = document.getElementById('orderBreakdownChartWeek');
+            const orderBreakdownChartWeek = new Chart(orderBreakdownChartCanvasWeek, {
+              type: 'bar',
+              data: data.context.order_breakdown_chart_data_week,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      font: {
+                        size: 14
+                      }
+                    }
+                  }
+                },
+              }
+            });
+            const orderBreakdownChartCanvasMonth = document.getElementById('orderBreakdownChartMonth');
+            const orderBreakdownChartMonth = new Chart(orderBreakdownChartCanvasMonth, {
+              type: 'bar',
+              data: data.context.order_breakdown_chart_data_month,
+              options: {
+                scales: {
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  },
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      display: false 
+                    },
+                    ticks: {
+                      font: {
+                        size: 8
+                      }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: {
+                    position: 'top',
+                    labels: {
+                      font: {
+                        size: 14
+                      }
+                    }
+                  }
+                },
+              }
+            });
+
+            const tableBody = document.getElementById('orderBreakdownTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; 
+            for (let i = 0; i < data.context.seven_days_breakdown.length; i++) {
+              const row = tableBody.insertRow();
+              const deliveryTypeCell = row.insertCell();
+              const sevenDaysCell = row.insertCell();
+              const fiveWeeksCell = row.insertCell();
+              const twelveMonthsCell = row.insertCell();
+
+              deliveryTypeCell.textContent = data.context.seven_days_breakdown[i].delivery_type;
+              sevenDaysCell.textContent = data.context.seven_days_breakdown[i].unique_users;
+              fiveWeeksCell.textContent = data.context.five_weeks_breakdown[i].unique_users;
+              twelveMonthsCell.textContent = data.context.twelve_months_breakdown[i].unique_users;
+            }
+          } else {
+            console.error("Error fetching data.");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
+      }
+      function populateQuickStatsTable() {
+        fetch('/admin_order_counts/', {
+          method: "GET",
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const tableBody = document.querySelector('#quickstatstable tbody');
+            tableBody.innerHTML = '';
+
+            const row = tableBody.insertRow();
+            const allOrdersCell = row.insertCell();
+            const newOrdersCell = row.insertCell();
+            const deliveredOrdersCell = row.insertCell();
+            const cancelledOrdersCell = row.insertCell();
+
+            allOrdersCell.textContent = data.context.all_orders;
+            newOrdersCell.textContent = data.context.new_orders;
+            deliveredOrdersCell.textContent = data.context.delivered_orders;
+            cancelledOrdersCell.textContent = data.context.cancelled_orders;
+
+          } else {
+            console.error("Error fetching order counts.");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching order counts:", error);
+        });
+      }
+      document.addEventListener('DOMContentLoaded', () => {
+        salesreports();
+        getTopSellingItems();
+        orderBreakDownReports();
+        populateQuickStatsTable();
+      });
+    </script>
+  {% endblock %} 
+
+  
+</body>
+</html>

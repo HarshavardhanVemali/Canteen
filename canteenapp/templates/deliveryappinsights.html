@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <title>Food Hub - Order</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <script src="https://kit.fontawesome.com/daf4636196.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+    <script src="{% static 'js/messageoverlay.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/messageoverlay.css' %}">
+    <link rel="stylesheet" href="{% static 'css/deliveryappstyles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<style>
+  .delivery-performance-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 10px;
+    max-width: 90%; 
+    margin-bottom: 80px;
+    margin-top: 70px;
+}
+
+.chart-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 30px 10px;
+    background-color: #ffffff; 
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);  
+    flex-grow: 1;
+}
+
+.chart-container canvas {
+    width: 100%;
+    height: auto;
+}
+.header-container {
+    background-color: white;
+    padding: 5px 20px;
+    box-shadow: none;
+    border-bottom: 0.5px solid rgb(207, 214, 246);
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    position: fixed
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header-title{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 530;
+    color: #202127;
+}
+</style>
+<body>
+  <div class="main-loading-animation">
+    
+  </div> 
+  <header class="header-container" style="overflow: hidden;">
+        <div class="header-content">
+            
+            <div class="header-title"> 
+                <a href="{%  url 'deliveryapphome' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                    </svg>
+                </a>
+                <p>Delivery Performance</p>
+            </div>
+        </div>
+    </header> 
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item ">
+              <a href="/deliveryapphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                  <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                  Home
+              </a>
+            </li> 
+            <li class="nav-item">
+              <a href="/deliveryappdelivered"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#28a745" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+                </svg>
+                  Delieverd
+              </a>
+            </li>
+            <li class="nav-item">
+                <a href="/deliveryappscan"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5M.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5M4 4h1v1H4z"></path>
+                        <path d="M7 2H2v5h5zM3 3h3v3H3zm2 8H4v1h1z"></path>
+                        <path d="M7 9H2v5h5zm-4 1h3v3H3zm8-6h1v1h-1z"></path>
+                        <path d="M9 2h5v5H9zm1 1v3h3V3zM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8zm2 2H9V9h1zm4 2h-1v1h-2v1h3zm-4 2v-1H8v1z"></path>
+                        <path d="M12 9h2V8h-2z"></path>
+                      </svg>
+                  Scan
+                </a>
+            </li> 
+            <li class="nav-item">
+                <a href="/deliveryappnotifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                </svg>
+                    Notifications
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a href="/deliveryappinsights">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+                      </svg>
+                Ingsights
+                </a>
+            </li>    
+        </ul>
+    </div>
+    <div class="delivery-performance-charts">
+        
+        <div class="chart-container" style="width: 100%; height: 300px;">
+            Day Wise
+            <canvas id="deliveryPerformanceChartLast7Days"></canvas>
+        </div>
+        <div class="chart-container" style="width: 100%; height: 300px;">
+            Week Wise
+            <canvas id="deliveryPerformanceChartLast5Weeks"></canvas>
+        </div>
+        <div class="chart-container" style="width: 100%; height: 300px;">
+            Month Wise
+            <canvas id="deliveryPerformanceChartLast12Months"></canvas>
+        </div>
+    </div>
+</body>
+<script>
+    function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                    }
+                }
+                }
+                return cookieValue;
+            }
+            let deliveryPerformanceChartLast7Days;
+            let deliveryPerformanceChartLast5Weeks;
+            let deliveryPerformanceChartLast12Months;
+            document.addEventListener('DOMContentLoaded', function() {
+                DeliveryPersonPerformance();
+            });
+            function DeliveryPersonPerformance(){
+                fetch('/get_delivery_performance_chart_data/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (deliveryPerformanceChartLast7Days) {
+                            deliveryPerformanceChartLast7Days.destroy(); 
+                        }
+                        if (deliveryPerformanceChartLast5Weeks) {
+                            deliveryPerformanceChartLast5Weeks.destroy(); 
+                        }
+                        if (deliveryPerformanceChartLast12Months) {
+                            deliveryPerformanceChartLast12Months.destroy(); 
+                        }
+                        const chartDataLast7Days = {
+                            labels: data.context.last_7_days_data.map(item => item.date), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_7_days_data.map(item => item.count),
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const chartDataLast5Weeks = {
+                            labels: data.context.last_5_weeks_data.map(item => item.week), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_5_weeks_data.map(item => item.count),
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const chartDataLast12Months = {
+                            labels: data.context.last_12_months_data.map(item => item.month), 
+                            datasets: [{
+                                label: 'Delivered Orders',
+                                data: data.context.last_12_months_data.map(item => item.count),
+                                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                borderWidth: 1
+                            }]
+                        };
+                        const deliveryPerformanceChartLast7DaysCanvas = document.getElementById('deliveryPerformanceChartLast7Days');
+                        deliveryPerformanceChartLast7Days = new Chart(deliveryPerformanceChartLast7DaysCanvas, {
+                            type: 'bar',
+                            data: chartDataLast7Days,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                        const deliveryPerformanceChartLast5WeeksCanvas = document.getElementById('deliveryPerformanceChartLast5Weeks');
+                        deliveryPerformanceChartLast5Weeks = new Chart(deliveryPerformanceChartLast5WeeksCanvas, {
+                            type: 'bar',
+                            data: chartDataLast5Weeks,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+                        const deliveryPerformanceChartLast12MonthsCanvas = document.getElementById('deliveryPerformanceChartLast12Months');
+                        deliveryPerformanceChartLast12Months = new Chart(deliveryPerformanceChartLast12MonthsCanvas, {
+                            type: 'bar',
+                            data: chartDataLast12Months,
+                            options: {
+                                scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: {
+                                            display: false 
+                                        },
+                                        ticks: {
+                                            font: {
+                                                size: 6
+                                            }
+                                        }
+                                    }
+                                },
+                                responsive: true,
+                                maintainAspectRatio: false
+                            }
+                        });
+
+                    } else {
+                        console.error('Error fetching chart data:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching chart data:', error);
+                });
+            }
+</script>

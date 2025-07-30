@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Hub - Search</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+</head>
+<body>
+    <header class="header-container">
+        <div class="header-content">
+          <div class="header-title">
+            <a href="{% url 'home' %}" class="logo-link" title="Food Delivery">
+                <img src="{% static 'images/3.png' %}" alt="">
+              </a>
+              <h3>Food Hub</h3>
+          </div>
+          
+          <ul class="nav-items-container">   
+            <li class="nav-item  active search-item">
+                <a href="/search"> 
+                    <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                    Search
+                </a>
+            </li>
+              <li class="nav-item cart-item">
+                <a href="/checkout">
+                  <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                      <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count">0</span>
+                  </span>
+                  Cart 
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/profile"> 
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                  </svg>
+                  Account
+                </a>
+              </li>
+              <li class="nav-item">
+                  <a href="/support">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                    </svg>
+                    Help
+                  </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="searchbarcontianer">
+            <form action="/search" method="GET" id="searchForm"> 
+                <div class="search-bar-container">
+                  <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off" id="searchInput">
+                  <button type="submit" class="search-button">
+                    <svg class="ppAwf" viewBox="5 -1 12 25" height="18" width="18" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                  </button>
+                </div>
+            </form>
+            <section class="searchitemscontainer section">
+                <div class="searchitems">
+                    <div class="loading-container">
+                        <div class="placeholder-card">
+                            
+                            <div class="text-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="description-placeholder"></div>
+                                <div class="delivery-placeholder"></div>
+                            </div>
+                            <div class="image-placeholder"></div>
+                        </div>
+                        <div class="placeholder-card">
+                            
+                            <div class="text-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="description-placeholder"></div>
+                                <div class="delivery-placeholder"></div>
+                            </div>
+                            <div class="image-placeholder"></div>
+                        </div>
+                        <div class="placeholder-card">
+                            
+                            <div class="text-placeholder">
+                                <div class="title-placeholder"></div>
+                                <div class="description-placeholder"></div>
+                                <div class="delivery-placeholder"></div>
+                            </div>
+                            <div class="image-placeholder"></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </section>
+        </div>
+        <div class="cartSuccessOverlay">
+            <button class="cartSuccessButton" id="view-cart-btn">
+                <span class="cartContent" aria-hidden="true">
+                    <span class="cartMain">
+                        <span class="cartTitle"></span>
+                        <span class="cartSubTitle"></span>
+                    </span>
+                    <span class="viewCart">
+                        <span>VIEW CART</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bag-check" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                          <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                        </svg>
+                    </span>
+                </span>
+            </button>
+        </div>
+        <div id="itemOverlay">
+            <div class="overlay-content" id="item-overlay-content">
+                <button class="overlay-close-btn">&times;</button>
+                <div class="overlay-body">
+                    <img src="#" alt="Item">
+                    <h3></h3>
+                    <p class="price"></p>
+                    <p></p>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        const cartitemscountSocket = new WebSocket('ws://127.0.0.1:8000/ws/cartitems/');
+
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        const cartIcon = document.querySelector('.cart-icon');
+        const cartCount = document.querySelector('.cart-count');
+
+        if (data.data && data.data.length > 0) {
+            cartIcon.style.fill = '#60b246';
+            cartCount.style.color = '#60b246';
+            cartCount.textContent = data.data.length;
+            document.querySelector('.cartSuccessOverlay').style.display='flex';
+            showCartSuccessOverlay();
+            if (data.data.length==1){
+                document.querySelector('.cartSubTitle').textContent='Item added';
+            }
+            else{
+                document.querySelector('.cartSubTitle').textContent='Items added';
+            }
+            document.querySelector('.cartTitle').textContent=data.data.length;
+        }
+        else {
+            cartIcon.style.fill = 'currentColor';
+            cartCount.style.color = 'inherit';
+            
+            cartCount.textContent = '0';
+            document.querySelector('.cartSuccessOverlay').style.display='none';
+        }
+        };
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchitemsDiv = document.querySelector('.searchitems'); 
+
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const searchTerm = searchInput.value;
+            performSearch(searchTerm);
+        });
+        searchInput.addEventListener('input', function(event) {
+            const searchTerm = searchInput.value;
+            performSearch(searchTerm);
+        });
+        const loadingContainer = document.querySelector('.loading-container');
+
+        function showLoading() {
+            loadingContainer.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingContainer.style.display = 'none';
+        }
+        function performSearch(searchTerm) {
+            if (searchTerm.trim() === '') {
+                searchitemsDiv.innerHTML = '';
+                return;
+            }
+            showLoading();
+            fetch(`/searchitems/?q=${searchTerm}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.items && data.items.length > 0) {
+                    searchitemsDiv.innerHTML = '';
+                    searchitemsDiv.innerHTML+='<h3>Search Results</h3>'
+                    data.items.forEach(item => {
+                        const itemHtml = `
+                            <div class="item-card" data-item-id="${item.item_id}" id="search-item-card">
+                                <div class="item-info">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                        <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                    </svg>
+                                    <h4>${item.item_name}</h4>
+                                    <span class="price" id="item-name">₹${item.price}</span>
+                                    <p>${item.description}</p>
+                                    <p style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery Time: ${item.preparation_time} min` : 'Not Available'}</p>
+                                </div>
+                                <div class="image-container">
+                                    <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                                    ${item.is_available ? (item.in_cart ? `
+                                        <div class="quantity-control">
+                                            <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                                    <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                                </svg>
+                                            </button>
+                                            <p class="quantity">${item.quantity}</p>
+                                            <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                                        </div>
+                                    ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                                </div>
+                                <hr class="styles_divider__2JelH">
+                            </div>
+                        `;
+                        searchitemsDiv.innerHTML += itemHtml;
+                    });
+                } else {
+                    searchitemsDiv.innerHTML = `
+                     <div class="noitemsfoundcontainer">
+                        <img src="{% static '/images/noitemsfound.avif' %}" alt="No Items found">
+                        <h4>No results found for your search.</h4>       
+                    </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error fetching search results:', error);
+            });
+        }
+        const itemOverlay = document.getElementById('itemOverlay');
+        const overlayCloseButton = document.querySelector('.overlay-close-btn');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (itemOverlay && overlayCloseButton && searchitemsDiv) {
+                searchitemsDiv.addEventListener('click', (event) => {
+                    if (event.target.tagName === 'IMG') {
+                        const itemId = event.target.dataset.itemId;
+                        const itemCard = document.querySelector(`.item-card[data-item-id="${itemId}"]`);
+
+                        if (itemCard) {
+                            const itemInfo = itemCard.querySelector('.item-info');
+                            const itemName = itemInfo.querySelector('h4').textContent;
+                            const itemPrice = itemInfo.querySelector('.price').textContent;
+                            const itemDescription = itemInfo.querySelector('p').textContent;
+                            const itemDeliveryTime = itemInfo.querySelector('p:last-of-type').textContent;
+
+                            itemOverlay.querySelector('h3').textContent = itemName;
+                            itemOverlay.querySelector('.overlay-body img').src = event.target.src;
+                            itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
+                            itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
+                            itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
+
+                            itemOverlay.classList.add('show'); 
+                            document.body.classList.add('overlay-active');
+                        }
+                    }
+                });
+
+                overlayCloseButton.addEventListener('click', () => {
+                    itemOverlay.classList.remove('show'); 
+                    document.body.classList.remove('overlay-active'); 
+                });
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+                    return {
+                        menu_name: params.get('menu_name'), 
+                    };
+                }
+                const params = getQueryParams();
+                const searchInput = document.getElementById('searchInput'); 
+                if (params.menu_name) {
+                    searchInput.value = decodeURIComponent(params.menu_name);
+                    performSearch(params.menu_name);
+                }
+
+        })
+        function addtocart(itemId, operation) {
+            const formData = new FormData();
+            formData.append('operation', operation);
+            formData.append('item_id',itemId);
+            fetch(/addtocart/, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') 
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const searchTerm = searchInput.value;
+                    performSearch(searchTerm);
+                    
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        document.getElementById('view-cart-btn').addEventListener('click', function() {
+            window.location.href = "{% url 'checkout' %}";
+        });
+        const SearchUpdatesocket = new WebSocket('ws://127.0.0.1:8000/ws/searchupdate/');
+        const menuDiv = document.querySelector('.meal-items');
+        SearchUpdatesocket.onopen = function(event) {
+            console.log('Connected to WebSocket server!');
+        };
+        SearchUpdatesocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.refresh_search) {
+                const searchInput = document.getElementById('searchInput');
+                performSearch(searchInput.value);
+            }
+        };
+        SearchUpdatesocket.onerror = function(event) {
+            console.error('WebSocket error observed:', event);
+        };
+        function showCartSuccessOverlay() {
+            const overlay = document.querySelector('.cartSuccessOverlay');
+            overlay.classList.add('show');
+        }
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+{% extends 'resturanttemplate.html' %}
+{% load static %}
+<head>
+  <title>{% block title %}Resturant Dashboard{% endblock %}</title> 
+  {% block link_section %}
+  <link rel="stylesheet" href="{% static '/css/adminsubstyles.css' %}">
+  <link rel="stylesheet" href="{% static '/css/adminorderstyles.css' %}">
+
+  {% endblock %}
+  
+</head>
+
+<body>
+    {% block place_order %}
+        <li class="nav-item"><a class="nav-link active" href="{% url 'restaurantplaceorderpage' %}"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="rgb(102, 187, 106)" class="bi bi-shop" viewBox="0 0 16 16">
+            <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .361-.976zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0M1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5M4 15h3v-5H4zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1zm3 0h-2v3h2z"/>
+            </svg>Place Order</a>
+        </li>
+    {% endblock %}
+    {% block main_content %}
+        <style>
+            .place-order-container {
+                border: 1px solid rgba(100, 121, 143, 0.12);
+                background-color: #ffffff;
+                height: calc(100% - 22%);
+                border-radius: 25px;
+                gap: 3px;
+            }
+            .place-order-sub {
+                height: calc(100% - 53px);
+                display: flex;
+                gap: 2px;
+                border-top: 1px solid rgba(100, 121, 143, 0.12);
+            }
+            .place-order-container-left{
+                padding: 10px;
+                width: 55%;
+                border-right: 1px solid rgba(100, 121, 143, 0.12);
+                overflow: auto;
+            }
+            .place-order-container-right{
+                overflow: auto;
+                width: 45%;
+                border-left: 1px solid rgba(100, 121, 143, 0.12);
+                padding: 20px;
+            }
+            .place-order-container-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 5px 15px;
+            }
+            .allitems {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            .item-card {
+                padding: 0;
+                margin: 10px;
+                position: relative;
+                display: flex;
+                border-bottom: .8px solid #e1e3fe;
+                padding-bottom: 15px;
+                width: 100%;
+                padding-top: 5px;
+            }
+            .item-info {
+                flex: 1;
+                margin-right: 20px;
+                max-width: 800px;
+            }
+            .item-info svg {
+                width: 14px;
+                height: 14px;
+            }
+            .item-info h4 {
+                margin-top: 0px;
+                margin-bottom: 8px;
+                font-weight: 800;
+                font-size: 20px;
+                line-height: 20px;
+                letter-spacing: -0.3px;
+                color: rgba(2, 6, 12, 0.78);
+            }
+            .price {
+                font-size: 18px;
+                margin-top: 10px;
+                font-weight: bold;
+                color: rgba(17, 24, 34, 0.98) !important;
+                font-family: Lato-Regular, Helvetica, sans-serif;
+            }
+            .item-info p {
+                margin-bottom: 10px;
+                color: #666;
+                margin-top: 5px;
+                font-weight: 500;
+                font-size: 16px;
+                line-height: 19px;
+                letter-spacing: -0.3px;
+                color: rgba(2, 6, 12, 0.6);
+            }
+            .image-container {
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                max-height: 183px;
+            }
+            #priceOutput{
+                font-family: Lato-Regular, Helvetica, sans-serif;
+            }
+            .item-card img {
+                width: 150px;
+                height: 140px;
+                flex-grow: 1;
+                border-radius: 12px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .image-container {
+                position: relative; 
+            }
+
+            .add-button {
+                width: 100px;
+                position: absolute;
+                bottom: 16px; 
+                left: 50%;
+                transform: translateX(-50%); 
+                text-align: center;
+                background-color: transparent;
+                color: rgb(27, 166, 114);
+                padding: 8px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 800;
+                background-color: rgb(255, 255, 255);
+                border: 1px solid rgba(2, 6, 12, 0.15);
+                box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+                margin-top: auto;
+                position: relative;
+                min-height: 33.5px;
+            }
+            .item-info svg{
+                width: 14px;
+                height: 14px;
+            }
+            .quantity-control {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                width: 100px;
+                position: absolute;
+                bottom: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: transparent;
+                padding: 0px;
+                height: 32px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 800;
+                background-color: rgb(255, 255, 255);
+                border: 1px solid rgba(2, 6, 12, 0.15);
+                box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+                justify-content: center;
+            }
+            .quantity {
+                font-size: 16px;
+                width: 30px;
+                text-align: center;
+                color: rgb(27, 166, 114) !important;
+            }
+            #increase{
+                color: rgb(27, 166, 114);
+            }
+            .image-container {
+                display: flex;
+                flex-direction: column; 
+                position: relative; 
+                max-height: 183px;
+            }
+
+            .quantity-control {
+                margin-top: auto;
+                position: relative;
+                
+            }
+            .allitems > .item-card:last-of-type {
+                border-bottom: none;
+            }
+            .cartemptyimage {
+                margin-bottom: 20px;
+            }
+            #emptycart {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                text-align: center;
+                background-color: #fff;
+            }
+            .cartemptyimage img {
+                width: 200px;
+                height: auto;
+                display: flex;
+                flex-grow: 1;
+            }
+
+            .quantity-btn {
+                background-color: transparent;
+                color: #3d4152;
+                border: none;
+                border-radius: 4px;
+                padding: 10px;
+                cursor: pointer;
+                font-size: 1.2em;
+                transition: background-color 0.3s;
+            }
+            #increase {
+                color: rgb(27, 166, 114);
+            }
+            .order-item:last-of-type {
+                border: none;
+            }
+            
+            .order-items{
+                box-shadow: rgba(28, 28, 28, 0.1) 0px 4px 6px;
+                border: 0.8px solid rgb(215, 221, 249);
+                border-radius: 20px;
+            }
+            .order-items.empty-cart{
+                height: 100%;
+                box-shadow: none;
+                border: none;
+                border-radius: 0px;
+            }
+            .order-item {
+                display: flex;
+                padding: 15px;
+                border-bottom: 0.5px dashed #ccd3f4;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            .item-image {
+                width: 100px;
+                height: 100px;
+                border-radius: 5px;
+                margin-right: 15px;
+            }
+            .item-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .item-header svg {
+                width: 12px;
+                height: 12px;
+            }
+            item-price {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0px;
+                gap: 10px;
+            }
+            .order-item p {
+                margin-top: 5px;
+                font-size: 14px;
+                margin-bottom: 0px;
+                color: #323234;
+                font-weight: 500;
+                margin: 0;
+            }
+            .item-price {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0px;
+                gap: 10px;
+            }
+            .cart-quantity-control {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                width: 100px;
+                bottom: 16px;
+                background-color: transparent;
+                padding: 0px;
+                height: 32px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 800;
+                background-color: rgb(255, 255, 255);
+                border: 1px solid rgba(146, 184, 242, 0.15);
+                box-shadow: none;
+                justify-content: center;
+                position: static;
+                transform: translateX(0%);
+            }
+            .bill-details {
+                background: #ffffff;
+                padding: 15px;
+                margin: 5px;
+                border-radius: 20px;
+                box-shadow: rgba(28, 28, 28, 0.1) 0px 4px 6px;
+                border: 0.8px solid rgb(215, 221, 249);
+            }
+            .bill-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px 0px;
+                font-size: 13px;
+                color: #1f1f20 !important;
+            }
+            .bill-price {
+                font-weight: 800;
+                font-family: Lato-Regular, Helvetica, sans-serif;
+            }
+            hr {
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                height: 0;
+                overflow: visible;
+                border: 1px solid rgba(2, 6, 12, 0.05);
+            }
+            .checkout-nav-bar {
+                z-index: 1000;
+                background-color: #ffffff;
+                padding: 10px;
+                box-shadow: 0 2px -4px rgba(3, 3, 3, 0.1);
+                border-top: 1px solid rgba(77, 92, 113, 0.2);
+                border-radius: 20px 20px 0px 0px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+
+            }
+            .checkout-nav-bar a {
+                text-decoration: none;
+                color: #020202;
+                font-weight: 600;
+                transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+            }
+            .proceed-button {
+                background-color: #ff5200;
+                color: white;
+                padding: 12px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background-color 0.2s;
+                width: fit-content;
+            }
+        </style>
+        
+        <div class="subnav-container">
+            <div class="subnav">
+                <div class="search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" placeholder="Search...">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" onclick="openFilterOverlay()"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"></path></svg>
+                </div>
+            </div>
+        </div> 
+        <div class="filter-overlay">
+            <div class="filter-overlay-content">
+                <div style="display: flex;justify-content: flex-end;">
+                    <button class="close-overlay" onclick="closeFilterOverlay()"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                      
+                    </svg></button>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="datefilter">Date</label>
+                    <input type="date" name="datefilter" id="datefilter">
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="statusfilter">Status</label>
+                    <select name="statusfilter" id="statusfilter" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Confirmed">New</option>
+                        <option value="Prepared">Prepared</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="customerstatusfilter">Customer Status</label>
+                    <select name="customerstatusfilter" id="customerstatusfilter" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="deliverychoice">Delivery Choice</label>
+                    <select name="deliverychoice" id="deliverychoice" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Delivery">Delivery</option>
+                        <option value="Pickup">Pickup</option>
+                        <option value="Dining">Dining</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row">
+                    <label for="paymentstatus">Payment Status</label>
+                    <select name="paymentstatus" id="paymentstatus" class="filterselect" required>
+                        <option value="" selected>All</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Success">Success</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <div class="filter-overlay-row" style="display: flex;align-items: center;justify-content: flex-end;">
+                    <button id="clearfilter" onclick="clearFilters()">Clear filter</button>
+                    <button id="searchfilter" onclick="filterTable()">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="place-order-container">
+            <div class="place-order-container-nav">
+                <button id="reload-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                      </svg>
+                </button>
+                
+            </div>
+            <div class="place-order-sub">
+                <div class="place-order-container-left">
+                    <div class="allitems">
+        
+                    </div>
+                </div>
+                <div class="place-order-container-right">
+                    
+                    <div class="order-items" id="order-items">
+
+                    </div>
+                    <div class="bill">
+                        <h4 style="margin: 10px;font-size: 20px;font-family: 'Poppins', sans-serif;">Bill Details</h4>
+                        <div class="bill-details" id="bill-details">
+                        
+                        </div>
+                    </div>
+                    <div class="checkout-nav-bar">
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <script>
+            function openFilterOverlay(){
+                document.querySelector('.filter-overlay ').style.display='block';
+            }
+            function closeFilterOverlay(){
+                document.querySelector('.filter-overlay ').style.display='none';
+            }
+            document.querySelector('.bill').style.display='none';
+            const getWebSocketUrl = () => {
+                const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+                return `${protocol}${window.location.host}/ws/`;
+            };
+            const setupWebSocket = (url, openHandler, messageHandler) => {
+                const socket = new WebSocket(url);
+                socket.onopen = () => {
+                    if (openHandler) openHandler();
+                };
+                socket.onmessage = (event) => {
+                messageHandler(event);
+                };
+                socket.onerror = (event) => {
+                console.error('WebSocket error:', event);
+                };
+                return socket;
+            };
+            const renderItems = (items) => {
+                const allItemsContainer = document.querySelector('.allitems');
+                allItemsContainer.innerHTML = '';
+                items.forEach(item => {
+                allItemsContainer.innerHTML += getItemHTML(item);
+                });
+            };
+            const updateItem = (updatedItem) => {
+                const itemCard = document.querySelector(`.item-card[data-item-id="${updatedItem.item_id}"]`);
+                if (itemCard) {
+                    itemCard.querySelector('.item-info h5').textContent = updatedItem.resturant_name;
+                    itemCard.querySelector('.item-info svg').setAttribute('fill',updatedItem.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)');
+                    itemCard.querySelector('.item-info svg').classList.remove('non-veg','veg');
+                    itemCard.querySelector('.item-info svg').classList.add(updatedItem.type === 'non_veg' ? 'non-veg':'veg');
+                    itemCard.querySelector('.item-info h4').textContent = updatedItem.item_name;
+                    itemCard.querySelector('.item-info .price').textContent = `₹${updatedItem.price}`;
+                    itemCard.querySelector('.item-info p').textContent = updatedItem.description;
+                    itemCard.querySelector('.item-info .delivery_time').textContent = updatedItem.is_available ? `Delivery in ${updatedItem.preparation_time} min` : 'Not Available';
+                    itemCard.querySelector('.item-info .delivery_time').style.color= updatedItem.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)';
+                    itemCard.querySelector('.item-info p:last-of-type').textContent = updatedItem.count > 0 && updatedItem.count <= 5 ? `Only ${updatedItem.count} Left` : '';
+
+                    const imgElement = itemCard.querySelector('.image-container img');
+                    imgElement.src = updatedItem.item_image;
+                    imgElement.style.filter = updatedItem.is_available ? 'none' : 'grayscale(100%)';
+
+                    const quantityControlDiv = itemCard.querySelector('.quantity-control');
+                    const addButton = itemCard.querySelector('.add-button');
+
+                    if(updatedItem.is_available){
+                        if(updatedItem.in_cart){
+                        if(addButton){
+                            addButton.remove();
+                        }
+                            if(!quantityControlDiv){
+                            const quantityControlHTML= `
+                                    <div class="quantity-control">
+                                        <button class="quantity-btn" id="decrease" onclick="addtocart(${updatedItem.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+                                            </svg>
+                                        </button>
+                                        <p class="quantity">${updatedItem.quantity}</p>
+                                        <button class="quantity-btn" id="increase" onclick="addtocart(${updatedItem.item_id}, 'increment')">+</button>
+                                    </div>
+                            `
+                            itemCard.querySelector('.image-container').innerHTML +=quantityControlHTML
+                        }else{
+                            itemCard.querySelector('.quantity-control p').textContent = updatedItem.quantity;
+                        }
+                        }else{
+                        if(quantityControlDiv){
+                            quantityControlDiv.remove();
+                        }
+                        if (!addButton){
+                                const addButtonHTML = `
+                                <button class="add-button" onclick="addtocart(${updatedItem.item_id}, 'increment')">ADD</button>
+                            `
+                                itemCard.querySelector('.image-container').innerHTML += addButtonHTML;
+                        }
+                        }
+                    }else{
+                        if(quantityControlDiv){
+                            quantityControlDiv.remove();
+                        }
+                        if(addButton){
+                                addButton.remove()
+                        }
+                    }
+
+                }
+            };
+            const getItemHTML = (item) => {
+                return `
+                    <div class="item-card" data-item-id="${item.item_id}">
+                        <div class="item-info">
+                            <h5 style="margin:0;">${item.resturant_name}</h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                    <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                </svg>
+                                <h4>${item.item_name}</h4>
+                                <span class="price" id="item-name">₹${item.price}</span>
+                                <p>${item.description}</p>
+                                <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
+                                <p style="color:#d7372b;margin-bottom:0px">${item.count > 0 && item.count <= 5 ? `Only ${item.count} Left` : ''}</p>
+                        </div>
+                        <div class="image-container">
+                            <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                            ${item.is_available ? (item.in_cart ? `
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                        </svg>
+                                    </button>
+                                    <p class="quantity">${item.quantity}</p>
+                                    <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                                </div>
+                            ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')">ADD</button>`) : ''}
+                        </div>
+                </div>
+                `;
+            };
+            setupWebSocket(
+                `${getWebSocketUrl()}allitems/`,
+                () => {
+                    console.log('Connected to All Items WebSocket server!');
+                },
+                (event) => {
+                    const data = JSON.parse(event.data);
+                if (data.type === "initial_items") {
+                    renderItems(data.data);
+                } else if (data.type === 'item_update') {
+                        updateItem(data.item);
+                    }
+                }
+            );
+            const cartitemsSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
+            const cartitemsDiv = document.querySelector('.order-items'); 
+
+            cartitemsSocket.onopen = function(event) {
+                console.log('Connected to All Items WebSocket server!');
+            };
+            let totalAmount = 0; 
+            cartitemsSocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const orderItemsContainer = document.querySelector('.order-items');
+                if (data.data) {
+                    cartitemsDiv.innerHTML = '';
+                    if(data.data.length>0){
+                        orderItemsContainer.classList.remove('empty-cart');
+                        document.querySelector('.bill').style.display='block';
+                        document.querySelector('.checkout-nav-bar').style.display='flex';
+                        totalAmount=0;
+                        let totalCount = 0;
+                        let maxdeliverytime=0;
+                        data.data.forEach(item => {
+                            const itemHtml = `
+                                <div class="order-item">
+                                    <img src="${item.item_image}" alt="${item.item_name}" class="item-image" />
+                                    <div>
+                                        <div class="item-header">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                                <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                            </svg>
+                                            <h4 class="item-name">${item.item_name}</h4>
+                                        </div>
+                                        <div class="item-price">
+                                            <div class="cart-quantity-control">
+                                                <button class="quantity-btn" id="decrease" onclick="addtocart(${item.id},'decrement')" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                                <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                                </svg></button>
+                                                <p class="quantity">${item.quantity}</p>
+                                                <button class="quantity-btn" id="increase" onclick="addtocart(${item.id}, 'increment')"  >+</button>
+                                            </div>
+                                            <div>
+                                        </div>
+                                        <p class="price" id="itemPrice">₹${(item.price * item.quantity).toFixed(2)}</p></div>
+                                    </div>
+                                </div>
+                            `;
+                        if(`${item.preparation_time}`>maxdeliverytime){
+                                maxdeliverytime=item.preparation_time;
+                        }
+                            cartitemsDiv.innerHTML += itemHtml;
+                            totalAmount += item.price * item.quantity; 
+                            totalCount += item.quantity;
+                        });
+                        
+                    }
+                    else{
+                        orderItemsContainer.classList.add('empty-cart')
+                        cartitemsDiv.innerHTML+=`
+                            <div id="emptycart">
+                            <div class="cartemptyimage">
+                                <img src="{% static '/images/cartempty.avif' %}" alt="">
+                            </div>
+                            <div class="emptycartcontent">
+                                <h2>Your cart is empty</h2>
+                            </div>
+                        </div>
+                        `;
+                        document.querySelector('.checkout-nav-bar').style.display='none';
+                        document.querySelector('.bill').style.display='none';
+                    }
+                } else {
+                    console.log("No item data received in the message.");
+                }
+            };
+            window.addtocart = async (itemId, operation) => {
+                const formData = new FormData();
+                formData.append('operation', operation);
+                formData.append('item_id', itemId);
+
+                try {
+                    const response = await fetch('/addtocart/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                            console.log('Cart updated successfully.');
+                    }else{
+                        if (data.replace_cart) {
+                                document.getElementById('replace-p-content').textContent = `Your cart contains dishes from ${data.current_restaurant_name}. Do you want to discard the selection and add dishes from ${data.restaurant_name}?`;
+                            document.getElementById('replace-overlay').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                                document.getElementById('confirmReplace').onclick = () => {
+                                confirmReplace(data.item_id, data.operation);
+                            };
+                            } else {
+                            console.error(data.error);
+                        }
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            };
+            const additionalpricesSocket = new WebSocket(`${getWebSocketUrl()}additionalprices/`);
+
+            additionalpricesSocket.onopen = function(event) {
+                console.log('Connected to AdditionalPrices WebSocket server!');
+            };
+
+            additionalpricesSocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const billDetailsDiv = document.querySelector('.bill-details');
+                billDetailsDiv.innerHTML='';
+                const itemTotalDiv=document.createElement('div');
+                itemTotalDiv.classList.add('bill-item');
+                itemTotalDiv.innerHTML=`
+                    <span>Item Total</span>
+                    <span class="bill-price" id="bill-item-total">₹ ${totalAmount}</span>
+                `;
+                billDetailsDiv.appendChild(itemTotalDiv);
+                let additionalTotal = 0;
+                data.data.forEach(price => {
+                    const charge = price.value_type === 'Percentage' ? (totalAmount * (price.value / 100)) : price.value;
+                    additionalTotal += charge;
+                    const billItemDiv = document.createElement('div');
+                    billItemDiv.classList.add('bill-item'); 
+                    billItemDiv.innerHTML = `
+                        <span>${price.price_type}${price.value_type === 'Percentage' ? ` (${price.value}%)` : ''}</span>
+                        <span class="bill-price">₹ ${charge.toFixed(2)}</span>
+                    `;
+                    billDetailsDiv.appendChild(billItemDiv);
+                });
+                const hr = document.createElement('hr');
+                billDetailsDiv.appendChild(hr); 
+                const finalAmount = totalAmount + additionalTotal;
+                const finalBillItemDiv = document.createElement('div');
+                finalBillItemDiv.classList.add('bill-item');
+                finalBillItemDiv.innerHTML = `
+                    <span><strong>To Pay</strong></span>
+                    <span class="bill-price" id="order-total">₹ ${finalAmount.toFixed(2)}</span>
+                `;
+                billDetailsDiv.appendChild(finalBillItemDiv);
+                const checkOutNav=document.querySelector('.checkout-nav-bar');
+                checkOutNav.innerHTML='';
+                checkOutNav.innerHTML=`
+                    <div>
+                        <a href="#bill-details">₹ ${finalAmount.toFixed(2)}<br><p style="color:rgb(27, 166, 114);font-size:13px;font-weight:600;margin:0;">View Bill</p></a>    
+                    </div>
+                    <div style="display:flex;align-items:center;gap:5px;">
+                        <input type="checkbox" id="order-delivered">Delivered
+                        <button class="proceed-button" id="proceed-button" onclick="proccedToPay()">Proceed to Pay</button>
+                    </div>
+                    
+                `
+            };
+            function proccedToPay() {
+                const isDeliveredChecked = document.getElementById('order-delivered').checked;
+                console.log("Delivered checked :",isDeliveredChecked)
+                const deliveryType = isDeliveredChecked ? 'delivered' : 'confirmed';
+                fetch('/restaurantplaceorder/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ deliveryType: deliveryType}),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('Order Successfully Placed', 'success');
+                    } else {
+                        console.log(data.error);
+                        showMessage('An error occured', 'warning');
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    showMessage('An error occured', 'warning');
+                });
+            }        
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            </script>
+    {% endblock %} 
+</body>
+</html>

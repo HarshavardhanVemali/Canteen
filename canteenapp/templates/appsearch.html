@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Food Hub - Search</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script> 
+    <script src="{% static 'js/apploadinganimation.js' %}"></script>
+</head>
+<style>
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button, a, img {
+        outline: none;
+    }
+    a:focus,button:focus {
+        outline: none;  
+        box-shadow: none; 
+        -webkit-tap-highlight-color: transparent;
+    }
+    a:focus {
+        outline: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+        a:focus {
+            outline: none;
+        }
+    }
+    body{
+        font-family: 'Poppins', sans-serif;
+        user-select: none; 
+        -webkit-user-select: none;
+        -ms-user-select: none; 
+    }
+    .navbarbottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0; 
+        z-index: 9999;
+        width: 100%; 
+    }
+
+    .nav-items-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        margin: 0;
+        padding: 5px 0 0;
+        background: #fff;
+        border-top: 1px solid rgba(72, 87, 109, 0.1);
+    }
+
+    .nav-item svg {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+        fill: #686b78;
+    }
+
+    .cart-count {
+        font-weight: bold;
+        font-size: 0.6rem;
+        padding: 2px 5px;
+        position: absolute;
+        top: 9px;
+        right: 24px;
+        min-width: 15px;
+        text-align: center;
+        display: inline-block;
+    }
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 10px;
+        font-weight: 500;
+        align-items: center;
+    }
+
+    .nav-item a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    @media (max-width: 768px) {
+        .nav-item {
+            margin-bottom: 0px;
+        }
+    }
+
+    .nav-item {
+        margin-left: 0px;
+    }
+    .searchbarcontianer {
+        max-width: 100%;
+        margin: 10px;
+    }
+    .search-bar-container {
+        display: flex;
+        align-items: center;
+        border-radius: 5px;
+        padding: 5px;
+        height: 2.5rem;
+        background: rgb(255, 255, 255);
+        border-radius: 0.8rem;
+        box-shadow: rgba(28, 28, 28, 0.05) 0px 1px 1px;
+        border: 0.5px solid rgb(215, 221, 249);
+    }
+    .search-input {
+        border: none;
+        padding: 5px 8px;
+        flex: 1;
+        font-size: 14px;
+        outline: none;
+        width: 400px;
+        font-weight: 500 !important;
+        color: rgba(2, 6, 12, 0.6);
+    }
+    .back-button{
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: rgb(255, 126, 139);
+    }
+    .back-button{
+        padding: 8px 10px 7px 8px;
+        border-radius: 50%;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+
+    .back-button:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    .back-button:active {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%);
+        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        transform: scale(0.95);
+    }
+    .section {
+        margin: 0;
+        max-width: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    #search-item-card {
+        background-color: #fff;
+        border: 0.5px solid rgb(215, 221, 249);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        border-bottom: none;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .item-info {
+        flex: 1;
+        margin-right: 20px;
+        max-width: 800px;
+
+    }
+
+    .item-info h4 {
+        margin-top: 0px;
+        margin-bottom: 8px;
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 20px;
+        letter-spacing: -0.3px;
+        color: rgba(2, 6, 12, 0.78);
+    }
+
+    .item-info p {
+        line-height: 19px;
+        margin-bottom: 10px;
+        color: #4d4c4c;
+        margin-top: 0px;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 15px;
+        letter-spacing: -0.3px;
+        color: rgba(2, 6, 12, 0.5);
+        letter-spacing: 0.5px;
+    }
+    
+    .price {
+        font-size: 18px;
+        margin-top: 10px;
+        font-weight: bold;
+        color: rgba(17, 24, 34, 0.98) !important;
+        font-family: Lato-Regular, Helvetica, sans-serif;
+    }
+
+    .item-card img {
+        cursor: pointer;
+        width: 150px;
+        height: 140px;
+        flex-grow: 1;
+        border-radius: 12px;
+    }
+
+    .image-container {
+        position: relative; 
+    }
+    .delivery_time{
+        font-weight: 530 !important;
+        font-size: 15px !important;
+    }
+    .add-button {
+        width: 100px;
+        position: absolute;
+        bottom: 16px; 
+        left: 50%;
+        transform: translateX(-50%); 
+        text-align: center;
+        background-color: transparent;
+        color: rgb(27, 166, 114);
+        padding: 4px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 800;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgba(2, 6, 12, 0.15);
+        box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+        margin-top: auto;
+        position: relative;
+        min-height: 37px;
+    }
+    .add-button p{
+        font-weight: 900;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        font-size: 19px;
+    }
+    .item-info svg{
+        width: 14px;
+        height: 14px;
+    }
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100px;
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: transparent;
+        padding: 0px;
+        height: 35px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 800;
+        background-color: rgb(255, 255, 255);
+        border: 1px solid rgba(2, 6, 12, 0.15);
+        box-shadow: rgba(2, 6, 12, 0.2) 0px 2px 12px;
+        justify-content: center;
+    }
+    .quantity {
+        font-size: 16px;
+        width: 30px;
+        text-align: center;
+        color: rgb(27, 166, 114) !important;
+    }
+    #increase{
+        color: rgb(27, 166, 114);
+    }
+    .image-container {
+        display: flex;
+        flex-direction: column; 
+        position: relative; 
+        max-height: 160px;
+    }
+
+    .quantity-control {
+        margin-top: auto;
+        position: relative;
+    
+    }
+    .searchitems h3{
+        font-size: 18px;
+    }
+    .searchitems {
+        margin: 0 auto;
+        margin-top: 5px;
+        margin-bottom: 50px;
+    
+        animation: slideUp 1s ease-in-out forwards;
+        opacity: 0; 
+        display: none; 
+    }
+    .searchitems.show {
+        opacity: 1;
+        display: block; 
+    }
+    @keyframes slideUp {
+        0% {
+            transform: translateY(20px);
+            opacity: 0; 
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    @keyframes fadeInOut {
+        0% {
+            opacity: 0; 
+        }
+        100% {
+            opacity: 1; 
+        }
+    }
+    .allitems > .item-card:last-of-type {
+        border-bottom: none;
+    }
+    .placeholder-card {
+        width: 100%;
+        height: 150px;
+        background-color: #fff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        border: 0.5px solid rgb(215, 221, 249);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .loading-container {
+        margin-bottom: 0;
+        gap: 10px;
+        width: 100%;
+    }
+    .image-placeholder {
+        width: 150px;
+        height: 100px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin-right: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    .noitemsfoundcontainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 50px auto;
+        margin-top: 50px;
+        width: 100%;
+        top: 0;
+        bottom: 0;
+        transform: translate(0,50%);
+    }
+    .noitemsfoundcontainer img{
+        width: 80%;
+    }
+    .noitemsfoundcontainer h4{
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .voiceRec svg{
+        fill: rgb(255, 126, 139);
+    }
+    .voiceRec {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+    }
+    .voiceRec{
+        padding: 8px 10px;
+        border-radius: 50%;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    }
+
+    .voiceRec:hover {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    .voiceRec:active {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%);
+        box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 15px rgba(0, 0, 0, 0.2);
+        transform: scale(0.95);
+    }
+    .listening-overlay { 
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: 0.4px;
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        justify-content: end;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        transition: opacity 0.3s ease; 
+        
+    }
+    .listening-overlay.show {
+        opacity: 1;
+    }
+    .mic-icon-container svg{
+        background-color: #f51c32;
+        padding: 15px;
+        border-radius: 50%;
+        box-shadow: 0px 4px 7px rgba(0, 0, 0, 0.2);
+        
+    }
+    .listening-content {
+        text-align: center;  
+        width: 100%;
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        width: -webkit-fill-available;
+        border-radius: 20px 20px 0 0; 
+        border-top: 1px solid rgba(77, 92, 113, 0.2);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01); 
+        bottom: 0; 
+        padding-bottom: 30px;
+        transition: transform 0.3s ease-in-out;
+        z-index: 10000;
+    }
+    .listening-content #listeningText {
+        margin-bottom: 10px;
+    }
+    .listening-content p{
+        color: #7d7f89;
+        font-weight: 500;
+        padding-bottom: 40px;
+    }
+    .close-listening {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #888; 
+    }
+
+    .close-listening:hover {
+        color: #dc3545;
+    }
+    .mic-icon-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        margin: 10px; 
+        border-radius: 50%;
+        background: rgb(255, 255, 255);
+    }
+    .mic-icon{
+        width: 22px;
+        height: 22px;
+    }
+
+
+    .radar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    .circle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+        animation: radarAnimation 1.5s linear infinite;
+        border: 1px solid rgba(195, 194, 194, 0.7);
+        width: 50px;
+        height: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .circle1 {
+        animation-delay: 0s;
+    }
+
+    .circle2 {
+        animation-delay: 0.8s;
+    }
+
+    @keyframes radarAnimation {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        70% {
+            transform: translate(-50%, -50%) scale(2.2);
+            opacity: 0.4;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(2.8);
+            opacity: 0;
+        }
+    }
+    #itemOverlay,#microphonePermissionOverlay{
+        position: fixed; 
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        justify-content: end;
+        flex-direction: column;
+        gap: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 11111;
+        transition: opacity 0.3s ease; 
+    }
+    .overlay-content {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 8px;
+        width: -webkit-fill-available;
+        border-radius: 20px 20px 0 0 !important;
+        border-top: 1px solid rgba(77, 92, 113, 0.2);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.01);
+        bottom: 0;
+        padding-bottom: 30px;
+        transition: transform 0.3s ease-in-out;
+        
+    }
+    .overlay-close-btn ,.permission-close-btn{
+        position: static;
+        background: transparent;
+        border: none;
+        font-size: 1.3rem;
+        cursor: pointer;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        height: 28px;
+        width: 28px;
+        cursor: pointer;
+        background: rgb(255, 255, 255);
+        border-radius: 50%;
+        box-shadow: rgba(0, 0, 0, 0.12) 0px 2px 6px;
+        border: none;
+        outline: none;
+        font: initial;
+        line-height: 1px;
+    }
+    .overlay-header{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+    }
+    .overlay-title{
+        margin: 0;
+        font-size: 20px;
+    }
+    .overlay-allow, .overlay-deny {
+        background-color: #307cf7;
+        color: white;
+        padding: 10px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        font-weight: 600;
+    }
+
+    .overlay-deny {
+        background-color: #f4f2f2;
+        color: #4d4c4c;
+    }
+    .overlay-header svg{
+        width: 24px;
+        height: 24px;
+        fill: rgb(255, 126, 139);
+    }
+    .overlay-content h3{
+        margin: 0;
+        font-size: 22px;
+        padding: 0px 10px;
+        font-weight: 700;
+    }
+    .overlay-message{
+        padding: 5px 0px !important;
+    }
+    .overlay-body p {
+        margin: 5px 0;
+        color: #666;
+        padding: 0px 10px;
+        font-size: 18px;
+    }
+    .permission-btn{
+        display: flex;
+        justify-content:center;
+        gap: 20px;
+    }
+    .overlay-body p:first-of-type{
+        font-size: 20px;
+        font-weight: bolder;
+        margin-bottom: 0px;
+    }
+    .overlay-body p:nth-of-type(2){
+        margin-top: 0px;
+        font-size: 16px;
+        font-weight: 530 !important;
+    }
+    .overlay-body p:last-of-type{
+        padding-bottom: 20px;
+        font-size: 14px;
+        line-height: 19px;
+        letter-spacing: -0.3px;
+        font-weight: 400;
+    }
+    .nav-item svg {
+        background: linear-gradient(to right, transparent 50%, transparent 50%);
+        border-radius: 18px;
+        padding: 6px 22px;
+        display: inline-flex;
+        align-items: center;
+        transition: padding 0.3s ease, box-shadow 0.3s ease;
+        background-size: 50% 50%;
+        background-position: center;
+    }
+
+    .nav-item.active svg {
+        background: rgba(250, 246, 235, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        background-size: 100% 100%;
+        background-position: center;
+        transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease, box-shadow 0.3s ease;
+        fill: #c2a97c;
+    }
+    #replace-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); 
+        display: none; 
+        align-items: center;
+        justify-content: center;
+        z-index: 1000; 
+    }
+
+    .replace-overlay-content {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 15px;
+        width: 70%; 
+        max-width: 400px; 
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: left;
+        animation: slideIn 0.3s ease; 
+    }
+
+    .replace-overlay-content h3 {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: 900 !important;
+    }
+
+    #replace-p-content {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 20px;
+        font-weight: 500 !important;
+    }
+    .replace-overlay-content div {
+        display: inline-block;
+    }
+
+    #cancelReplace,
+    #confirmReplace {
+        padding: 12px 0px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        min-width: 130px;
+
+    }
+    #cancelReplace span,#confirmReplace span{
+    font-weight: 800 !important;
+    } 
+    #cancelReplace {
+        background-color: #faebe4; 
+        color: #ff5200;
+    }
+
+    #cancelReplace:hover {
+        background-color: #fae4da;
+    }
+    #confirmReplace {
+        background-color: #ff5200; 
+        color: #fff;
+    }
+
+    #confirmReplace:hover {
+        background-color: #f75b12;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+</style>
+<body>
+    <div class="main-loading-animation">
+    
+    </div>
+    <div class="navbarbottom">
+        <ul class="nav-items-container">  
+            <li class="nav-item">
+            <a href="/apphome"> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                </svg>
+                Home
+            </a>
+            </li> 
+            <li class="nav-item search-item active">
+            <a href="/appsearch"> 
+                <svg class="ppAwf" viewBox="5 -1 12 25" height="20" width="20" fill=""><path d="M17.6671481,17.1391632 L22.7253317,22.1973467 L20.9226784,24 L15.7041226,18.7814442 C14.1158488,19.8024478 12.225761,20.3946935 10.1973467,20.3946935 C4.56550765,20.3946935 0,15.8291858 0,10.1973467 C0,4.56550765 4.56550765,0 10.1973467,0 C15.8291858,0 20.3946935,4.56550765 20.3946935,10.1973467 C20.3946935,12.8789625 19.3595949,15.3188181 17.6671481,17.1391632 Z M10.1973467,17.8453568 C14.4212261,17.8453568 17.8453568,14.4212261 17.8453568,10.1973467 C17.8453568,5.97346742 14.4212261,2.54933669 10.1973467,2.54933669 C5.97346742,2.54933669 2.54933669,5.97346742 2.54933669,10.1973467 C2.54933669,14.4212261 5.97346742,17.8453568 10.1973467,17.8453568 Z"></path></svg>
+                Search
+            </a>
+            </li>
+            <li class="nav-item">
+                <a href="/appnotifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                    </svg>
+                    Notifications
+                </a>
+            </li>
+                <li class="nav-item cart-item">
+                <a href="/appcheckout">
+                    <span class="cart-icon-container" style="display: flex;align-items: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-bag cart-icon" viewBox="0 0 16 16">
+                        <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
+                    </svg>
+                    <span class="cart-count"></span>
+                    </span>
+                    Cart 
+                </a>
+            </li>
+                <li class="nav-item">
+                <a href="/appprofile"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                    </svg>
+                    Account
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    <div class="container">
+        <div class="searchbarcontianer">
+            <form action="/search" method="GET" id="searchForm"> 
+                <div class="search-bar-container">
+                    <button class="back-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/>
+                        </svg>
+                    </button>
+                    <input type="text" name="q" placeholder="Search for dishes" class="search-input" autocomplete="off" id="searchInput">
+                    <button type="button" class="voiceRec" id="voiceRecBtn" onclick="startSpeechRecognition()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+                            <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+                            <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                    </button>
+                
+                </div>
+            </form>
+            <section class="searchitemscontainer section">
+                <div class="loading-container">
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                    <div class="placeholder-card">
+                        
+                        <div class="text-placeholder">
+                            <div class="title-placeholder"></div>
+                            <div class="description-placeholder"></div>
+                            <div class="delivery-placeholder"></div>
+                        </div>
+                        <div class="image-placeholder"></div>
+                    </div>
+                </div>
+                <div class="searchitems">
+                    
+                </div>
+                
+            </section>
+        </div>
+        <div class="listening-overlay" id="listeningOverlay">
+            <div style="z-index: 11111;">
+                <svg xmlns="http://www.w3.org/2000/svg" onclick="stopSpeechRecognition()" width="22" height="22" fill="#ffffff" class="bi bi-x-circle" viewBox="0 0 16 16" style="cursor: pointer;">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+            </div>
+            <div class="listening-content">
+                <p id="listeningText">Listening...</p> 
+                <div class="mic-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#ffffff" class="bi bi-mic-fill mic-icon" viewBox="0 0 16 16">
+                        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0V3z"/>
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <div class="radar">
+                        <div class="circle circle1"></div>
+                        <div class="circle circle2"></div>
+                    </div>  
+                </div>    
+            </div>
+        </div> 
+        <div id="itemOverlay">
+            <button class="overlay-close-btn">&times;</button>
+            <div class="overlay-content" id="item-overlay-content">
+                
+                <div class="overlay-body">
+                    <img src="#" alt="Item">
+                    <h3></h3>
+                    <p class="price"></p>
+                    <p class="delivery_time"></p>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="microphonePermissionOverlay" class="overlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h2 class="overlay-title">Need Your Microphone</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                    <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3"/>
+                  </svg>
+            </div>
+            <div class="overlay-body">
+                <p class="overlay-message">To use voice search, we need access to your microphone. This will only be used to recognize what you say and won't be recorded or stored.</p>
+                <div class="permission-btn">
+                    <button class="overlay-deny" onclick="closeMicrophoneOverlay()">Deny</button>
+                    <button class="overlay-allow" onclick="openBrowserSettings()">Allow</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="replace-overlay" id="replace-overlay">
+        <div class="replace-overlay-content">
+            <h3>Replace cart item?</h3>
+            <p id="replace-p-content"></p>
+            <div style="display: flex;align-items: center;justify-content: space-between;">
+              <div>
+                  <button id="cancelReplace" onclick="cancelReplace()"><span>No</span></button>
+              </div>
+              <div>
+                <button id="confirmReplace"><span>Replace</span></button>
+              </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItemsContainer = document.querySelector('.nav-items-container');
+            hideAppLoadingAnimation();
+            navItemsContainer.addEventListener('click', function(event) {
+            if (event.target.closest('a')) {
+                showAppLoadingAnimation();
+            }
+            });
+            const backButton = document.querySelector('.back-button');
+
+            backButton.addEventListener('click', (event) => {
+                event.preventDefault(); 
+                if (document.referrer) {
+                    window.location.href = document.referrer;
+                } else {
+                    window.location.href = '/apphome';
+                }
+            });
+            document.querySelector('.search-input').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    const searchTerm = searchInput.value;
+                    performSearch(searchTerm);
+                }
+            });
+        });
+        
+        
+        const searchForm = document.querySelector('.search-input');
+        const searchInput = document.getElementById('searchInput');
+        const searchitemsDiv = document.querySelector('.searchitems');
+
+        const voiceRecBtn = document.getElementById('voiceRecBtn');
+        const listeningOverlay = document.getElementById('listeningOverlay');
+        const listeningText = document.getElementById('listeningText');
+
+        const startSound = new Audio("{% static '/images/Voiceassistantactivate.mp3' %}");
+        const stopSound = new Audio("{% static '/images/Voiceassistantdeactivate.mp3' %}");
+        let recognition;
+
+        function closeMicrophoneOverlay() {
+            document.getElementById('microphonePermissionOverlay').style.display = 'none';
+        }
+
+        function startSpeechRecognition() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Speech recognition is not supported by your browser. Please upgrade.");
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    startRecording(stream);
+                })
+                .catch(error => {
+                    console.error("Error accessing the microphone:", error);
+                    if (error.name === 'NotAllowedError') {
+                        alert("Microphone access is required for this feature.");
+                    } else if (error.name === 'NotFoundError') {
+                        alert("No microphone was found on your device.");
+                    } else {
+                        alert("Unexpected error occurred: " + error.message);
+                    }
+                });
+        }
+
+        function startRecording(stream) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true; 
+            recognition.lang = 'en-IN'; 
+
+            recognition.onstart = () => {
+                startSound.play();
+                const radar = document.querySelector('.radar');
+                radar.style.display = 'block';
+                listeningOverlay.classList.add('show');
+                listeningOverlay.style.display = 'flex';
+                voiceRecBtn.classList.add('listening');
+                listeningText.textContent = 'Listening...';
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                searchInput.value = finalTranscript || interimTranscript;
+                listeningText.textContent = finalTranscript || interimTranscript || 'Listening...';
+
+                if (finalTranscript) {
+                    stopSpeechRecognition();
+                    setTimeout(() => {
+                        const searchTerm = searchInput.value;
+                        performSearch(searchTerm); 
+                        speakSearchTerm(searchTerm);
+                    }, 300);
+                }
+            };
+
+            recognition.onend = () => {
+                if (listeningOverlay.classList.contains('show')) {
+                    stopSound.play();
+                    const radar = document.querySelector('.radar');
+                    radar.style.display = 'none';
+                    voiceRecBtn.classList.remove('listening');
+                    listeningOverlay.classList.remove('show');
+
+                    setTimeout(() => {
+                        listeningOverlay.style.display = 'none';
+                    }, 300);
+                }
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recognition.onerror = (event) => {
+                stopSound.play();
+                voiceRecBtn.classList.remove('listening');
+                listeningOverlay.classList.remove('show');
+                setTimeout(() => {
+                    listeningOverlay.style.display = 'none';
+                }, 300);
+
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    console.log('No speech was detected. Please try again.');
+                } else if (event.error === 'network') {
+                    alert('Please check your network connection.');
+                } else {
+                    alert('An error occurred during speech recognition: ' + event.error);
+                }
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            recognition.start();
+        }
+
+        function stopSpeechRecognition() {
+            if (recognition) {
+                recognition.stop();
+                stopSound.play();
+                const radar = document.querySelector('.radar');
+                radar.style.display = 'none';
+                voiceRecBtn.classList.remove('listening');
+                listeningOverlay.classList.remove('show');
+                listeningOverlay.style.display = 'none';
+            }
+        }
+
+        function speakSearchTerm(searchTerm) {
+            console.log(searchTerm);
+            if ('speechSynthesis' in window) {
+                const synth = window.speechSynthesis;
+                const utterance = new SpeechSynthesisUtterance(`Searching results for ${searchTerm}`);
+                function setVoiceAndSpeak() {
+                    const voices = synth.getVoices();
+                    const indianVoice = voices.find(voice =>
+                        voice.name === "Google हिन्दी" || 
+                        voice.name === "Google भारतीय अंग्रेज़ी" || 
+                        voice.name.includes("Google UK English Female")
+                    );
+                    
+                    if (indianVoice) {
+                        utterance.voice = indianVoice;
+                        console.log(`Using voice: ${indianVoice.name}`);
+                    } else {
+                        console.warn("Desired Indian accent voice not found. Using default.");
+                    }
+
+                    adjustPitchAndRate(utterance);
+                    synth.speak(utterance);
+                }
+
+                function adjustPitchAndRate(utterance) {
+                    let pitch = 1.1;
+                    let rate = 1.0;
+
+                    if (utterance.text.endsWith('?')) {
+                        pitch = 1.2;
+                    } else if (utterance.text.endsWith('!')) {
+                        pitch = 1.3;
+                    }
+
+                    const words = utterance.text.split(' ');
+                    if (words.length > 8) {
+                        rate = 1.05;
+                    } else if (words.length < 4) {
+                        rate = 0.95;
+                    }
+
+                    utterance.pitch = pitch;
+                    utterance.rate = rate;
+                }
+
+                if (synth.getVoices().length > 0) {
+                    setVoiceAndSpeak();
+                } else {
+                    synth.onvoiceschanged = setVoiceAndSpeak;
+                }
+            } else {
+                console.warn("Speech synthesis not supported");
+            }
+        }
+
+        function openBrowserSettings() {
+            startSpeechRecognition();
+        }
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const searchTerm = searchInput.value;
+            performSearch(searchTerm);
+        });
+        searchInput.addEventListener('input', function(event) {
+            const searchTerm = searchInput.value;
+            performSearch(searchTerm);
+        });
+        const loadingContainer = document.querySelector('.loading-container');
+
+        function showLoading() {
+            document.querySelector('.searchitems').style.display='none';
+            loadingContainer.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.querySelector('.searchitems').classList.remove('show');
+            document.querySelector('.searchitems').style.animation = 'none'; 
+            document.querySelector('.searchitems').style.opacity = 0; 
+        }
+        function hideLoading() {
+            loadingContainer.style.display = 'none';
+            document.body.style.overflow = '';
+            document.querySelector('.searchitems').style.display='block';
+            document.querySelector('.searchitems').classList.add('show');
+            document.querySelector('.searchitems').style.animation = 'slideUp 1s ease-in-out forwards'; 
+        }
+        function performSearch(searchTerm) {
+            if (searchTerm.trim() === '') {
+                searchitemsDiv.innerHTML = '';
+                return;
+            }
+            showLoading();
+            fetch(`/searchitems/?q=${searchTerm}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.items && data.items.length > 0) {
+                   searchitemsDiv.innerHTML = '<h3>Search Results</h3>';
+                     renderSearchResults(data.items);
+                } else {
+                    searchitemsDiv.innerHTML = `
+                     <div class="noitemsfoundcontainer">
+                        <img src="{% static '/images/noitemsfound.avif' %}" alt="No Items found">
+                        <h4>No results found for your search.</h4>       
+                    </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                console.error('Error fetching search results:', error);
+            });
+        }
+        const itemOverlay = document.getElementById('itemOverlay');
+        const overlayCloseButton = document.querySelector('.overlay-close-btn');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (itemOverlay && overlayCloseButton && searchitemsDiv) {
+                searchitemsDiv.addEventListener('click', (event) => {
+                    if (event.target.tagName === 'IMG') {
+                        const itemId = event.target.dataset.itemId;
+                        const itemCard = document.querySelector(`.item-card[data-item-id="${itemId}"]`);
+
+                        if (itemCard) {
+                            const itemInfo = itemCard.querySelector('.item-info');
+                            const itemName = itemInfo.querySelector('h4').textContent;
+                            const itemPrice = itemInfo.querySelector('.price').textContent;
+                            const itemDescription = itemInfo.querySelector('p').textContent;
+                            const itemDeliveryTime = itemInfo.querySelector('p:last-of-type').textContent;
+
+                            itemOverlay.querySelector('h3').textContent = itemName;
+                            itemOverlay.querySelector('.overlay-body img').src = event.target.src;
+                            itemOverlay.querySelector('.overlay-body p:first-of-type').textContent = itemPrice;
+                            itemOverlay.querySelector('.overlay-body p:last-of-type').textContent = itemDescription;
+                            itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').textContent = itemDeliveryTime;
+                            if(itemDeliveryTime[0]=='D'){
+                                itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(27, 166, 114)';
+                            }
+                            else{
+                                itemOverlay.querySelector('.overlay-body p:nth-of-type(2)').style.color='rgb(239, 79, 95)';
+                            }
+                            itemOverlay.classList.add('show'); 
+                            document.body.classList.add('overlay-active');
+                        }
+                    }
+                });
+
+                overlayCloseButton.addEventListener('click', () => {
+                    itemOverlay.classList.remove('show'); 
+                    document.body.classList.remove('overlay-active'); 
+                });
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+                    return {
+                        menu_name: params.get('menu_name'), 
+                    };
+                }
+                const params = getQueryParams();
+                const searchInput = document.getElementById('searchInput'); 
+                if (params.menu_name) {
+                    searchInput.value = decodeURIComponent(params.menu_name);
+                    performSearch(params.menu_name);
+                }
+
+        })
+        function addtocart(itemId, operation) {
+             const formData = new FormData();
+            formData.append('operation', operation);
+            formData.append('item_id',itemId);
+             fetch(/addtocart/, {
+                method: 'POST',
+                body: formData,
+                 headers: {
+                    'X-CSRFToken': getCookie('csrftoken') 
+                },
+             })
+            .then(response => response.json())
+             .then(data => {
+                if (data.success) {
+                    console.log('Cart updated successfully.');
+                    const searchUpdatesocket = new WebSocket(`${getWebSocketUrl()}searchupdate/`);
+                    searchUpdatesocket.onopen = function(event) {
+                        console.log('Connected to Search Update WebSocket server!');
+                        searchUpdatesocket.send(JSON.stringify({ item_id:itemId }));
+                    }
+                    searchUpdatesocket.onerror = function(event) {
+                        console.error('WebSocket error observed:', event);
+                    }      
+                } else{
+                    if (data.replace_cart) {
+                        document.getElementById('replace-p-content').textContent = `Your cart contains dishes from ${data.current_restaurant_name}. Do you want to discard the selection and add dishes from ${data.restaurant_name}?`;
+                        document.getElementById('replace-overlay').style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                        document.getElementById('confirmReplace').onclick = () => {
+                            confirmReplace(data.item_id, data.operation);
+                            
+                        };
+                    } else {
+                        console.error(data.error);
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        const confirmReplace = async (itemId, operation) => {
+            const formData = new FormData();
+            formData.append('operation', operation);
+            formData.append('item_id', itemId);
+            formData.append('replace_cart', true);
+            try {
+                const response = await fetch('/addtocart/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Cart updated successfully.');
+                    document.getElementById('replace-overlay').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    const searchTerm = document.getElementById('searchInput').value;
+                    performSearch(searchTerm); 
+                } else {
+                    console.log(data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        
+        const SearchUpdatesocket = new WebSocket(`${getWebSocketUrl()}searchupdate/`);
+        const menuDiv = document.querySelector('.meal-items');
+        SearchUpdatesocket.onopen = function(event) {
+            console.log('Connected to WebSocket server!');
+        };
+        SearchUpdatesocket.onmessage = function(event) {
+          const data = JSON.parse(event.data);
+             if(data.type === 'item_update'){
+               updateItemInSearchResults(data.item);
+            }else if (data.type === 'search_result') {
+                renderSearchResults(data.items);
+             }
+        };
+
+        function renderSearchResults(items) {
+            const searchitemsDiv = document.querySelector('.searchitems');
+             searchitemsDiv.innerHTML = '<h3>Search Results</h3>';
+
+            items.forEach(item => {
+                const itemHtml = `
+                    <div class="item-card" data-item-id="${item.item_id}" id="search-item-card">
+                         <div class="item-info">
+                             <h5 style="margin:0;">${item.resturant_name}</h5>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="${item.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)'}" stroke-width="2" class="bi bi-caret-up-square ${item.type === 'non_veg' ? 'non-veg' : 'veg'}" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                    <path d="M3.544 10.705A.5.5 0 0 0 4 11h8a.5.5 0 0 0 .374-.832l-4-4.5a.5.5 0 0 0-.748 0l-4 4.5a.5.5 0 0 0-.082.537"/>
+                                </svg>
+                                <h4>${item.item_name}</h4>
+                                <span class="price" id="item-name">₹${item.price}</span>
+                                 <p>${item.description}</p>
+                                <p class="delivery_time" style="color:${item.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)'};font-weight:500;">${item.is_available ? `Delivery in ${item.preparation_time} min` : 'Not Available'}</p>
+                         </div>
+                        <div class="image-container">
+                             <img src="${item.item_image}" alt="${item.item_name}" data-item-id="${item.item_id}" style="filter: ${item.is_available ? 'none' : 'grayscale(100%)'};">
+                            ${item.is_available ? (item.in_cart ? `
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" id="decrease" onclick="addtocart(${item.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
+                                        </svg>
+                                    </button>
+                                     <p class="quantity">${item.quantity}</p>
+                                    <button class="quantity-btn" id="increase" onclick="addtocart(${item.item_id}, 'increment')">+</button>
+                                </div>
+                            ` : `<button class="add-button" onclick="addtocart(${item.item_id}, 'increment')"><p>ADD</p></button>`) : ''}
+                        </div>
+                        <hr class="styles_divider__2JelH">
+                     </div>
+                `;
+                searchitemsDiv.innerHTML += itemHtml;
+                });
+
+        }
+
+    function updateItemInSearchResults(updatedItem) {
+            const itemCard = document.querySelector(`.item-card[data-item-id="${updatedItem.item_id}"]`);
+            if (itemCard) {
+                itemCard.querySelector('.item-info h5').textContent = updatedItem.resturant_name;
+                itemCard.querySelector('.item-info svg').setAttribute('fill',updatedItem.type === 'non_veg' ? 'rgb(239, 79, 95)' : 'rgb(27, 166, 114)');
+                itemCard.querySelector('.item-info svg').classList.remove('non-veg','veg');
+                itemCard.querySelector('.item-info svg').classList.add(updatedItem.type === 'non_veg' ? 'non-veg':'veg');
+                itemCard.querySelector('.item-info h4').textContent = updatedItem.item_name;
+                itemCard.querySelector('.item-info .price').textContent = `₹${updatedItem.price}`;
+                itemCard.querySelector('.item-info p').textContent = updatedItem.description;
+                itemCard.querySelector('.item-info .delivery_time').textContent = updatedItem.is_available ? `Delivery in ${updatedItem.preparation_time} min` : 'Not Available';
+                itemCard.querySelector('.item-info .delivery_time').style.color= updatedItem.is_available ? 'rgb(27, 166, 114)' : 'rgb(239, 79, 95)';
+
+                const imgElement = itemCard.querySelector('.image-container img');
+                imgElement.src = updatedItem.item_image;
+                imgElement.style.filter = updatedItem.is_available ? 'none' : 'grayscale(100%)';
+
+                const quantityControlDiv = itemCard.querySelector('.quantity-control');
+            const addButton = itemCard.querySelector('.add-button');
+
+                if(updatedItem.is_available){
+                if(updatedItem.in_cart){
+                    if(addButton){
+                        addButton.remove();
+                    }
+                    if(!quantityControlDiv){
+                        const quantityControlHTML= `
+                            <div class="quantity-control">
+                                <button class="quantity-btn" id="decrease" onclick="addtocart(${updatedItem.item_id}, 'decrement')" style="display:flex;align-items:center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
+                                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"></path>
+                                    </svg>
+                                </button>
+                                <p class="quantity">${updatedItem.quantity}</p>
+                                <button class="quantity-btn" id="increase" onclick="addtocart(${updatedItem.item_id}, 'increment')">+</button>
+                            </div>
+                    `
+                    itemCard.querySelector('.image-container').innerHTML +=quantityControlHTML
+                    }else{
+                    itemCard.querySelector('.quantity-control p').textContent = updatedItem.quantity;
+                    }
+                }else{
+                if(quantityControlDiv){
+                        quantityControlDiv.remove();
+                }
+                if(!addButton){
+                    const addButtonHTML = `
+                            <button class="add-button" onclick="addtocart(${updatedItem.item_id}, 'increment')"><p>ADD</p></button>
+                    `
+                    itemCard.querySelector('.image-container').innerHTML += addButtonHTML;
+                    }
+                }
+            }else{
+                if(quantityControlDiv){
+                        quantityControlDiv.remove();
+                    }
+                if(addButton){
+                        addButton.remove();
+                    }
+            }
+        }
+    }
+        SearchUpdatesocket.onerror = function(event) {
+            console.error('WebSocket error observed:', event);
+        };
+       function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+            }
+            return cookieValue;
+        }
+    
+        const cartitemscountSocket = new WebSocket(`${getWebSocketUrl()}cartitems/`);
+        cartitemscountSocket.onopen = function(event) {
+            console.log('Connected to Cart WebSocket server!');
+        };
+
+        cartitemscountSocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const cartIcon = document.querySelector('.cart-icon');
+            const cartCount = document.querySelector('.cart-count');
+
+            if (data.data && data.data.length > 0) {
+                cartIcon.style.fill = '#60b246';
+                cartCount.style.color = '#60b246';
+                cartCount.textContent = data.data.length;
+            }
+            else {
+                cartIcon.style.fill = 'currentColor';
+                cartCount.style.color = 'inherit';
+                
+                cartCount.textContent = '';
+                
+            }
+        };
+        function getWebSocketUrl() {
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            const host = window.location.host;
+            const ipRegex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?$/; 
+            if (ipRegex.test(host)) {
+                return `${protocol}${host}/ws/`; 
+            } else {
+                return `${protocol}${host}/ws/`; 
+            }
+        }
+        function cancelReplace(){
+            document.getElementById('replace-overlay').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
