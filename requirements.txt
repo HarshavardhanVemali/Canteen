@@ -13,7 +13,7 @@ cffi==2.0.0
 channels==4.3.2
 channels-redis==4.3.0
 charset-normalizer==3.4.7
-click==8.3.1
+click==8.3.2
 constantly==23.10.4
 daphne==4.2.1
 dataclasses-json==0.6.7
@@ -24,11 +24,11 @@ django-allauth==65.15.1
 django-cors-headers==4.9.0
 djangorestframework==3.17.1
 dnspython==2.8.0
-firebase-admin==7.3.0
+firebase-admin==7.4.0
 frozenlist==1.8.0
-google-api-core==2.30.2
-google-api-python-client==2.193.0
-google-auth==2.49.1
+google-api-core==2.30.3
+google-api-python-client==2.194.0
+google-auth==2.49.2
 google-auth-httplib2==0.3.1
 google-cloud-core==2.5.1
 google-cloud-firestore==2.26.0
@@ -48,7 +48,7 @@ hyperlink==21.0.0
 idna==3.11
 incremental==24.11.0
 jsons==1.6.3
-marshmallow==4.2.4
+marshmallow==4.3.0
 marshmallow-enum==1.5.1
 msgpack==1.1.2
 multidict==6.7.1
@@ -93,7 +93,7 @@ tzdata==2026.1
 tzlocal==5.3.1
 uritemplate==4.2.0
 urllib3==2.6.3
-uvicorn==0.43.0
+uvicorn==0.44.0
 whitenoise==6.12.0
 yarl==1.23.0
-zope.interface==8.2
+zope.interface==8.3
